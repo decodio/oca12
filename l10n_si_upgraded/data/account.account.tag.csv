@@ -1,0 +1,45 @@
+id,name,applicability
+P_SLO_B_22,Prodaja SLO 22% - bruto,taxes
+P_SLO_N_22,Prodaja SLO 22% - neto,taxes
+P_SLO_B_9_5,"Prodaja SLO 9,5% - bruto",taxes
+P_SLO_N_9_5,"Prodaja SLO 9,5% - neto",taxes
+ZDDV-52-1,DDV ni obračunan po 1.točki 52.čl. ZDDV-1. (Izvoz),taxes
+ZDDV-46-1-S,DDV ni obračunan po 1.točki 46.čl. ZDDV-1. (Dobave storitev EU),taxes
+ZDDV-46-1-B,DDV ni obračunan po 1.točki 46.čl. ZDDV-1. (Dobave blaga v EU),taxes
+ZDDV-76a,DDV ni obračunan po 76a. čl. ZDDV-1. (Obrnjena davčna obveznost),taxes
+ZDDV-76a-O,DDV ni obračunan po 76a. čl. ZDDV-1. (Obrnjena davčna obveznost) – osnova,taxes
+ZDDV-76a-D,DDV ni obračunan po 76a. čl. ZDDV-1. (Obrnjena davčna obveznost) – davek,taxes
+ZDDV-49-2,DDV ni obračunan po 2. odstavku 49.čl. ZDDV-1. (Mednarodni prevoz),taxes
+N_SLO_B_22,Nabava SLO 22% - bruto,taxes
+N_SLO_N_22,Nabava SLO 22% - neto,taxes
+N_SLO_B_9_5,"Nabava SLO 9,5% - bruto",taxes
+N_SLO_N_9_5,"Nabava SLO 9,5% - neto",taxes
+N_ECL_B_22,ECL 22% - bruto,taxes
+N_ECL_N_22,ECL 22% - neto,taxes
+N_ECL_B_9_5,"ECL 9,5% - bruto",taxes
+N_ECL_N_9_5,"ECL 9,5% - neto",taxes
+N_EU_B_22,Nabava EU 22% - bruto,taxes
+N_EU_B_22_IN,Nabava EU 22% - bruto – vstopni,taxes
+N_EU_B_22_OUT,Nabava EU 22% - bruto – izstopni,taxes
+N_EU_N_22,Nabava EU 22% - neto,taxes
+N_EU_N_22_IN,Nabava EU 22% - neto – vstopni,taxes
+N_EU_N_22_OUT,Nabava EU 22% - neto – izstopni,taxes
+N_EU_B_9_5,"Nabava EU 9,5% - bruto",taxes
+N_EU_B_9_5_IN,"Nabava EU 9,5% - bruto – vstopni",taxes
+N_EU_B_9_5_OUT,"Nabava EU 9,5% - bruto – izstopni",taxes
+N_EU_N_9_5,"Nabava EU 9,5% - neto",taxes
+N_EU_N_9_5_IN,"Nabava EU 9,5% - neto – vstopni",taxes
+N_EU_N_9_5_OUT,"Nabava EU 9,5% - neto – izstopni",taxes
+N_76_B_22,Nabava 76a. čl. 22% - bruto,taxes
+N_76_B_22_IN,Nabava 76a. čl. 22% - bruto – vstopni,taxes
+N_76_B_22_OUT,Nabava 76a. čl. 22% - bruto – izstopni,taxes
+N_76_N_22,Nabava 76a. čl. 22% - neto,taxes
+N_76_N_22_IN,Nabava 76a. čl. 22% - neto – vstopni,taxes
+N_76_N_22_OUT,Nabava 76a. čl. 22% - neto – izstopni,taxes
+NX_22_B,Neodbitni DDV 22% - bruto,taxes
+NX_22_N,Neodbitni DDV 22% - neto,taxes
+NX_9_5_B,"Neodbitni DDV 9,5% - bruto",taxes
+NX_9_5_N,"Neodbitni DDV 9,5% - neto",taxes
+N_0,Oproščen neobdavčen promet,taxes
+NS_0,Neobdavčen promet – izstopni,taxes
+NN_0,Neobdavčen promet – vstopni,taxes

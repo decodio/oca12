@@ -1,0 +1,4 @@
+id,chart_template_id/id,name
+fiscal_position_home,account_chart_si_gd,Domači partner
+fiscal_position_eu,account_chart_si_gd,Partner EU
+fiscal_position_noeu,account_chart_si_gd,Partner izven EU / EU brez DŠ

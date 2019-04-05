@@ -1,0 +1,866 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+# * program
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: program (7.0)\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-07-25 00:56+0000\n"
+"PO-Revision-Date: 2015-05-17 16:56+0000\n"
+"Last-Translator: Maxime Chambreuil <maxime.chambreuil@gmail.com>\n"
+"Language-Team: French (http://www.transifex.com/oca/OCA-program-7-0/language/fr/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. module: program
+#: field:program.result.level,chain_tail:0
+msgid "Chain Tail"
+msgstr "Queue de la chaîne"
+
+#. module: program
+#: model:program.result.level,name:program.demo_result_level_fr
+msgid "Final Result"
+msgstr "Résultat final"
+
+#. module: program
+#: field:program.result,validation_domain:0
+msgid "Validation Domain Search"
+msgstr "Recherche du domaine de la validation"
+
+#. module: program
+#: model:res.groups,name:program.group_program_dpe
+msgid "Evaluation and Planing Directorate"
+msgstr "Direction Planification et Evaluation (DPE)"
+
+#. module: program
+#: code:addons/program/program_result.py:80
+#, python-format
+msgid "%s contributes to"
+msgstr "%s contribue à"
+
+#. module: program
+#: model:ir.model,name:program.model_program_result_validation_spec
+msgid "Result Validation Specifications"
+msgstr "Spécifications de la validation des résultats"
+
+#. module: program
+#: view:program.result.intervention:0
+msgid "Search Intervention Methods"
+msgstr "Rechercher les modes d'intervention"
+
+#. module: program
+#: help:program.result.level,status_options:0
+msgid "Comma-separated list of options for the Status Field."
+msgstr "Liste délimité par des virgules des options pour le champ statut."
+
+#. module: program
+#: model:program.result.level,status_label:program.demo_result_level_act
+msgid "Status of the Activity"
+msgstr "Statut de l'activité"
+
+#. module: program
+#: view:program.result:0 field:program.result,parent_id:0
+#: field:program.result,parent_id2:0 field:program.result.level,parent_id:0
+msgid "Parent"
+msgstr "Parent"
+
+#. module: program
+#: field:program.result.level,chain_root:0
+msgid "Chain Root"
+msgstr "Racine de la chaîne"
+
+#. module: program
+#: field:program.result,message_unread:0
+msgid "Unread Messages"
+msgstr "Messages non-lus"
+
+#. module: program
+#: model:ir.model,name:program.model_program_result_validation_line
+msgid "Result Mass Validator Line"
+msgstr "Line de validation masse de résultat"
+
+#. module: program
+#: field:program.result,statement:0
+msgid "Title"
+msgstr "Titre"
+
+#. module: program
+#: field:program.result.level,validation_spec_ids:0
+msgid "Validation Specifications"
+msgstr "Spécifications de la validation"
+
+#. module: program
+#: model:res.groups,name:program.group_program_director
+msgid "Director"
+msgstr "Directeur"
+
+#. module: program
+#: model:program.result.level,code:program.demo_result_level_re
+msgid "RE"
+msgstr "RE"
+
+#. module: program
+#: model:program.result.level,name:program.demo_result_level_imr
+msgid "Immediate Result"
+msgstr "Résultat immédiat"
+
+#. module: program
+#: model:res.groups,name:program.group_program_basic_user
+msgid "Base"
+msgstr "Base"
+
+#. module: program
+#: model:ir.model,name:program.model_program_result_tag
+#: view:program.result.tag:0
+msgid "Result Tag"
+msgstr "Étiquette de résultat"
+
+#. module: program
+#: model:ir.actions.act_window,name:program.action_program_result_multi_validate
+#: view:program.result:0 view:program.result.validation:0
+msgid "Validate"
+msgstr "Valider"
+
+#. module: program
+#: model:res.groups,comment:program.group_program_director
+msgid "This group can validate Results to the visa_director state."
+msgstr "Ce groupe peut valider des résultats à l'état Visa Directeur."
+
+#. module: program
+#: code:addons/program/program_result.py:422
+#, python-format
+msgid "Error! You can not create recursive Results."
+msgstr "Erreur ! Vous ne pouvez pas créer de résultats récursifs"
+
+#. module: program
+#: model:ir.ui.menu,name:program.menu_program
+msgid "Programs"
+msgstr "Programmes"
+
+#. module: program
+#: field:program.result,message_ids:0
+msgid "Messages"
+msgstr "Messages"
+
+#. module: program
+#: view:program.result.level:0
+msgid "Search Result Levels"
+msgstr "Rechercher dans les niveaux de résultats"
+
+#. module: program
+#: view:program.result:0
+msgid "Assumptions and Risks"
+msgstr "Risques et hypothèses"
+
+#. module: program
+#: code:addons/program/program_result.py:90
+#, python-format
+msgid "Contributed by %s"
+msgstr "Résultats contribuant à %s"
+
+#. module: program
+#: model:res.groups,comment:program.group_program_dpe
+msgid "This group can validate results to the visa_dpe state."
+msgstr "Ce groupe peut valider des résultats à l'état Visa DPE."
+
+#. module: program
+#: code:addons/program/program_result.py:43 selection:program.result,state:0
+#: selection:program.result.close.line,state:0
+#: selection:program.result.validation.line,state:0
+#, python-format
+msgid "Cancelled"
+msgstr "Annulé"
+
+#. module: program
+#: view:program.result.level:0
+msgid "Validation"
+msgstr "Validation"
+
+#. module: program
+#: help:program.result,message_unread:0
+msgid "If checked new messages require your attention."
+msgstr "Si coché, les nouveaux messages demanderont votre attention."
+
+#. module: program
+#: view:program.result.intervention:0
+msgid "Result Intervention Method"
+msgstr "Modes d'intervention de résultat"
+
+#. module: program
+#: model:ir.actions.act_window,name:program.action_program_result_level_tree
+#: model:ir.ui.menu,name:program.menu_program_configuration_level
+msgid "Result Levels"
+msgstr "Niveaux de résultats"
+
+#. module: program
+#: model:ir.model,name:program.model_program_result_intervention
+msgid "Intervention Method"
+msgstr "Mode d'intervention"
+
+#. module: program
+#: help:program.result,message_summary:0
+msgid ""
+"Holds the Chatter summary (number of messages, ...). This summary is "
+"directly in html format in order to be inserted in kanban views."
+msgstr "Contient le résumé de la discussion (nombre de messages, ...). Ce résumé est au format HTML pour permettre son utilisation dans les vues kanban."
+
+#. module: program
+#: model:ir.model,name:program.model_program_result_close
+msgid "Result Mass Closer"
+msgstr "Fermeture de masse de résultat"
+
+#. module: program
+#: field:program.result,assumptions:0
+msgid "Typology of Assumptions"
+msgstr "Typologie des hypothèses"
+
+#. module: program
+#: code:addons/program/program_result.py:39 selection:program.result,state:0
+#: selection:program.result.close.line,state:0
+#: selection:program.result.validation.line,state:0
+#, python-format
+msgid "DPE's Visa"
+msgstr "Visa DPE"
+
+#. module: program
+#: field:program.result.level,fvg_show_page_children:0
+msgid "Show \"Results\" Tab"
+msgstr "Montrer l'onglet « Résultats »"
+
+#. module: program
+#: view:program.result.tag:0
+msgid "Search Result Tag"
+msgstr "Rechercher les étiquettes"
+
+#. module: program
+#: help:program.result.level,status_label:0
+msgid "Label to the Status Field."
+msgstr "Libellé du champ Statut."
+
+#. module: program
+#: model:program.result.level,status_label:program.demo_result_level_mi
+msgid "Status of the Mission"
+msgstr "Statut de la mission"
+
+#. module: program
+#: field:program.result,message_follower_ids:0
+msgid "Followers"
+msgstr "Abonnés"
+
+#. module: program
+#: model:res.groups,name:program.group_program_employee
+msgid "Employee"
+msgstr "Employé"
+
+#. module: program
+#: model:ir.actions.act_window,name:program.action_program_result_intervention_tree
+#: model:ir.ui.menu,name:program.menu_program_configuration_intervention
+msgid "Intervention Methods"
+msgstr "Modes d'intervention"
+
+#. module: program
+#: code:addons/program/program_result_level.py:172
+#: code:addons/program/program_result_level.py:262
+#, python-format
+msgid "Status of the %s"
+msgstr "Statut du %s"
+
+#. module: program
+#: help:program.result.level,validation_spec_ids:0
+msgid "Configuration of which users can validate which states"
+msgstr "Configuration des états qui peuvent être validés et par quels groupes"
+
+#. module: program
+#: field:program.result,transverse_parent_ids_label:0
+msgid "Contributed by label"
+msgstr "Résultats contribuant à (libellé)"
+
+#. module: program
+#: field:program.result,status:0
+msgid "Status of Result"
+msgstr "Statut de l'extrant"
+
+#. module: program
+#: view:program.result:0
+msgid "Tag"
+msgstr "Étiquette"
+
+#. module: program
+#: view:program.result.level:0
+msgid "Interface"
+msgstr "Interface"
+
+#. module: program
+#: model:ir.ui.menu,name:program.menu_program_configuration
+msgid "Configuration"
+msgstr "Configuration"
+
+#. module: program
+#: model:ir.ui.menu,name:program.menu_program_configuration_target
+msgid "Result Target Types"
+msgstr "Types de publics cibles"
+
+#. module: program
+#: model:program.result,name:program.demo_program_result_re_E
+msgid "Realisation E"
+msgstr "Extrant / Réalisation E"
+
+#. module: program
+#: model:ir.model,name:program.model_program_result_close_line
+msgid "Result Mass Closer Line"
+msgstr "Ligne de fermeture de masse de résultat"
+
+#. module: program
+#: view:program.result:0
+msgid "Result Schedule"
+msgstr "Horaire des résultats"
+
+#. module: program
+#: model:program.result,name:program.demo_program_result_fr_G
+msgid "Final Result G"
+msgstr "Résultat final G"
+
+#. module: program
+#: view:program.result:0
+msgid "Return to Draft"
+msgstr "Mettre à l'état brouillon"
+
+#. module: program
+#: model:ir.model,name:program.model_program_result_validation
+msgid "Result Mass Validator"
+msgstr "Validateur de masse de résultat"
+
+#. module: program
+#: model:program.result,name:program.demo_program_result_fr_B
+msgid "Final Result B"
+msgstr "Résultat final B"
+
+#. module: program
+#: code:addons/program/program_result.py:40 selection:program.result,state:0
+#: selection:program.result.close.line,state:0
+#: selection:program.result.validation.line,state:0
+#, python-format
+msgid "Admin's Visa"
+msgstr "Visa Admin"
+
+#. module: program
+#: field:program.result,child_ids:0
+msgid "Child Results"
+msgstr "Résultats fils"
+
+#. module: program
+#: model:res.groups,comment:program.group_program_administrator
+msgid "This group can validate results to the visa_administrator state."
+msgstr "Ce groupe peut valider des résultats à l'état Visa Admin."
+
+#. module: program
+#: field:program.result.level,fvg_show_page_risk:0
+msgid "Show \"Assumptions and Risks\" Tab"
+msgstr "Montrer l'onglet « Risques et hypothèses »"
+
+#. module: program
+#: model:program.result.level,code:program.demo_result_level_mi
+msgid "MI"
+msgstr "MI"
+
+#. module: program
+#: field:program.result,intervention_id:0
+msgid "Intervention Mode"
+msgstr "Mode d'intervention"
+
+#. module: program
+#: view:program.result:0
+msgid "Group by..."
+msgstr "Grouper par..."
+
+#. module: program
+#: model:ir.model,name:program.model_program_result view:program.result:0
+#: field:program.result.level,result_ids:0
+#: field:program.result.target,result:0
+msgid "Result"
+msgstr "Résultat"
+
+#. module: program
+#: field:program.result,date_from:0
+msgid "Start Date"
+msgstr "Date de début"
+
+#. module: program
+#: model:res.groups,comment:program.group_program_basic_user
+msgid ""
+"Very basic access to object used in Result Based Management.\n"
+"These permissions are granted to every group in Result Based Management.\n"
+"* Read and write permissions for program.result\n"
+"* Read permissions for program.result.level\n"
+"* Read, write, create access for program.indicator\n"
+"* Read access for program.evaluation"
+msgstr "Accès très basique sur les objets de la gestion axée sur les résultats.\nCes permissions sont donnés pour tous les groupes de ce module.\n* Lecture et écriture de program.result\n* Lecture de program.result.level\n* Lecture, écriture et création de program.indicator\n* Lecture de program.evaluation"
+
+#. module: program
+#: view:program.result.close:0 view:program.result.validation:0
+msgid "or"
+msgstr "ou"
+
+#. module: program
+#: field:program.result.level,fvg_show_page_target:0
+msgid "Show \"Targets\" Tab"
+msgstr "Montrer l'onglet « Cibles »"
+
+#. module: program
+#: model:program.result.level,status_label:program.demo_result_level_ir
+msgid "Status of the Intermediate Result"
+msgstr "Statut du résultat intermédiaire"
+
+#. module: program
+#: model:program.result.level,name:program.demo_result_level_re
+msgid "Realisation"
+msgstr "Réalisation"
+
+#. module: program
+#: model:program.result.level,code:program.demo_result_level_fr
+msgid "FR"
+msgstr "RF"
+
+#. module: program
+#: field:program.result.validation.spec,group_id:0
+msgid "Group"
+msgstr "Groupe"
+
+#. module: program
+#: code:addons/program/program_result.py:41 selection:program.result,state:0
+#: selection:program.result.close.line,state:0
+#: selection:program.result.validation.line,state:0
+#, python-format
+msgid "Opened"
+msgstr "Ouvert"
+
+#. module: program
+#: field:program.result.close.line,is_closable:0
+#: field:program.result.validation.line,is_validatable:0
+msgid "Can be Validated"
+msgstr "Peut être validé"
+
+#. module: program
+#: model:ir.model,name:program.model_program_result_target
+#: view:program.result.tag:0 view:program.result.target:0
+msgid "Result Target"
+msgstr "Cible de Résultat"
+
+#. module: program
+#: model:ir.module.category,name:program.module_category_program
+msgid "Program"
+msgstr "Programme"
+
+#. module: program
+#: code:addons/program/program_result.py:36 selection:program.result,state:0
+#: selection:program.result.close.line,state:0
+#: selection:program.result.validation.line,state:0
+#, python-format
+msgid "Draft"
+msgstr "Brouillon"
+
+#. module: program
+#: code:addons/program/program_result.py:42 selection:program.result,state:0
+#: selection:program.result.close.line,state:0
+#: selection:program.result.validation.line,state:0
+#, python-format
+msgid "Closed"
+msgstr "Fermé"
+
+#. module: program
+#: field:program.result,parent_depth:0
+msgid "Parent Depth"
+msgstr "Profondeur du parent"
+
+#. module: program
+#: code:addons/program/program_result.py:405
+#, python-format
+msgid "Status"
+msgstr "Statut"
+
+#. module: program
+#: model:ir.actions.act_window,name:program.action_program_result_tag_tree
+msgid "Result Tags"
+msgstr "Étiquettes de résultats"
+
+#. module: program
+#: model:ir.ui.menu,name:program.menu_program_configuration_tag
+#: field:program.result,tag_ids:0
+msgid "Tags"
+msgstr "Étiquettes"
+
+#. module: program
+#: field:program.result.level,fvg_show_group_status:0
+msgid "Show Status of Result Fields"
+msgstr "Montrer le champs Statut de résultats"
+
+#. module: program
+#: field:program.result,transverse_child_ids:0
+msgid "Contributes to"
+msgstr "Contribue à"
+
+#. module: program
+#: code:addons/program/wizard/program_result_close.py:77
+#, python-format
+msgid ""
+"The following results cannot be closed or you don't have the required permissions:\n"
+"\n"
+"%s"
+msgstr "Ces résultats peuvent soit ne pas être fermés ou vous n'avez pas les bonnes permissions:\n\n%s"
+
+#. module: program
+#: model:program.result.level,code:program.demo_result_level_imr
+msgid "ImR"
+msgstr "RIm"
+
+#. module: program
+#: field:program.result,message_is_follower:0
+msgid "Is a Follower"
+msgstr "Est abonné"
+
+#. module: program
+#: model:program.result.level,status_label:program.demo_result_level_fr
+msgid "Status of the Final Result"
+msgstr "Statut du résultat final"
+
+#. module: program
+#: model:program.result.level,name:program.demo_result_level_ir
+msgid "Intermediate Result"
+msgstr "Résultat intermédiaire"
+
+#. module: program
+#: field:program.result.tag,active:0 field:program.result.target,active:0
+msgid "Active"
+msgstr "Actif"
+
+#. module: program
+#: field:program.result.level,fvg_show_field_statement:0
+msgid "Show \"Title\" Field"
+msgstr "Montrer le champs « Titre »"
+
+#. module: program
+#: view:program.result.target:0
+msgid "Search Result Targets"
+msgstr "Rechercher dans les résultats cibles"
+
+#. module: program
+#: field:program.result,target_audience_type_ids:0
+msgid "Target Audience Types"
+msgstr "Types de publics cibles"
+
+#. module: program
+#: field:program.result.level,menu_id:0
+msgid "Menu"
+msgstr "Menu"
+
+#. module: program
+#: model:ir.model,name:program.model_program_result_level
+#: view:program.result.level:0
+msgid "Result Level"
+msgstr "Niveau de résultats"
+
+#. module: program
+#: field:program.result.level,child_id:0
+msgid "Child"
+msgstr "Enfant"
+
+#. module: program
+#: field:program.result,message_summary:0
+msgid "Summary"
+msgstr "Résumé"
+
+#. module: program
+#: code:addons/program/wizard/program_result_close.py:76
+#: code:addons/program/wizard/program_result_validation.py:76
+#, python-format
+msgid "Error"
+msgstr "Erreur"
+
+#. module: program
+#: model:program.result.level,status_label:program.demo_result_level_re
+msgid "Status of the Realisation"
+msgstr "Statut de la réalisation"
+
+#. module: program
+#: view:program.result.close:0
+msgid "Closing Multiple Results"
+msgstr "Fermer plusieurs résultats"
+
+#. module: program
+#: field:program.result,code:0 field:program.result.intervention,code:0
+#: field:program.result.level,code:0
+msgid "Code"
+msgstr "Code"
+
+#. module: program
+#: view:program.result.validation:0
+msgid "Validating Multiple Results"
+msgstr "Valider plusieurs résultats"
+
+#. module: program
+#: field:program.result,state:0 field:program.result.close.line,state:0
+#: field:program.result.validation.line,state:0
+msgid "State"
+msgstr "État"
+
+#. module: program
+#: code:addons/program/wizard/program_result_validation.py:77
+#, python-format
+msgid ""
+"The following results cannot be validated or you don't have the required permissions:\n"
+"\n"
+"%s"
+msgstr "Ces résultats peuvent soit ne pas être validés ou vous n'avez pas les bonnes permissions:\n\n%s"
+
+#. module: program
+#: view:program.result:0 view:program.result.close:0
+#: view:program.result.validation:0
+msgid "Cancel"
+msgstr "Annuler"
+
+#. module: program
+#: model:ir.actions.act_window,name:program.action_program_result_multi_close
+#: view:program.result:0 view:program.result.close:0
+msgid "Close"
+msgstr "Fermer"
+
+#. module: program
+#: code:addons/program/program_result.py:37 selection:program.result,state:0
+#: selection:program.result.close.line,state:0
+#: selection:program.result.validation.line,state:0
+#, python-format
+msgid "Validated"
+msgstr "Validé"
+
+#. module: program
+#: view:program.result:0
+msgid "Open"
+msgstr "Ouvrir"
+
+#. module: program
+#: view:program.result:0
+msgid "Targets"
+msgstr "Cibles"
+
+#. module: program
+#: view:program.result:0
+msgid "Search Results"
+msgstr "Rechercher les Résultats : "
+
+#. module: program
+#: model:program.result,name:program.demo_program_result_mi_F
+msgid "Mission F"
+msgstr "Mission F"
+
+#. module: program
+#: field:program.result,transverse_parent_ids:0
+msgid "Contributed by"
+msgstr "Résultats contribuant à"
+
+#. module: program
+#: model:program.result,name:program.demo_program_result_imr_D
+msgid "Immediate Result D"
+msgstr "Résultat Immédiat D"
+
+#. module: program
+#: model:res.groups,comment:program.group_program_employee
+msgid ""
+"This is the main group of Result Based Management.\n"
+"* This group can Create and Modify Results\n"
+"* This group can Modify most fields in a draft form\n"
+"* This group can validate Results until the validated state"
+msgstr "Ceci est le groupe principal de la gestion axée sur les résultats.\n* Ce groupe peut créer et modifier des résultats\n* Ce groupe peut modifier la plupart des champs en état brouillon\n* Ce groupe peut valider les résultat jusqu'à l'état Validé"
+
+#. module: program
+#: model:program.result,name:program.demo_program_result_imr_I
+msgid "Immediate Result I"
+msgstr "Résultat Immédiat I"
+
+#. module: program
+#: model:ir.actions.act_window,name:program.action_program_result_form
+#: model:ir.actions.act_window,name:program.action_program_result_list
+#: model:ir.ui.menu,name:program.menu_program_result
+#: model:ir.ui.menu,name:program.menu_program_result_result
+#: view:program.result:0 field:program.result.close,line_ids:0
+#: field:program.result.close.line,result_id:0
+#: field:program.result.validation,line_ids:0
+#: field:program.result.validation.line,result_id:0
+msgid "Results"
+msgstr "Résultats"
+
+#. module: program
+#: model:program.result,name:program.demo_program_result_mi_A
+msgid "Mission A"
+msgstr "Mission A"
+
+#. module: program
+#: field:program.result,transverse_child_ids_label:0
+msgid "Contributes to Label"
+msgstr "Contribue à (Libellé)"
+
+#. module: program
+#: model:program.result,name:program.demo_program_result_ir_H
+msgid "Intermediate Result H"
+msgstr "Résultat intermédiaire H"
+
+#. module: program
+#: model:program.result,name:program.demo_program_result_ir_C
+msgid "Intermediate Result C"
+msgstr "Résultat intermédiaire C"
+
+#. module: program
+#: field:program.result.validation.spec,states:0
+msgid "States"
+msgstr "États"
+
+#. module: program
+#: model:res.groups,name:program.group_program_administrator
+msgid "Administrator"
+msgstr "Administrateur"
+
+#. module: program
+#: field:program.result,description:0
+msgid "Description"
+msgstr "Description"
+
+#. module: program
+#: field:program.result,result_level_id:0 field:program.result.level,depth:0
+#: field:program.result.validation.spec,level_id:0
+msgid "Level"
+msgstr "Niveau"
+
+#. module: program
+#: field:program.result,risks:0
+msgid "Typology of Risks"
+msgstr "Typologie des risques"
+
+#. module: program
+#: model:res.groups,comment:program.group_program_manager
+msgid "This group has full access to configuration."
+msgstr "Les Gestionnaires de la programmation ont les droits complets de la configuration"
+
+#. module: program
+#: code:addons/program/program_result.py:38 selection:program.result,state:0
+#: selection:program.result.close.line,state:0
+#: selection:program.result.validation.line,state:0
+#, python-format
+msgid "Director's Visa"
+msgstr "Visa Directeur"
+
+#. module: program
+#: field:program.result,descendant_ids:0
+msgid "Descendant"
+msgstr "Descendance"
+
+#. module: program
+#: field:program.result,date_to:0
+msgid "End Date"
+msgstr "Date de fin"
+
+#. module: program
+#: model:program.result.level,code:program.demo_result_level_act
+msgid "AC"
+msgstr "AC"
+
+#. module: program
+#: model:program.result,name:program.demo_program_result_re_J
+msgid "Realisation J"
+msgstr "Extrant / Réalisation J"
+
+#. module: program
+#: view:program.result:0 field:program.result,name:0
+#: field:program.result.close.line,name:0
+#: field:program.result.intervention,name:0 field:program.result.level,name:0
+#: field:program.result.tag,name:0 field:program.result.target,name:0
+#: field:program.result.validation.line,name:0
+msgid "Name"
+msgstr "Nom"
+
+#. module: program
+#: model:program.result.level,code:program.demo_result_level_ir
+msgid "IR"
+msgstr "RI"
+
+#. module: program
+#: field:program.result.level,fvg_show_group_transversals:0
+msgid "Show Transversal fields"
+msgstr "Montrer les champs transversaux"
+
+#. module: program
+#: code:addons/program/program_result_validation_spec.py:58
+#, python-format
+msgid "Duplicate Group"
+msgstr "Groupe en double"
+
+#. module: program
+#: field:program.result,depth:0
+msgid "Depth"
+msgstr "Profondeur"
+
+#. module: program
+#: model:program.result.level,name:program.demo_result_level_act
+msgid "Activity"
+msgstr "Activité"
+
+#. module: program
+#: code:addons/program/program_result_level.py:403
+#, python-format
+msgid "Error! You can not create recursive Levels."
+msgstr "Erreur ! Vous ne pouvez pas créer de niveaux récursifs."
+
+#. module: program
+#: help:program.result,message_ids:0
+msgid "Messages and communication history"
+msgstr "Historique des messages et des communications"
+
+#. module: program
+#: model:ir.actions.act_window,name:program.action_program_result_tree
+#: model:ir.ui.menu,name:program.menu_program_result_chain
+msgid "Result Chain"
+msgstr "Chaîne de résultats"
+
+#. module: program
+#: model:program.result.level,name:program.demo_result_level_mi
+msgid "Mission"
+msgstr "Mission"
+
+#. module: program
+#: field:program.result,status_label:0
+#: field:program.result.level,status_label:0
+msgid "Label for Status"
+msgstr "Libellé du statut."
+
+#. module: program
+#: help:program.result.validation.spec,states:0
+msgid "Comma separated list of states which can be validated with group"
+msgstr "Liste, délimité par des virgules, des états qui peuvent être validés par le groupe"
+
+#. module: program
+#: model:res.groups,name:program.group_program_manager
+msgid "Manager"
+msgstr "Gestionnaire"
+
+#. module: program
+#: model:ir.actions.act_window,name:program.action_program_result_target_tree
+msgid "Result Targets"
+msgstr "Cibles de Résultats"
+
+#. module: program
+#: model:program.result.level,status_label:program.demo_result_level_imr
+msgid "Status of the Immediate Result"
+msgstr "Statut du résultat Immédiat"
+
+#. module: program
+#: field:program.result.level,menu_title:0
+msgid "Menu Title"
+msgstr "Libellé du menu"
+
+#. module: program
+#: field:program.result.level,status_options:0
+msgid "Options for Status"
+msgstr "Options du statut"
