@@ -14,3 +14,7 @@ def import_csv_data(cr, registry):
             filename, None, mode='init', noupdate=True,
             kind='init', report=None,
         )
+
+
+def post_init(cr, registry):
+    import_csv_data(cr, registry)

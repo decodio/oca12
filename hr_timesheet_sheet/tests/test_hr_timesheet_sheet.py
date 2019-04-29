@@ -620,3 +620,101 @@ class TestHrTimesheetSheet(TransactionCase):
 
         sheet.date_end = sheet.date_start + relativedelta(years=1)
         self.assertIsNotNone(sheet.name)
+
+    def test_14_analytic_account_multicompany(self):
+        new_employee = self.employee_model.create({
+            'name': "Test New Employee",
+            'user_id': self.user_2.id,
+            'company_id': self.company_2.id,
+        })
+        sheet = self.sheet_model.sudo(self.user_2).create({
+            'employee_id': new_employee.id,
+            'date_start': self.sheet_model._default_date_start(),
+            'date_end': self.sheet_model._default_date_end(),
+        })
+        self.assertEqual(sheet.company_id, self.company_2)
+
+        with self.assertRaises(UserError):
+            self.aal_model.create({
+                'name': 'test1',
+                'sheet_id': sheet.id,
+                'project_id': self.project_1.id,
+                'employee_id': new_employee.id,
+                'unit_amount': 1.0,
+                'date': self.sheet_model._default_date_start(),
+            })
+
+        new_project = self.project_model.create({
+            'name': "Project Test",
+            'company_id': self.company_2.id,
+            'allow_timesheets': True,
+        })
+        self.aal_model.create({
+            'name': 'test1',
+            'sheet_id': sheet.id,
+            'project_id': new_project.id,
+            'employee_id': new_employee.id,
+            'unit_amount': 1.0,
+            'date': self.sheet_model._default_date_start(),
+        })
+
+    def test_15(self):
+        """Test company constraint in Account Analytic Account."""
+        self.aal_model.create({
+            'name': 'test1',
+            'project_id': self.project_1.id,
+            'employee_id': self.employee.id,
+            'company_id': self.company.id,
+            'unit_amount': 2.0,
+            'date': self.sheet_model._default_date_start(),
+        })
+        self.assertNotEqual(self.company, self.company_2)
+        sheet = self.sheet_model.sudo(self.user).create({
+            'employee_id': self.employee.id,
+            'department_id': self.department.id,
+        })
+        self.assertEqual(sheet.company_id, self.company)
+        sheet._onchange_dates()
+        self.assertEqual(len(sheet.timesheet_ids), 1)
+        self.assertEqual(sheet.timesheet_ids.company_id, self.company)
+
+        analytic_account = sheet.timesheet_ids.account_id
+        self.assertEqual(analytic_account.company_id, self.company)
+
+        with self.assertRaises(ValidationError):
+            analytic_account.company_id = self.company_2
+
+    def test_16(self):
+        department = self.department_model.create({
+            'name': "Department test",
+            'company_id': False,
+        })
+        new_employee = self.employee_model.create({
+            'name': "Test User",
+            'user_id': self.user.id,
+            'company_id': False,
+            'department_id': department.id,
+        })
+        self.assertFalse(new_employee.company_id)
+        sheet_no_department = self.sheet_model.sudo(self.user).create({
+            'employee_id': new_employee.id,
+            'department_id': False,
+            'date_start': self.sheet_model._default_date_start(),
+            'date_end': self.sheet_model._default_date_end(),
+        })
+        self.assertFalse(sheet_no_department.department_id)
+        sheet_no_department._onchange_employee_id()
+        self.assertTrue(sheet_no_department.department_id)
+        self.assertEqual(sheet_no_department.department_id, department)
+        self.assertTrue(sheet_no_department.company_id)
+
+        sheet_no_department.unlink()
+        sheet_no_employee = self.sheet_model.sudo(self.user).create({
+            'date_start': self.sheet_model._default_date_start(),
+            'date_end': self.sheet_model._default_date_end(),
+        })
+        self.assertTrue(sheet_no_employee.employee_id)
+        self.assertFalse(sheet_no_employee.department_id)
+        sheet_no_employee._onchange_employee_id()
+        self.assertFalse(sheet_no_employee.department_id)
+        self.assertTrue(sheet_no_employee.company_id)

@@ -45,12 +45,12 @@
                             <label for="date_start" string="Timesheet Period"/>
                             <div style="display: inline;"><field name="date_start" class="oe_inline"/> to <field name="date_end" class="oe_inline"/></div>
                             <field name="department_id" invisible="1"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" groups="base.group_multi_company" force_save="1"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Summary">
-                            <group name="Sheet">
+                            <group name="Sheet" class="hr_timesheet_sheet_summary">
                                 <field name="line_ids" nolabel="1" attrs="{'readonly': [('state', 'not in', ['new', 'draft'])]}"
                                        widget="x2many_2d_matrix"
                                        field_x_axis="value_x"
@@ -64,7 +64,7 @@
                                     <tree limit="1000000">
                                         <field name="value_x"/>
                                         <field name="value_y"/>
-                                        <field name="unit_amount"/>
+                                        <field name="unit_amount" widget="float_time"/>
                                         <field name="sheet_id"/>
                                         <field name="date"/>
                                         <field name="project_id"/>
@@ -84,7 +84,7 @@
                             </group>
                         </page>
                         <page string="Details">
-                            <field name="timesheet_ids" nolabel="1">
+                            <field name="timesheet_ids" nolabel="1" context="{'user_id': user_id}">
                                 <tree editable="bottom" string="Timesheet Activities">
                                     <field name="date"/>
                                     <field name="project_id" required="1"/>

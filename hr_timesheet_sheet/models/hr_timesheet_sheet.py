@@ -60,8 +60,8 @@ class Sheet(models.Model):
         company = self.env['res.company']._company_default_get()
         return self.env['hr.employee'].search([
             ('user_id', '=', self.env.uid),
-            ('company_id', '=', company.id),
-        ], limit=1)
+            ('company_id', 'in', [company.id, False]),
+        ], limit=1, order="company_id ASC")
 
     name = fields.Char(
         compute='_compute_name',
@@ -130,6 +130,7 @@ class Sheet(models.Model):
         comodel_name='res.company',
         string='Company',
         default=lambda self: self.env['res.company']._company_default_get(),
+        required=True,
         readonly=True,
     )
     department_id = fields.Many2one(
@@ -249,24 +250,19 @@ class Sheet(models.Model):
                     _('The Company in the Timesheet Sheet and in '
                       'the Task must be the same.'))
 
-    @api.constrains('company_id')
-    def _check_company_id(self):
-        for rec in self.sudo():
-            if not rec.company_id:
-                continue
-            for field in rec.timesheet_ids:
-                if field.company_id and rec.company_id != field.company_id:
-                    raise ValidationError(_(
-                        'You cannot change the company, as this %s (%s) '
-                        'is assigned to %s (%s).'
-                    ) % (rec._name, rec.display_name,
-                         field._name, field.display_name))
+    def _get_timesheet_sheet_company(self):
+        self.ensure_one()
+        employee = self.employee_id
+        company = employee.company_id or employee.department_id.company_id
+        if not company:
+            company = employee.user_id.company_id
+        return company
 
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
         if self.employee_id:
             self.department_id = self.employee_id.department_id
-            self.company_id = self.employee_id.company_id
+            self.company_id = self._get_timesheet_sheet_company()
 
     def _get_timesheet_sheet_lines_domain(self):
         self.ensure_one()
@@ -275,7 +271,7 @@ class Sheet(models.Model):
             ('date', '<=', self.date_end),
             ('date', '>=', self.date_start),
             ('employee_id', '=', self.employee_id.id),
-            ('company_id', '=', self.employee_id.company_id.id),
+            ('company_id', '=', self._get_timesheet_sheet_company().id),
         ]
 
     @api.multi
@@ -354,7 +350,6 @@ class Sheet(models.Model):
                 raise UserError(
                     _('In order to create a sheet for this employee, '
                       'you must link him/her to an user.'))
-            vals['company_id'] = employee.company_id.id
         res = super().create(vals)
         res.write({'state': 'draft'})
         self.delete_empty_lines(True)
