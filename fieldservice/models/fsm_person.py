@@ -21,6 +21,8 @@ class FSMPerson(models.Model):
                                group_expand='_read_group_stage_ids',
                                default=lambda self: self._default_stage_id())
     hide = fields.Boolean(default=False)
+    mobile = fields.Char(string="Mobile")
+    territory_ids = fields.Many2many('fsm.territory', string='Territories')
 
     @api.model
     def create(self, vals):
@@ -48,12 +50,23 @@ class FSMPerson(models.Model):
         return self.env['fsm.stage'].search([('stage_type', '=', 'worker'),
                                              ('sequence', '=', '1')])
 
-    def advance_stage(self):
+    def next_stage(self):
         seq = self.stage_id.sequence
         next_stage = self.env['fsm.stage'].search(
-            [('stage_type', '=', 'worker'), ('sequence', '=', seq + 1)])
-        self.stage_id = next_stage
-        self._onchange_stage_id()
+            [('stage_type', '=', 'worker'), ('sequence', '>', seq)],
+            order="sequence asc")
+        if next_stage:
+            self.stage_id = next_stage[0]
+            self._onchange_stage_id()
+
+    def previous_stage(self):
+        seq = self.stage_id.sequence
+        prev_stage = self.env['fsm.stage'].search(
+            [('stage_type', '=', 'worker'), ('sequence', '<', seq)],
+            order="sequence desc")
+        if prev_stage:
+            self.stage_id = prev_stage[0]
+            self._onchange_stage_id()
 
     @api.onchange('stage_id')
     def _onchange_stage_id(self):

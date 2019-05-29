@@ -36,10 +36,13 @@ class AccountBankingMandate(models.Model):
     partner_bank_id = fields.Many2one(
         comodel_name='res.partner.bank', string='Bank Account',
         track_visibility='onchange',
-        domain=lambda self: self._get_default_partner_bank_id_domain(),)
+        domain=lambda self: self._get_default_partner_bank_id_domain(),
+        ondelete='restrict',
+        index=True,
+    )
     partner_id = fields.Many2one(
         comodel_name='res.partner', related='partner_bank_id.partner_id',
-        string='Partner', store=True)
+        string='Partner', store=True, index=True)
     company_id = fields.Many2one(
         comodel_name='res.company', string='Company', required=True,
         default=lambda self: self.env['res.company']._company_default_get(
@@ -183,7 +186,8 @@ class AccountBankingMandate(models.Model):
 
     @api.model
     def create(self, vals=None):
-        if vals.get('unique_mandate_reference', 'New') == 'New':
+        unique_mandate_reference = vals.get('unique_mandate_reference')
+        if not unique_mandate_reference or unique_mandate_reference == 'New':
             vals['unique_mandate_reference'] = \
                 self.env['ir.sequence'].next_by_code(
                     'account.banking.mandate') or 'New'

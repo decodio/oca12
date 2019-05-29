@@ -51,13 +51,13 @@ Installation
 
 **Italiano**
 
-Questo modulo richiede PyXB 1.2.5
+Questo modulo richiede PyXB 1.2.6
 
 http://pyxb.sourceforge.net/
 
 **English**
 
-This module requires PyXB 1.2.5
+This module requires PyXB 1.2.6
 
 http://pyxb.sourceforge.net/
 
@@ -109,6 +109,7 @@ Contributors
 * Roberto Onnis
 * Alessio Gerace
 * Sergio Zanchetta <https://github.com/primes2h>
+* Gianluigi Tiesi <https://github.com/sherpya>
 
 Maintainers
 ~~~~~~~~~~~

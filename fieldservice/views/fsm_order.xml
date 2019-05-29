@@ -15,7 +15,7 @@
                             groups="fieldservice.group_fsm_dispatcher"
                             attrs="{'invisible': [('stage_id', '!=', %(fieldservice.fsm_stage_new)d)]}"/>
                     <button id="action_request"
-                            name="action_request" string="Submit"
+                            name="action_request" string="Request"
                             class="oe_highlight"
                             type="object"
                             groups="fieldservice.group_fsm_dispatcher"
@@ -25,7 +25,7 @@
                             class="oe_highlight"
                             type="object"
                             groups="fieldservice.group_fsm_dispatcher"
-                            attrs="{'invisible': [('stage_id', '!=', %(fieldservice.fsm_stage_requested)d)]}"/>
+                            attrs="{'invisible': [('stage_id', 'not in', (%(fieldservice.fsm_stage_confirmed)d, %(fieldservice.fsm_stage_requested)d))]}"/>
                     <button id="action_schedule"
                             name="action_schedule" string="Schedule"
                             class="oe_highlight"
@@ -68,9 +68,8 @@
                     </div>
                     <group>
                         <group>
-                            <field name="type"
-                                   groups="fieldservice.group_fsm_equipment"/>
-                            <field name="template_id"/>
+                            <field name="type"/>
+                            <field name="template_id" groups="fieldservice.group_fsm_template"/>
                             <field name="priority" widget="priority"/>
                             <field name="tag_ids"
                                    widget="many2many_tags"
@@ -78,6 +77,10 @@
                         </group>
                         <group>
                             <field name="location_id"/>
+                            <field name="territory_id" invisible='1'/>
+                            <field name="branch_id" invisible='1'/>
+                            <field name="district_id" invisible='1'/>
+                            <field name="region_id" invisible='1'/>
                             <field name="customer_id"/>
                             <field name="equipment_id"
                                    attrs="{'required': [('type', '!=', False)]}"
@@ -91,9 +94,6 @@
                     </group>
                     <group string="Description">
                         <field name="description" nolabel="1"/>
-                    </group>
-                    <group string="Instructions">
-                        <field name="todo" nolabel="1" widget="html"/>
                     </group>
                     <group string="Resolution">
                         <field name="resolution" nolabel="1"/>
@@ -141,6 +141,11 @@
                                         <field name="email"/>
                                     </tree>
                                 </field>
+                            </group>
+                        </page>
+                        <page string="Instructions">
+                            <group string="Instructions">
+                                <field name="todo" nolabel="1" widget="html"/>
                             </group>
                         </page>
                         <page string="Execution">
@@ -323,14 +328,19 @@
                 <filter string="Done"
                         domain="[('stage_id.is_closed', '=', True)]"
                         name="done"/>
+                <filter string="Past Due"
+                        domain="[('stage_id.name', 'not in', ['Started', 'Completed', 'Cancelled']), ('scheduled_date_start', '&lt;', current_date)]"
+                        name="past_due"/>
                 <separator/>
                 <group expand="0" string="Group By">
-                    <filter name="region_id" string="Region" domain=""
-                            context="{'group_by':'region_id'}"/>
-                    <filter name="district_id" string="District" domain=""
-                            context="{'group_by':'district_id'}"/>
+                    <filter name="territory_id" string="Territory" domain=""
+                            context="{'group_by':'territory_id'}"/>
                     <filter name="branch_id" string="Branch" domain=""
                             context="{'group_by':'branch_id'}"/>
+                    <filter name="district_id" string="District" domain=""
+                            context="{'group_by':'district_id'}"/>
+                    <filter name="region_id" string="Region" domain=""
+                            context="{'group_by':'region_id'}"/>
                 </group>
             </search>
         </field>

@@ -45,7 +45,7 @@
     <!-- Operations Menu -->
 
     <menuitem id="menu_fsm_operation_order"
-              name="Orders"
+              name="All Orders"
               action="action_fsm_operation_order"
               parent="operations"
               sequence="30"/>
@@ -81,6 +81,13 @@
               parent="data"
               sequence="80"
               groups="group_fsm_equipment"/>
+    
+    <menuitem id="menu_fsm_template"
+              name="Templates"
+              action="action_fsm_template"
+              parent="data"
+              sequence="90"
+              groups="group_fsm_template"/>
 
     <!-- Reporting Menu -->
     <menuitem id="menu_fsm_report_order"
@@ -108,18 +115,24 @@
               sequence="10"
               parent="config"
               action="action_fsm_config"/>
-    <!-- Config / Orders -->
-    <menuitem id="menu_fsm_config_order"
-              name="Orders"
+
+    <menuitem id="menu_fsm_schedules"
+              name="Schedules"
+              action="action_fsm_schedule"
               parent="config"
               sequence="20"/>
 
     <menuitem id="menu_fsm_stage"
               name="Stages"
               action="action_fsm_stage"
-              parent="menu_fsm_config_order"
-              sequence="20"
-              groups="base.group_no_one"/>
+              parent="config"
+              sequence="30"/>
+
+    <!-- Config / Orders -->
+    <menuitem id="menu_fsm_config_order"
+              name="Orders"
+              parent="config"
+              sequence="40"/>
 
     <menuitem id="menu_fsm_tag"
               name="Tags"
@@ -127,13 +140,6 @@
               parent="menu_fsm_config_order"
               sequence="30"
               groups="fieldservice.group_fsm_tag"/>
-
-    <menuitem id="menu_fsm_template"
-              name="Templates"
-              action="action_fsm_template"
-              parent="menu_fsm_config_order"
-              sequence="40"
-              groups="group_fsm_template"/>
 
     <!-- Config / Locations -->
     <menuitem id="menu_fsm_config_location"
@@ -145,29 +151,25 @@
               name="Territories"
               action="action_fsm_territory"
               parent="menu_fsm_config_location"
-              sequence="50"
-              groups="base.group_no_one"/>
+              sequence="50"/>
 
     <menuitem id="menu_fsm_branch"
               name="Branches"
               action="action_fsm_branch"
               parent="menu_fsm_config_location"
-              sequence="60"
-              groups="base.group_no_one"/>
+              sequence="60"/>
 
     <menuitem id="menu_fsm_district"
               name="Districts"
               action="action_fsm_district"
               parent="menu_fsm_config_location"
-              sequence="70"
-              groups="base.group_no_one"/>
+              sequence="70"/>
 
     <menuitem id="menu_fsm_region"
               name="Regions"
               action="action_fsm_region"
               parent="menu_fsm_config_location"
-              sequence="80"
-              groups="base.group_no_one"/>
+              sequence="80"/>
 
     <!-- Config / Workers -->
     <menuitem id="menu_fsm_config_person"

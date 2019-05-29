@@ -13,7 +13,7 @@ from odoo import api, fields, models
 from odoo.tools.translate import _
 from odoo.exceptions import UserError
 
-from odoo.addons.l10n_it_fatturapa.bindings.fatturapa_v_1_2 import (
+from odoo.addons.l10n_it_fatturapa.bindings.fatturapa import (
     FatturaElettronica,
     FatturaElettronicaHeaderType,
     DatiTrasmissioneType,
@@ -668,7 +668,8 @@ class WizardExportFatturapa(models.TransientModel):
             if line.product_id:
                 if line.product_id.default_code:
                     CodiceArticolo = CodiceArticoloType(
-                        CodiceTipo='ODOO',
+                        CodiceTipo=self.env['ir.config_parameter'].sudo(
+                        ).get_param('fatturapa.codicetipo.odoo', 'ODOO'),
                         CodiceValore=line.product_id.default_code
                     )
                     DettaglioLinea.CodiceArticolo.append(CodiceArticolo)

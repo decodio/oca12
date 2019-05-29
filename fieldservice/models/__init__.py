@@ -2,19 +2,20 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from . import (
+    res_company,
     res_config_settings,
     fsm_category,
     fsm_template,
     fsm_region,
     fsm_district,
     fsm_branch,
+    fsm_territory,
     fsm_tag,
     fsm_stage,
     fsm_team,
     fsm_person,
     fsm_location,
     res_partner,
-    fsm_territory,
     res_state,
     res_country,
     fsm_equipment,
