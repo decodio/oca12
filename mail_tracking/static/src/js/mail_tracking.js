@@ -22,12 +22,22 @@ odoo.define('mail_tracking.partner_tracking', function(require){
         hasPartnerTrackings: function () {
             return false;
         },
+
+        /**
+         * Messages do not have any email Cc values.
+         *
+         * @return {boolean}
+         */
+        hasEmailCc: function () {
+            return false;
+        },
     });
 
     Message.include({
         init: function (parent, data, emojis) {
             this._super.apply(this, arguments);
             this._partnerTrackings = data.partner_trackings || [];
+            this._emailCc = data.email_cc || [];
         },
 
         /**
@@ -37,7 +47,16 @@ odoo.define('mail_tracking.partner_tracking', function(require){
          * @return {boolean}
          */
         hasPartnerTrackings: function () {
-            return !!(this._partnerTrackings && (this._partnerTrackings.length > 0));
+            return _.some(this._partnerTrackings);
+        },
+
+        /**
+         * State whether this message contains some email Cc values
+         *
+         * @return {boolean}
+         */
+        hasEmailCc: function () {
+            return _.some(this._emailCc);
         },
 
         /**
@@ -52,6 +71,34 @@ odoo.define('mail_tracking.partner_tracking', function(require){
                 return [];
             }
             return this._partnerTrackings;
+        },
+
+        /**
+         * Get the email Cc values of this message
+         * If this message has no email Cc values, returns []
+         *
+         * @return {Array}
+         */
+        getEmailCc: function () {
+            if (!this.hasEmailCc()) {
+                return [];
+            }
+            return this._emailCc;
+        },
+
+        /**
+         * Check if the email is an Cc
+         * If this message has no email Cc values, returns false
+         *
+         * @return {Boolean}
+         */
+        isEmailCc: function (email) {
+            if (!this.hasEmailCc()) {
+                return false;
+            }
+            return _.some(this._emailCc, function (item) {
+                return item[0] === email;
+            });
         },
     });
 

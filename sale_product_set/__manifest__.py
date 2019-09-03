@@ -6,7 +6,7 @@
     'category': 'Sale',
     'license': 'AGPL-3',
     'author': 'Anybox, Odoo Community Association (OCA)',
-    'version': '12.0.1.0.0',
+    'version': '12.0.1.2.0',
     'website': 'https://github.com/OCA/sale-workflow',
     'summary': "Sale product set",
     'depends': [
@@ -14,6 +14,8 @@
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/rule_product_set.xml',
+        'security/rule_product_set_line.xml',
         'views/product_set.xml',
         'wizard/product_set_add.xml',
         'views/sale_order.xml',

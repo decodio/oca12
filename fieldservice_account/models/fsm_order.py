@@ -30,6 +30,11 @@ class FSMOrder(models.Model):
                                        string='Total Employee Hours')
     account_stage = fields.Selection(ACCOUNT_STAGES, string='State',
                                      default='draft')
+    bill_to = fields.Selection([('location', 'Bill Location'),
+                                ('contact', 'Bill Contact')],
+                               string="Bill to",
+                               required=True,
+                               default="location")
 
     def _compute_employee(self):
         user = self.env['res.users'].browse(self.env.uid)
@@ -41,10 +46,9 @@ class FSMOrder(models.Model):
     def _compute_total_cost(self):
         for order in self:
             order.total_cost = 0.0
+            rate = 0
             for line in order.employee_timesheet_ids:
-                for emp in line.user_id.employee_ids:
-                    rate = emp.timesheet_cost
-                    continue
+                rate = line.employee_id.timesheet_cost
                 order.total_cost += line.unit_amount * rate
             for cost in order.contractor_cost_ids:
                 order.total_cost += cost.price_unit * cost.quantity
@@ -66,12 +70,20 @@ class FSMOrder(models.Model):
     def action_complete(self):
         for order in self:
             order.account_stage = 'review'
+        if self.person_id.supplier and not self.contractor_cost_ids:
+            raise ValidationError(_("Cannot move to Complete " +
+                                    "until 'Contractor Costs' is filled in"))
+        if not self.person_id.supplier and not self.employee_timesheet_ids:
+            raise ValidationError(_("Cannot move to Complete until " +
+                                    "'Employee Timesheets' is filled in"))
         return super(FSMOrder, self).action_complete()
 
     def create_bills(self):
-        jrnl = self.env['account.journal'].search([('type', '=', 'purchase'),
-                                                   ('active', '=', True)],
-                                                  limit=1)
+        jrnl = self.env['account.journal'].search([
+            ('company_id', '=', self.env.user.company_id.id),
+            ('type', '=', 'purchase'),
+            ('active', '=', True)],
+            limit=1)
         fpos = self.customer_id.property_account_position_id
         vals = {
             'partner_id': self.person_id.partner_id.id,
@@ -95,21 +107,39 @@ class FSMOrder(models.Model):
                 else:
                     raise ValidationError(_("The worker assigned to this order"
                                             " is not a supplier"))
+            if order.employee_timesheet_ids:
+                order.account_stage = 'confirmed'
 
     def account_create_invoice(self):
-        jrnl = self.env['account.journal'].search([('type', '=', 'sale'),
-                                                   ('active', '=', True)],
-                                                  limit=1)
-        fpos = self.customer_id.property_account_position_id
-        vals = {
-            'partner_id': self.customer_id.id,
-            'type': 'out_invoice',
-            'journal_id': jrnl.id or False,
-            'fiscal_position_id': fpos.id or False,
-            'fsm_order_id': self.id
-        }
-        invoice = self.env['account.invoice'].sudo().create(vals)
-        price_list = invoice.partner_id.property_product_pricelist
+        jrnl = self.env['account.journal'].search([
+            ('company_id', '=', self.env.user.company_id.id),
+            ('type', '=', 'sale'),
+            ('active', '=', True)],
+            limit=1)
+        if self.bill_to == 'contact':
+            if not self.customer_id:
+                raise ValidationError(_("Contact empty"))
+            fpos = self.customer_id.property_account_position_id
+            vals = {
+                'partner_id': self.customer_id.id,
+                'type': 'out_invoice',
+                'journal_id': jrnl.id or False,
+                'fiscal_position_id': fpos.id or False,
+                'fsm_order_id': self.id
+            }
+            invoice = self.env['account.invoice'].sudo().create(vals)
+            price_list = invoice.partner_id.property_product_pricelist
+        else:
+            fpos = self.location_id.customer_id.property_account_position_id
+            vals = {
+                'partner_id': self.location_id.customer_id.id,
+                'type': 'out_invoice',
+                'journal_id': jrnl.id or False,
+                'fiscal_position_id': fpos.id or False,
+                'fsm_order_id': self.id
+            }
+            invoice = self.env['account.invoice'].sudo().create(vals)
+            price_list = invoice.partner_id.property_product_pricelist
         for line in self.employee_timesheet_ids:
             price = price_list.get_product_price(product=line.product_id,
                                                  quantity=line.unit_amount,
@@ -154,6 +184,7 @@ class FSMOrder(models.Model):
             con_cost.invoice_line_tax_ids = fpos.map_tax(taxes)
         invoice.compute_taxes()
         self.account_stage = 'invoiced'
+        return invoice
 
     def account_no_invoice(self):
         self.account_stage = 'no'

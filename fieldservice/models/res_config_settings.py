@@ -23,6 +23,8 @@ class ResConfigSettings(models.TransientModel):
     group_fsm_equipment = fields.Boolean(
         string='Manage Equipment',
         implied_group='fieldservice.group_fsm_equipment')
+    auto_populate_the_equipments = fields.Boolean(
+        string='Auto-populate the Equipments')
     group_fsm_template = fields.Boolean(
         string='Manage Template',
         implied_group='fieldservice.group_fsm_template')
@@ -34,6 +36,8 @@ class ResConfigSettings(models.TransientModel):
         string='Manage Agreements')
     module_fieldservice_distribution = fields.Boolean(
         string='Manage Distribution')
+    module_fieldservice_geoengine = fields.Boolean(
+        string='Use GeoEngine')
     module_fieldservice_maintenance = fields.Boolean(
         string='Link FSM orders to maintenance requests')
     module_fieldservice_purchase = fields.Boolean(
@@ -48,12 +52,37 @@ class ResConfigSettings(models.TransientModel):
         string='Manage Vehicles')
     module_fieldservice_substatus = fields.Boolean(
         string='Manage Sub-Statuses')
+    module_fieldservice_recurring = fields.Boolean(
+        string='Manage Recurring Orders')
+    auto_populate_persons_on_location = fields.Boolean(
+        string='Auto-populate Workers on Location based on Territory',
+        related='company_id.auto_populate_persons_on_location',
+        readonly=False)
 
     # Companies
     auto_populate_persons_on_location = fields.Boolean(
         string='Auto-populate Workers on Location based on Territory',
         related='company_id.auto_populate_persons_on_location',
         readonly=False)
+
+    def get_values(self):
+        res = super(ResConfigSettings, self).get_values()
+        res.update(
+            auto_populate_the_equipments=self.env['ir.config_parameter']
+            .sudo().get_param('fieldservice.auto_populate_the_equipments'))
+        return res
+
+    def set_values(self):
+        res = super(ResConfigSettings, self).set_values()
+        self.env['ir.config_parameter'].sudo().set_param(
+            "fieldservice.auto_populate_the_equipments",
+            self.auto_populate_the_equipments)
+        return res
+
+    @api.onchange('group_fsm_equipment')
+    def _onchange_group_fsm_equipment(self):
+        if not self.group_fsm_equipment:
+            self.auto_populate_the_equipments = False
 
     # Dependencies
     @api.onchange('module_fieldservice_repair')
@@ -65,6 +94,7 @@ class ResConfigSettings(models.TransientModel):
     def _onchange_module_fieldservice_stock(self):
         if self.module_fieldservice_stock:
             self.group_stock_production_lot = True
+            self.group_stock_request_order = True
 
     @api.onchange('module_fieldservice_purchase')
     def _onchange_module_fieldservice_purchase(self):

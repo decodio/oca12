@@ -1,1 +1,0 @@
-Bridge module between l10n_it_withholding_tax and l10n_it_causali_pagamento

@@ -25,6 +25,42 @@ class FSMPerson(models.Model):
     territory_ids = fields.Many2many('fsm.territory', string='Territories')
 
     @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False,
+                access_rights_uid=None):
+        res = super(FSMPerson, self)._search(
+            args=args, offset=offset, limit=limit, order=order, count=count,
+            access_rights_uid=access_rights_uid)
+        # Check for args first having location_ids as default filter
+        for arg in args:
+            if isinstance(arg, (list)):
+                if arg[0] == 'location_ids':
+                    # If given int search ID, else search name
+                    if isinstance(arg[2], int):
+                        self.env.cr.execute("SELECT person_id "
+                                            "FROM fsm_location_person "
+                                            "WHERE location_id=%s", (arg[2],))
+                    else:
+                        arg[2] = '%' + arg[2] + '%'
+                        self.env.cr.execute("SELECT id "
+                                            "FROM fsm_location "
+                                            "WHERE complete_name like %s",
+                                            (arg[2],))
+                        location_ids = self.env.cr.fetchall()
+                        if location_ids:
+                            location_ids = \
+                                [location[0] for location in location_ids]
+                            self.env.cr.execute("SELECT DISTINCT person_id "
+                                                "FROM fsm_location_person "
+                                                "WHERE location_id in %s",
+                                                [tuple(location_ids)])
+                    workers_ids = self.env.cr.fetchall()
+                    if workers_ids:
+                        preferred_workers_list = \
+                            [worker[0] for worker in workers_ids]
+                        return preferred_workers_list
+        return res
+
+    @api.model
     def create(self, vals):
         vals.update({'fsm_person': True})
         return super(FSMPerson, self).create(vals)

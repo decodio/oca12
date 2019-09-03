@@ -8,17 +8,17 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-29 10:30+0000\n"
 "PO-Revision-Date: 2018-03-29 11:34+0100\n"
+"Last-Translator: Jairo Llopis <yajo.sk8@gmail.com>\n"
 "Language-Team: \n"
+"Language: es_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 2.0.6\n"
-"Last-Translator: Jairo Llopis <yajo.sk8@gmail.com>\n"
-"Language: es_ES\n"
 
 #. module: event_track_location_overlap
-#: model:ir.model.fields,help:event_track_location_overlap.field_event_track_location_overlappable
+#: model:ir.model.fields,help:event_track_location_overlap.field_event_track_location__overlappable
 msgid "Can this location have simultaneous tracks?"
 msgstr "¿Esta ubicación puede tener sesiones solapadas?"
 
@@ -28,12 +28,18 @@ msgid "Event Track"
 msgstr "Sesión del evento"
 
 #. module: event_track_location_overlap
-#: model:ir.model.fields,field_description:event_track_location_overlap.field_event_track_location_overlappable
+#: model:ir.model,name:event_track_location_overlap.model_event_track_location
+#, fuzzy
+msgid "Event Track Location"
+msgstr "Ubicación de la sesión"
+
+#. module: event_track_location_overlap
+#: model:ir.model.fields,field_description:event_track_location_overlap.field_event_track_location__overlappable
 msgid "Overlappable"
 msgstr "Solapable"
 
 #. module: event_track_location_overlap
-#: code:addons/event_track_location_overlap/models/event_track_location.py:48
+#: code:addons/event_track_location_overlap/models/event_track_location.py:44
 #, python-format
 msgid ""
 "Track %(one)s (from event %(one_event)s) and track %(other)s (from event "
@@ -41,8 +47,3 @@ msgid ""
 msgstr ""
 "La sesión %(one)s (del evento %(one_event)s) y la sesión %(other)s (del "
 "evento %(other_event)s) se solaparían en la misma ubicación %(location)s"
-
-#. module: event_track_location_overlap
-#: model:ir.model,name:event_track_location_overlap.model_event_track_location
-msgid "Track Location"
-msgstr "Ubicación de la sesión"

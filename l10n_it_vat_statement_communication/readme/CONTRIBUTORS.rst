@@ -1,2 +1,0 @@
-* Alessandro Camilli
-* Lorenzo Battistini

@@ -1,5 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_fsm_stock_request"
+              name="Stock Requests"
+              action="stock_request.action_stock_request_form"
+              parent="fieldservice.operations"
+              sequence="90"/>
 
     <menuitem id="menu_fsm_product"
               name="Products"
@@ -12,11 +18,5 @@
               action="stock.quantsact"
               parent="fieldservice.reporting"
               sequence="30"/>
-
-    <menuitem id="menu_fsm_stock_request"
-              name="Stock Requests"
-              action="stock_request.stock_request_order_action"
-              parent="fieldservice.operations"
-              sequence="20"/>
 
 </odoo>

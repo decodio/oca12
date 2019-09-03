@@ -4,31 +4,25 @@
 from odoo import fields, models
 
 
-class StockRequest(models.Model):
-    _inherit = "stock.request"
-
-    fsm_order_id = fields.Many2one(
-        'fsm.order', string="FSM Order", ondelete='cascade',
-        index=True, copy=False)
-    direction = fields.Selection([('outbound', 'Outbound'),
-                                  ('inbound', 'Inbound')], string='Direction')
-
-
 class StockMoveLine(models.Model):
     _inherit = "stock.move.line"
 
     def _action_done(self):
         res = super(StockMoveLine, self)._action_done()
         for rec in self:
-            for all_rec in rec.move_id.allocation_ids:
-                request = all_rec.stock_request_id
-                if request.state == 'done' and request.fsm_order_id:
-                    request.fsm_order_id.request_stage = 'done'
+            if rec.move_id and rec.move_id.allocation_ids:
+                for request in rec.move_id.allocation_ids:
+                    if (request.stock_request_id.state == 'done'
+                            and request.stock_request_id.fsm_order_id):
+                        request.stock_request_id.\
+                            fsm_order_id.request_stage = 'done'
         return res
 
 
 class StockMove(models.Model):
     _inherit = "stock.move"
+
+    fsm_order_id = fields.Many2one('fsm.order', string='Field Service Order')
 
     def prepare_equipment_values(self, move_line):
         return {'name': '%s (%s)' % (
@@ -36,8 +30,8 @@ class StockMove(models.Model):
             'product_id': move_line.product_id.id,
             'lot_id': move_line.lot_id.id,
             'current_location_id':
-            move_line.request_id.fsm_order_id.location_id.id,
-            'current_stock_location_id': move_line.dest_location_id.id}
+            move_line.move_id.stock_request_ids.fsm_order_id.location_id.id,
+            'current_stock_location_id': move_line.location_dest_id.id}
 
     def _action_done(self):
         res = False
@@ -56,6 +50,20 @@ class ProcurementGroup(models.Model):
     _inherit = 'procurement.group'
 
     fsm_order_id = fields.Many2one('fsm.order', 'Field Service Order')
+
+
+class StockRule(models.Model):
+    _inherit = 'stock.rule'
+
+    def _get_stock_move_values(self, product_id, product_qty, product_uom,
+                               location_id, name, origin, values, group_id):
+        vals = super()._get_stock_move_values(
+            product_id, product_qty, product_uom, location_id, name, origin,
+            values, group_id)
+        vals.update({
+            'fsm_order_id': values.get('fsm_order_id'),
+        })
+        return vals
 
 
 class StockPicking(models.Model):

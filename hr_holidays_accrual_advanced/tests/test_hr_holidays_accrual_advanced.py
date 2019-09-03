@@ -40,6 +40,7 @@ class TestHrHolidaysAccrualAdvanced(common.TransactionCase):
         self.SudoCalculator = self.Calculator.sudo()
         self.ResourceCalendar = self.env['resource.calendar']
         self.SudoResourceCalendar = self.ResourceCalendar.sudo()
+        self.Calculator = self.env['hr.leave.allocation.accrual.calculator']
 
     def test_allocation_1(self):
         leave_type = self.SudoLeaveType.create({
@@ -234,6 +235,7 @@ class TestHrHolidaysAccrualAdvanced(common.TransactionCase):
         leave_type = self.SudoLeaveType.create({
             'name': 'Leave Type #8',
             'allocation_type': 'fixed',
+            'validity_start': False,
         })
         employee = self.SudoEmployee.create({
             'name': 'Employee #8',
@@ -249,6 +251,7 @@ class TestHrHolidaysAccrualAdvanced(common.TransactionCase):
             'name': 'Leave Type #8 (unpaid)',
             'allocation_type': 'no',
             'unpaid': True,
+            'validity_start': False,
         })
         unpaid_from = self.now - relativedelta(years=1)
         unpaid_to = self.now - relativedelta(months=6)
@@ -516,6 +519,7 @@ class TestHrHolidaysAccrualAdvanced(common.TransactionCase):
         leave_type = self.SudoLeaveType.create({
             'name': 'Leave Type #19',
             'allocation_type': 'fixed',
+            'validity_start': False,
         })
         employee = self.SudoEmployee.create({
             'name': 'Employee #19',
@@ -541,6 +545,7 @@ class TestHrHolidaysAccrualAdvanced(common.TransactionCase):
         leave_type = self.SudoLeaveType.create({
             'name': 'Leave Type #20',
             'allocation_type': 'fixed',
+            'validity_start': False,
         })
         employee = self.SudoEmployee.create({
             'name': 'Employee #20',
@@ -604,7 +609,7 @@ class TestHrHolidaysAccrualAdvanced(common.TransactionCase):
         })
 
         date_from = (
-            self.now - relativedelta(years=1) - relativedelta(days=1)
+            self.now - relativedelta(years=1) - relativedelta(months=1)
         )
         with mock.patch(_get_date_from, return_value=date_from):
             allocation._update_accrual_allocation()
@@ -644,6 +649,7 @@ class TestHrHolidaysAccrualAdvanced(common.TransactionCase):
         leave_type = self.SudoLeaveType.create({
             'name': 'Leave Type #23',
             'allocation_type': 'fixed',
+            'validity_start': False,
         })
         calendar = self.SudoResourceCalendar.create({
             'name': 'Calendar #23',
@@ -703,6 +709,7 @@ class TestHrHolidaysAccrualAdvanced(common.TransactionCase):
         leave_type = self.SudoLeaveType.create({
             'name': 'Leave Type #24',
             'allocation_type': 'fixed',
+            'validity_start': False,
         })
         employee = self.SudoEmployee.create({
             'name': 'Employee #24',
@@ -744,3 +751,37 @@ class TestHrHolidaysAccrualAdvanced(common.TransactionCase):
             lambda x: x.days_accrued,
             accruements
         )), 30.0)
+
+    def test_calculator(self):
+        leave_type = self.SudoLeaveType.create({
+            'name': 'Leave Type',
+            'allocation_type': 'fixed',
+        })
+        employee = self.SudoEmployee.create({
+            'name': 'Employee',
+        })
+        allocation = self.SudoLeaveAllocation.create({
+            'holiday_type': 'employee',
+            'employee_id': employee.id,
+            'holiday_status_id': leave_type.id,
+            'state': 'validate',
+            'accrual': True,
+            'date_from': (
+                self.now - relativedelta(years=3)
+            ),
+            'date_to': (
+                self.now - relativedelta(years=1)
+            ),
+        })
+
+        calculator = self.Calculator.with_context({
+            'active_id': allocation.id,
+        }).new()
+        calculator._onchange()
+        self.assertEqual(calculator.accrued, 0.0)
+        self.assertEqual(calculator.balance, 0.0)
+
+        calculator.date = self.today
+        calculator._onchange()
+        self.assertEqual(calculator.accrued, 40.0)
+        self.assertEqual(calculator.balance, 40.0)

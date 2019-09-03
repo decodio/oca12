@@ -84,6 +84,13 @@ msgid "Event"
 msgstr "Evento"
 
 #. module: event_email_reminder
+#: model:ir.actions.server,name:event_email_reminder.ir_cron_event_email_reminder_action_ir_actions_server
+#: model:ir.cron,cron_name:event_email_reminder.ir_cron_event_email_reminder_action
+#: model:ir.cron,name:event_email_reminder.ir_cron_event_email_reminder_action
+msgid "Event Email Reminder"
+msgstr ""
+
+#. module: event_email_reminder
 #: model:mail.template,subject:event_email_reminder.event_email_reminder_template
 msgid "The events will be started soon"
 msgstr "Hay eventos que comenzarán en breve"

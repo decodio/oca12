@@ -13,8 +13,10 @@
     'license': 'AGPL-3',
     'depends': ['agreement_legal'],
     'data': [
+        'data/serviceprofile_stage.xml',
         'security/ir.model.access.csv',
         'views/agreement_serviceprofile.xml',
+        'views/agreement.xml'
     ],
     'development_status': 'Beta',
     'maintainers': [
