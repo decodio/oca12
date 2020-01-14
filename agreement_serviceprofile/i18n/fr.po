@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2019-04-07 12:37+0000\n"
+"PO-Revision-Date: 2019-09-12 11:23+0000\n"
 "Last-Translator: Yves Goldberg <admin@ygol.com>\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -14,7 +14,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.4\n"
+"X-Generator: Weblate 3.8\n"
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__message_needaction
+msgid "Action Needed"
+msgstr ""
 
 #. module: agreement_serviceprofile
 #: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__active
@@ -24,7 +29,7 @@ msgstr "Actif"
 #. module: agreement_serviceprofile
 #: model_terms:ir.ui.view,arch_db:agreement_serviceprofile.agreement_fsm_order_form_view
 msgid "Add notes here..."
-msgstr ""
+msgstr "Ajouter des notes ici ..."
 
 #. module: agreement_serviceprofile
 #: selection:agreement.stage,stage_type:0
@@ -41,10 +46,19 @@ msgstr "Accord Profils de service"
 
 #. module: agreement_serviceprofile
 #: model:ir.model,name:agreement_serviceprofile.model_agreement_stage
-#, fuzzy
-#| msgid "Agreement"
 msgid "Agreement Stages"
-msgstr "Accord"
+msgstr "Étapes de l'accord"
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,field_description:agreement_serviceprofile.field_product_product__is_serviceprofile
+#: model:ir.model.fields,field_description:agreement_serviceprofile.field_product_template__is_serviceprofile
+msgid "Create Service Profiles"
+msgstr "Créer des profils de service"
 
 #. module: agreement_serviceprofile
 #: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__create_uid
@@ -62,9 +76,49 @@ msgid "Display Name"
 msgstr "Nom d'affichage"
 
 #. module: agreement_serviceprofile
+#: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__message_channel_ids
+msgid "Followers (Channels)"
+msgstr ""
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: agreement_serviceprofile
 #: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__id
 msgid "ID"
 msgstr "ID"
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,help:agreement_serviceprofile.field_product_product__is_serviceprofile
+#: model:ir.model.fields,help:agreement_serviceprofile.field_product_template__is_serviceprofile
+msgid ""
+"If True, this product will create a service profile on the\n"
+"         agreement when the sales order is confirmed."
+msgstr ""
+"Si Vrai, ce produit créera un profil de service sur le\n"
+"         accord lorsque la commande client est confirmée."
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,help:agreement_serviceprofile.field_agreement_serviceprofile__message_unread
+msgid "If checked new messages require your attention."
+msgstr ""
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,help:agreement_serviceprofile.field_agreement_serviceprofile__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,help:agreement_serviceprofile.field_agreement_serviceprofile__message_has_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
 
 #. module: agreement_serviceprofile
 #: model:ir.model.fields,help:agreement_serviceprofile.field_agreement_serviceprofile__active
@@ -74,6 +128,11 @@ msgid ""
 msgstr ""
 "Si cette case est décochée, cela vous permettra de masquer ce profil de "
 "service sans le supprimer."
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__message_is_follower
+msgid "Is Follower"
+msgstr ""
 
 #. module: agreement_serviceprofile
 #: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile____last_update
@@ -91,6 +150,21 @@ msgid "Last Updated on"
 msgstr "Dernière mise à jour le"
 
 #. module: agreement_serviceprofile
+#: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: agreement_serviceprofile
 #: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__name
 msgid "Name"
 msgstr "Nom"
@@ -100,24 +174,57 @@ msgstr "Nom"
 #: model_terms:ir.ui.view,arch_db:agreement_serviceprofile.agreement_fsm_order_form_view
 #: model_terms:ir.ui.view,arch_db:agreement_serviceprofile.agreement_serviceprofile_form
 msgid "Notes"
+msgstr "Remarques"
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__message_has_error_counter
+msgid "Number of error"
+msgstr ""
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,help:agreement_serviceprofile.field_agreement_serviceprofile__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr ""
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,help:agreement_serviceprofile.field_agreement_serviceprofile__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,help:agreement_serviceprofile.field_agreement_serviceprofile__message_unread_counter
+msgid "Number of unread messages"
 msgstr ""
 
 #. module: agreement_serviceprofile
 #: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__partner_id
 msgid "Partner"
-msgstr ""
+msgstr "Partenaire"
 
 #. module: agreement_serviceprofile
 #: model_terms:ir.ui.view,arch_db:agreement_serviceprofile.agreement_serviceprofile_search
 msgid "Product"
-msgstr ""
+msgstr "Produit"
+
+#. module: agreement_serviceprofile
+#: model:ir.model,name:agreement_serviceprofile.model_product_template
+msgid "Product Template"
+msgstr "Modèle produit"
+
+#. module: agreement_serviceprofile
+#: model_terms:ir.ui.view,arch_db:agreement_serviceprofile.product_template_form_view
+msgid "Service"
+msgstr "Service"
 
 #. module: agreement_serviceprofile
 #: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__product_id
-#, fuzzy
-#| msgid "Service Profile"
 msgid "Service Product"
-msgstr "Profil de service"
+msgstr "Profil produit"
 
 #. module: agreement_serviceprofile
 #: selection:agreement.stage,stage_type:0
@@ -139,19 +246,34 @@ msgstr "Profils de service"
 #. module: agreement_serviceprofile
 #: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__stage_id
 msgid "Stage"
-msgstr ""
+msgstr "Étape"
 
 #. module: agreement_serviceprofile
 #: model:ir.model.fields,help:agreement_serviceprofile.field_agreement_serviceprofile__partner_id
 msgid "The customer or vendor this agreement is related to."
-msgstr ""
+msgstr "Le client ou le fournisseur auquel cet accord est lié."
 
 #. module: agreement_serviceprofile
 #: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_stage__stage_type
 msgid "Type"
+msgstr "Type"
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__message_unread
+msgid "Unread Messages"
 msgstr ""
 
-#, fuzzy
-#~| msgid "Service Profile"
-#~ msgid "Service"
-#~ msgstr "Profil de service"
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr ""
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,field_description:agreement_serviceprofile.field_agreement_serviceprofile__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: agreement_serviceprofile
+#: model:ir.model.fields,help:agreement_serviceprofile.field_agreement_serviceprofile__website_message_ids
+msgid "Website communication history"
+msgstr ""

@@ -8,13 +8,14 @@ class NPA(models.Model):
     """GEO OSV SAMPLE"""
 
     _name = "dummy.zip"
+    _description = "Geoengine demo ZIP"
 
     priority = fields.Integer('Priority', default=100)
     name = fields.Char('ZIP', size=64, index=True, required=True)
     city = fields.Char('City', size=64, index=True, required=True)
     the_geom = fields.GeoMultiPolygon('NPA Shape')
     total_sales = fields.Float(
-        compute='_get_ZIP_total_sales',
+        compute='_compute_ZIP_total_sales',
         string='Spatial! Total Sales',
     )
     retail_machine_ids = fields.One2many(
@@ -24,7 +25,7 @@ class NPA(models.Model):
     )
 
     @api.multi
-    def _get_ZIP_total_sales(self):
+    def _compute_ZIP_total_sales(self):
         """Return the total of the invoiced sales for this npa"""
         mach_obj = self.env['geoengine.demo.automatic.retailing.machine']
         for rec in self:

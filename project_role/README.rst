@@ -25,8 +25,9 @@ Project Roles
 
 |badge1| |badge2| |badge3| |badge4| |badge5| 
 
-This module allows maintaining project roster based on roles. List of roles is
-configured at company level.
+This module allows maintaining project roster based on roles and assignments.
+List of roles is configured at company level, while assignments can be created
+on project, company, and cross-company levels, with configurable inheritance.
 
 **Table of contents**
 
@@ -52,6 +53,10 @@ To manage assignments:
 
 #. Go to *Project > Assignments*
 #. Add/remove assignments as needed
+
+Also, it's recommended to consider using ``web_m2x_options`` module in order to
+avoid unneeded creation of roles and projects using Quick Create action by
+setting the ``web_m2x_options.create`` system parameter to ``False``.
 
 Bug Tracker
 ===========
@@ -88,6 +93,14 @@ This module is maintained by the OCA.
 OCA, or the Odoo Community Association, is a nonprofit organization whose
 mission is to support the collaborative development of Odoo features and
 promote its widespread use.
+
+.. |maintainer-alexey-pelykh| image:: https://github.com/alexey-pelykh.png?size=40px
+    :target: https://github.com/alexey-pelykh
+    :alt: alexey-pelykh
+
+Current `maintainer <https://odoo-community.org/page/maintainer-role>`__:
+
+|maintainer-alexey-pelykh| 
 
 This module is part of the `OCA/project <https://github.com/OCA/project/tree/12.0/project_role>`_ project on GitHub.
 

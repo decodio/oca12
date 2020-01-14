@@ -3,17 +3,17 @@
 
 {
     'name': 'Field Service - Maintenance',
-    'summary': 'Maintenance',
+    'summary': 'Integrate Field Service orders with maintenance requests',
     'version': '12.0.1.0.0',
     'category': 'Field Service',
     'author': 'Open Source Integrators, Odoo Community Association (OCA)',
     'website': 'https://github.com/OCA/field-service',
     'depends': [
-        'fieldservice_stock',
+        'fieldservice',
         'maintenance',
-        'hr',
     ],
     'data': [
+        'data/fsm_order_type.xml',
         'views/maintenance_view.xml',
         'views/fsm_equipment_view.xml',
         'views/fsm_order_view.xml',
@@ -23,6 +23,7 @@
     'maintainers': [
         'smangukiya',
         'max3903',
+        'bodedra',
     ],
     'installable': True,
 }

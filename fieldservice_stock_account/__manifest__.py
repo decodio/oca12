@@ -3,10 +3,9 @@
 
 {
     'name': 'Field Service - Stock Account',
-    'version': '12.0.1.0.0',
+    'version': '12.0.1.0.1',
     'category': 'Field Service',
-    'summary': 'Adds inventory items delivered as part of the field service '
-               'order to a customer invoice',
+    'summary': 'Invoice inventory items delivered with Field Service orders',
     'author': 'Open Source Integrators, '
               'Odoo Community Association (OCA)',
     'website': 'https://github.com/OCA/field-service',

@@ -27,7 +27,6 @@ class TestPaymentSlip(common.SavepointCase):
         bank = self.env['res.bank'].create(
             {
                 'name': 'BCV',
-                'ccp': '01-1234-1',
                 'bic': 'BBRUBEBB',
                 'clearing': '234234',
             }
@@ -37,15 +36,15 @@ class TestPaymentSlip(common.SavepointCase):
                 'partner_id': partner.id,
                 'bank_id': bank.id,
                 'bank_bic': bank.bic,
-                'acc_number': '01-1234-1',
-                'isr_adherent_num': '1234567',
+                'acc_number': 'ISR account',
+                'l10n_ch_isr_subscription_chf': '01-1234-1',
+                'l10n_ch_isrb_id_number': '123456',
                 'print_bank': True,
                 'print_account': True,
                 'print_partner': True,
+                'sequence': 1,
             }
         )
-        bank_account.onchange_acc_number_set_swiss_bank()
-        self.assertEqual(bank_account.ccp, '01-1234-1')
         return bank_account
 
     def make_invoice(self):
@@ -73,7 +72,6 @@ class TestPaymentSlip(common.SavepointCase):
 
         invoice = self.env['account.invoice'].create({
             'partner_id': self.env.ref('base.res_partner_12').id,
-            'reference_type': 'none',
             'name': 'A customer invoice',
             'account_id': account_debtor.id,
             'type': 'out_invoice',
@@ -103,11 +101,10 @@ class TestPaymentSlip(common.SavepointCase):
         """Test that confirming an invoice generate slips correctly"""
         invoice = self.make_invoice()
         self.assertTrue(invoice.move_id)
-        for line in invoice.move_id.line_ids:
-            if line.account_id.user_type_id.type in ('payable', 'receivable'):
-                self.assertTrue(line.transaction_ref)
-            else:
-                self.assertFalse(line.transaction_ref)
+        self.assertTrue(invoice.move_id.ref)
+        self.assertEqual(
+            invoice.isr_reference.replace(' ', ''), invoice.move_id.ref
+        )
         for line in invoice.move_id.line_ids:
             slip = self.env['l10n_ch.payment_slip'].search(
                 [('move_line_id', '=', line.id)]
@@ -137,6 +134,62 @@ class TestPaymentSlip(common.SavepointCase):
                     '', "%s%s" % (inv_num, line.id)
                 )
                 self.assertIn(line_ident, slip.reference.replace(' ', ''))
+
+    def test_isr_reference(self):
+        # no partner ref
+        self.env.ref('base.res_partner_12').ref = ''
+        invoice = self.make_invoice()
+        self.assertTrue(invoice.isr_reference)
+        reference = invoice.isr_reference.replace(' ', '')
+        self.assertEqual(len(reference), 27)
+        self.assertEqual(reference[:6], '123456')
+        self.assertEqual(reference[6:13], '0' * 7)
+
+        # standard
+        self.env.ref('base.res_partner_12').ref = '12345'
+        invoice = self.make_invoice()
+        self.assertTrue(invoice.isr_reference)
+        reference = invoice.isr_reference.replace(' ', '')
+        self.assertEqual(len(reference), 27)
+        self.assertEqual(reference[:6], '123456')
+        self.assertEqual(reference[6:13], '0012345')
+
+        # partner ref without num
+        self.env.ref('base.res_partner_12').ref = 'alpha'
+        invoice = self.make_invoice()
+        self.assertTrue(invoice.isr_reference)
+        reference = invoice.isr_reference.replace(' ', '')
+        self.assertEqual(len(reference), 27)
+        self.assertEqual(reference[:6], '123456')
+        self.assertEqual(reference[6:13], '0' * 7)
+
+        # contains alphanumerics
+        self.env.ref('base.res_partner_12').ref = 'alpha123'
+        invoice = self.make_invoice()
+        self.assertTrue(invoice.isr_reference)
+        reference = invoice.isr_reference.replace(' ', '')
+        self.assertEqual(len(reference), 27)
+        self.assertEqual(reference[:6], '123456')
+        self.assertEqual(reference[6:13], '0000123')
+
+        # partner_ref too long
+        self.env.ref('base.res_partner_12').ref = '0987654321'
+        invoice = self.make_invoice()
+        self.assertTrue(invoice.isr_reference)
+        reference = invoice.isr_reference.replace(' ', '')
+        self.assertEqual(len(reference), 27)
+        self.assertEqual(reference[:6], '123456')
+        self.assertEqual(reference[6:13], '7654321')
+
+        # customer id with more chars
+        invoice.partner_bank_id.l10n_ch_isrb_id_number = '123456789'
+        self.env.ref('base.res_partner_12').ref = '12345'
+        invoice = self.make_invoice()
+        self.assertTrue(invoice.isr_reference)
+        reference = invoice.isr_reference.replace(' ', '')
+        self.assertEqual(len(reference), 27)
+        self.assertEqual(reference[:9], '123456789')
+        self.assertEqual(reference[9:16], '0012345')
 
     def test_print_report(self):
         invoice = self.make_invoice()

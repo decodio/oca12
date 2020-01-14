@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2019-07-12 15:43+0000\n"
+"PO-Revision-Date: 2019-10-11 10:37+0000\n"
 "Last-Translator: Maria Sparenberg <maria.sparenberg@gmx.net>\n"
 "Language-Team: none\n"
 "Language: de\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.7.1\n"
+"X-Generator: Weblate 3.8\n"
 
 #. module: project_hr
 #: model:ir.model.fields,field_description:project_hr.field_project_task__allowed_hr_category_ids
@@ -27,16 +27,9 @@ msgid "Allowed users"
 msgstr "Erlaubte Benutzer"
 
 #. module: project_hr
-#: model:ir.model.fields,field_description:project_hr.field_project_task__user_id
-msgid "Assigned to"
-msgstr ""
-
-#. module: project_hr
 #: model:ir.model,name:project_hr.model_hr_employee
-#, fuzzy
-#| msgid "Linked employee"
 msgid "Employee"
-msgstr "Zugehöriger Mitarbeiter"
+msgstr "Mitarbeiter"
 
 #. module: project_hr
 #: model:ir.model.fields,field_description:project_hr.field_project_project__hr_category_ids
@@ -72,11 +65,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:project_hr.field_project_task__employee_id
 msgid "Linked employee"
 msgstr "Zugehöriger Mitarbeiter"
-
-#. module: project_hr
-#: model:ir.model,name:project_hr.model_project_project
-msgid "Project"
-msgstr "Projekt"
 
 #. module: project_hr
 #: model:ir.model,name:project_hr.model_project_task
@@ -115,7 +103,12 @@ msgid "Users"
 msgstr "Benutzer"
 
 #. module: project_hr
-#: code:addons/project_hr/models/project_task.py:89
+#: model:ir.model,name:project_hr.model_project_project
+msgid "WBS element"
+msgstr ""
+
+#. module: project_hr
+#: code:addons/project_hr/models/project_task.py:87
 #, python-format
 msgid "You can't assign a category that is not allowed at project level."
 msgstr ""
@@ -123,10 +116,13 @@ msgstr ""
 "Projektebene nicht erlaubt wurde."
 
 #. module: project_hr
-#: code:addons/project_hr/models/project_task.py:78
+#: code:addons/project_hr/models/project_task.py:76
 #, python-format
 msgid ""
 "You can't assign a user not belonging to the selected employee category."
 msgstr ""
 "Der Aufgabe darf kein Benutzer zugewiesen werden, der nicht zur gewählten "
 "Mitarbeiter-Kategorie gehört."
+
+#~ msgid "Project"
+#~ msgstr "Projekt"

@@ -36,7 +36,7 @@ class FSMOrder(models.Model):
     inventory_location_id = fields.Many2one(
         related='location_id.inventory_location_id', readonly=True)
     warehouse_id = fields.Many2one('stock.warehouse', string='Warehouse',
-                                   required=True, readonly=True,
+                                   required=True,
                                    default=_default_warehouse_id,
                                    help="Warehouse used to ship the materials")
     return_count = fields.Integer(string='Return Orders',
@@ -44,6 +44,8 @@ class FSMOrder(models.Model):
     request_stage = fields.Selection(REQUEST_STATES, string='Request State',
                                      default='draft', readonly=True,
                                      store=True)
+    move_ids = fields.One2many('stock.move', 'fsm_order_id',
+                               string='Operations')
 
     @api.multi
     def action_request_submit(self):
@@ -53,9 +55,9 @@ class FSMOrder(models.Model):
             for line in rec.stock_request_ids:
                 if line.state == 'draft':
                     if line.order_id:
-                        line.order_id.action_confirm()
+                        line.order_id.action_submit()
                     else:
-                        line.action_confirm()
+                        line.action_submit()
             rec.request_stage = 'submitted'
 
     @api.multi
@@ -105,12 +107,12 @@ class FSMOrder(models.Model):
         pickings = self.mapped('picking_ids')
         delivery_ids = [picking.id for picking in pickings if
                         picking.picking_type_id.code == 'outgoing']
-        if len(pickings) > 1:
+        if len(delivery_ids) > 1:
             action['domain'] = [('id', 'in', delivery_ids)]
         elif pickings:
             action['views'] = [(self.env.ref('stock.view_picking_form').id,
                                 'form')]
-            action['res_id'] = pickings.id
+            action['res_id'] = delivery_ids[0]
         return action
 
     @api.multi
@@ -122,12 +124,12 @@ class FSMOrder(models.Model):
         """
         action = self.env.ref('stock.action_picking_tree_all').read()[0]
         pickings = self.mapped('picking_ids')
-        receipt_ids = [picking.id for picking in pickings if
-                       picking.picking_type_id.code == 'incoming']
-        if len(pickings) > 1:
-            action['domain'] = [('id', 'in', receipt_ids)]
+        return_ids = [picking.id for picking in pickings if
+                      picking.picking_type_id.code == 'incoming']
+        if len(return_ids) > 1:
+            action['domain'] = [('id', 'in', return_ids)]
         elif pickings:
             action['views'] = [(self.env.ref('stock.view_picking_form').id,
                                 'form')]
-            action['res_id'] = pickings.id
+            action['res_id'] = return_ids[0]
         return action

@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <record id="view_fsm_order_form_inherit_stock" model="ir.ui.view">
@@ -20,7 +19,7 @@
                         class="oe_stat_button"
                         icon="fa-truck"
                         attrs="{'invisible': [('return_count', '=', 0)]}" groups="base.group_user">
-                    <field name="return_count" widget="statinfo" string="Receipts"/>
+                    <field name="return_count" widget="statinfo" string="Returns"/>
                 </button>
             </div>
             <xpath expr="//notebook/page[1]" position="after">
@@ -48,6 +47,7 @@
                         <tree editable="bottom">
                             <field name="name" readonly="1"/>
                             <field name="product_id"/>
+                            <field name="order_id"/>
                             <field name="product_uom_id"
                                    options="{'no_open': True, 'no_create': True}"
                                    groups="uom.group_uom"/>
@@ -69,6 +69,7 @@
                             <field name="state"/>
                         </tree>
                     </field>
+                    <field name="move_ids" readonly="1" attrs="{'invisible': [('move_ids', '=', False)]}"/>
                 </page>
             </xpath>
         </field>

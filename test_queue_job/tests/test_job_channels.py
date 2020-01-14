@@ -1,5 +1,5 @@
 # Copyright 2016 Camptocamp SA
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html)
+# License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html)
 
 from odoo import exceptions
 import odoo.tests.common as common
@@ -124,3 +124,9 @@ class TestJobChannels(common.TransactionCase):
         self.assertEquals(partial.keywords.get('default_channel'),
                           default_channel)
         self.assertEquals(partial.keywords.get('retry_pattern'), retry_pattern)
+
+    def test_default_removal_interval(self):
+        channel = self.channel_model.create(
+            {'name': 'number',
+             'parent_id': self.root_channel.id})
+        self.assertEqual(channel.removal_interval, 30)

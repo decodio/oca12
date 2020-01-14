@@ -13,6 +13,17 @@ class ReportCheckPrint(models.AbstractModel):
     _name = 'report.account_check_printing_report_base.report_check_base'
     _description = 'Report Check Print'
 
+    @api.model
+    def fill_stars_number(self, amount, stars_prefix=5, stars_suffix=1):
+        str_prefix = ' '.join(['*' * stars_prefix, amount, '*' * stars_suffix])
+        return str_prefix
+
+    def _format_date_to_partner_lang(self, date, partner_id):
+        lang_code = self.env['res.partner'].browse(partner_id).lang
+        lang = self.env['res.lang']._lang_get(lang_code)
+        return date.strftime(lang.date_format)
+
+    @api.model
     def fill_stars(self, amount_in_word):
         if amount_in_word and len(amount_in_word) < 100:
             stars = 100 - len(amount_in_word)
@@ -67,8 +78,8 @@ class ReportCheckPrint(models.AbstractModel):
                 payment.journal_id.default_credit_account_id
             rec_lines = payment.move_line_ids.filtered(
                 lambda x: x.account_id.reconcile and x.account_id != pay_acc)
-            amls = rec_lines.matched_credit_ids.mapped('credit_move_id') + \
-                rec_lines.matched_debit_ids.mapped('debit_move_id')
+            amls = rec_lines.mapped('matched_credit_ids.credit_move_id') + \
+                rec_lines.mapped('matched_debit_ids.debit_move_id')
             amls -= rec_lines
             for aml in amls:
                 date_due = aml.date_maturity
@@ -86,7 +97,7 @@ class ReportCheckPrint(models.AbstractModel):
                 lines[payment.id].append(line)
         return lines
 
-    @api.multi
+    @api.model
     def _get_report_values(self, docids, data=None):
         model = self.env.context.get('active_model', 'account.payment')
         objects = self.env[model].browse(docids)
@@ -97,6 +108,8 @@ class ReportCheckPrint(models.AbstractModel):
             'docs': objects,
             'time': time,
             'fill_stars': self.fill_stars,
-            'paid_lines': paid_lines
+            'fill_stars_number': self.fill_stars_number,
+            'paid_lines': paid_lines,
+            '_format_date_to_partner_lang': self._format_date_to_partner_lang,
         }
         return docargs

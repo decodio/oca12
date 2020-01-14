@@ -10,9 +10,9 @@ Job Queue
 .. |badge1| image:: https://img.shields.io/badge/maturity-Mature-brightgreen.png
     :target: https://odoo-community.org/page/development-status
     :alt: Mature
-.. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
-    :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
-    :alt: License: AGPL-3
+.. |badge2| image:: https://img.shields.io/badge/licence-LGPL--3-blue.png
+    :target: http://www.gnu.org/licenses/lgpl-3.0-standalone.html
+    :alt: License: LGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fqueue-lightgray.png?logo=github
     :target: https://github.com/OCA/queue/tree/12.0/queue_job
     :alt: OCA/queue
@@ -171,6 +171,19 @@ Tip: you can do this at test case level like this
 Then all your tests execute the job methods synchronously
 without delaying any jobs.
 
+Tips and tricks
+~~~~~~~~~~~~~~~
+
+* **Idempotency** (https://www.restapitutorial.com/lessons/idempotency.html): The queue_job should be idempotent so they can be retried several times without impact on the data.
+* **The job should test at the very beginning its relevance**: the moment the job will be executed is unknown by design. So the first task of a job should be to check if the related work is still relevant at the moment of the execution.
+
+Patterns
+~~~~~~~~
+Through the time, two main patterns emerged:
+
+1. For data exposed to users, a model should store the data and the model should be the creator of the job. The job is kept hidden from the users
+2. For technical data, that are not exposed to the users, it is generally alright to create directly jobs with data passed as arguments to the job, without intermediary models.
+
 Known issues / Roadmap
 ======================
 
@@ -193,6 +206,7 @@ Known issues / Roadmap
 
   update queue_job set state='pending' where state in ('started', 'enqueued')
 
+
 Changelog
 =========
 
@@ -209,12 +223,27 @@ Changelog
 Next
 ~~~~
 
+12.0.1.1.0 (2019-11-01)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Important: the license has been changed from AGPL3 to LGPL3.
+
 * [IMP] Dont' start the Jobrunner if root channel's capacity
   is explicitly set to 0
 * [ADD] Ability to set several jobs to done using an multi-action
   (port of `#59 <https://github.com/OCA/queue/pull/59>`_)
 * [REF] Extract a method handling the post of a message when a job is failed,
   allowing to modify this behavior from addons
+* [ADD] Allow Jobrunner configuration from server_environment
+  (details on `#124 <https://github.com/OCA/queue/pull/124>`_)
+* [ADD] Environment variable ``TEST_QUEUE_JOB_NO_DELAY=1`` for test and debug
+  (details on `#114 <https://github.com/OCA/queue/pull/114>`_)
+* [FIX] race condition under pressure, when starting a job takes more than 1 second
+  (details on `#131 <https://github.com/OCA/queue/pull/131>`_)
+* [FIX] ``retry_postone`` on a job could be rollbacked on errors
+  (details on `#130 <https://github.com/OCA/queue/pull/130>`_)
+* [FIX] Autovacuum cron job misconfiguration
+  (details on `#163 <https://github.com/OCA/queue/pull/163>`_)
 
 12.0.1.0.0 (2018-10-02)
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -250,6 +279,7 @@ Contributors
 * David Lefever <dl@taktik.be>
 * Laurent Mignon <laurent.mignon@acsone.eu>
 * Laetitia Gangloff <laetitia.gangloff@acsone.eu>
+* Cédric Pigeon <cedric.pigeon@acsone.eu>
 
 Maintainers
 ~~~~~~~~~~~

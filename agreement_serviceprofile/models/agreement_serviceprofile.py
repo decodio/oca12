@@ -7,6 +7,7 @@ from odoo import fields, models, api
 
 class AgreementServiceProfile(models.Model):
     _name = 'agreement.serviceprofile'
+    _inherit = 'mail.thread'
     _description = 'Agreement Service Profiles'
 
     def _default_stage_id(self):
@@ -26,7 +27,8 @@ class AgreementServiceProfile(models.Model):
 
     notes = fields.Text(string="Notes")
     product_id = fields.Many2one('product.template', 'Service Product',
-                                 domain="[('type', '=', 'service')]",
+                                 domain="[('is_serviceprofile', '=', True), "
+                                        "('type', '=', 'service')]",
                                  required=True)
     partner_id = fields.Many2one(related='agreement_id.partner_id',
                                  string='Partner')

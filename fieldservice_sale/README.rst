@@ -25,7 +25,8 @@ Field Service - Sales
 
 |badge1| |badge2| |badge3| |badge4| |badge5| 
 
-The module integrate the field service application with the sales one.
+The module integrates the Field Service application with the Sales one and
+allows you to sell products that generate field service orders.
 
 **Table of contents**
 
@@ -43,17 +44,31 @@ https://github.com/OCA/geospatial/tree/12.0/base_geoengine
 Configuration
 =============
 
-To setup a product for quoting and selling field service orders:
+Products must be configured properly in order to create field service
+orders upon sale order confirmation.
+
+The field service tracking of a product defines how it generates a field service
+order if the product is sold via sale order.
+
+To configure a product that generates a unique field service order on each
+sale order line:
 
 * Go to Sales > Catalog > Products
 * Create or select a product
-* Set the Product Type to 'Service' under General Information tab
-* Under Invoicing tab, set the Field Service Tracking option
+* Set the Field Service Tracking to 'One FSM Order per Sale Order Line'
 * Select the FSM Order Template that will be used for creating FSM Orders when
-    a Sale Order is confirmed with this product
+  a Sale Order is confirmed with this product
 
+To configure a product that generates a unique field service order for
+an individual sale order:
 
-To setup a sales territory, you need to:
+* Go to Sales > Catalog > Products
+* Create or select a product
+* Set the Field Service Tracking to 'One FSM Order per Sale Order'
+* Select the FSM Order Template that will be used for creating FSM Orders when
+  a Sale Order is confirmed with this product
+
+To setup a sales territory:
 
 * Go to Field Service > Master Data > Locations
 * Create or select a location
@@ -62,12 +77,15 @@ To setup a sales territory, you need to:
 Usage
 =====
 
-* Go to Sales app
+* Go to Sales
 * Create a new Quotation/Sale Order
 * Set the FSM Location to be used
 * On a Sale Order Line, select a product configured for field service orders
 * Confirm the Sale Order
-* Field Service Orders linked to SO lines are created
+* Field Service orders linked to SO lines are created
+* When a Field Service order is completed, the quantity delivered for its
+   linked sale order line will be updated to the quantity ordered, indicating
+   this line is ready for invoicing.
 
 Known issues / Roadmap
 ======================
@@ -96,19 +114,16 @@ Authors
 Contributors
 ~~~~~~~~~~~~
 
-* Steve Campbell <scampbell@opensourceintegrators.com>
-* Maxime Chambreuil <mchambreuil@opensourceintegrators.com>
-* Wolfgang Hall <whall@opensourceintegrators.com>
+* Open Source Integrators <https://opensourceintegrators.com>
+
+  * Steve Campbell <scampbell@opensourceintegrators.com>
+  * Maxime Chambreuil <mchambreuil@opensourceintegrators.com>
+  * Wolfgang Hall <whall@opensourceintegrators.com>
+
 * Serpent Consulting Services Pvt. Ltd. <support@serpentcs.com>
 * Brian McMaster <brian@mcmpest.com>
 * Raphaël Reverdy <raphael.reverdy@akretion.com>
-
-Other credits
-~~~~~~~~~~~~~
-
-The development of this module has been financially supported by:
-
-* Open Source Integrators <https://opensourceintegrators.com>
+* Clément Mombereau <clement.mombereau@akretion.com>
 
 Maintainers
 ~~~~~~~~~~~

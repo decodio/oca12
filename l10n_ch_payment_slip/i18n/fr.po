@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-06-02 00:43+0000\n"
-"PO-Revision-Date: 2019-08-14 09:44+0000\n"
+"PO-Revision-Date: 2019-10-22 11:32+0000\n"
 "Last-Translator: Valaeys Stéphane <svalaeys@fiefmanage.ch>\n"
 "Language-Team: French (https://www.transifex.com/oca/teams/23907/fr/)\n"
 "Language: fr\n"
@@ -17,34 +17,24 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.7.1\n"
+"X-Generator: Weblate 3.8\n"
 
 #. module: l10n_ch_payment_slip
-#: code:addons/l10n_ch_payment_slip/models/invoice.py:157
+#: code:addons/l10n_ch_payment_slip/models/invoice.py:212
 #, python-format
-msgid "- The bank account {} used in invoice has no ISR adherent number."
+msgid "- The bank account {} used in invoice has no ISR subscription number."
 msgstr ""
-"- Le compte bancaire {} utilisé dans la facture n'a pas de numéro d'adhérent "
-"BVR."
+"- Le compte bancaire {} utilisé dans la facture n'a pas de numéro de "
+"participant BVR."
 
 #. module: l10n_ch_payment_slip
-#: code:addons/l10n_ch_payment_slip/models/invoice.py:162
-#, python-format
-msgid ""
-"- The bank account {} used in invoice needs to be a postal account or have a "
-"bank CCP."
-msgstr ""
-"- Le compte bancaire {} utilisé dans la facture doit être un compte postal "
-"ou avoir un CCP bancaire."
-
-#. module: l10n_ch_payment_slip
-#: code:addons/l10n_ch_payment_slip/models/invoice.py:150
+#: code:addons/l10n_ch_payment_slip/models/invoice.py:205
 #, python-format
 msgid "- The invoice must be confirmed."
 msgstr "- La facture doit être validée."
 
 #. module: l10n_ch_payment_slip
-#: code:addons/l10n_ch_payment_slip/models/invoice.py:153
+#: code:addons/l10n_ch_payment_slip/models/invoice.py:208
 #, python-format
 msgid "- The invoice needs a partner bank account."
 msgstr "- La facture doit faire référence à un de vos comptes bancaires."
@@ -170,7 +160,7 @@ msgstr "Décalage horizontal global en pouces"
 #. module: l10n_ch_payment_slip
 #: model:ir.model,name:l10n_ch_payment_slip.model_report_one_slip_per_page_from_invoice
 msgid "ISR Invoice report"
-msgstr ""
+msgstr "Rapport  de facture BVR"
 
 #. module: l10n_ch_payment_slip
 #: model:ir.model.fields,field_description:l10n_ch_payment_slip.field_l10n_ch_payment_slip__reference
@@ -229,6 +219,20 @@ msgid "ISR scan line letter spacing"
 msgstr "Espace entre les caractères de la ligne scannée"
 
 #. module: l10n_ch_payment_slip
+#: model:ir.model.fields,help:l10n_ch_payment_slip.field_account_invoice__l10n_ch_isr_subscription
+msgid ""
+"ISR subscription number identifying your company or your bank  to generate "
+"ISR."
+msgstr ""
+
+#. module: l10n_ch_payment_slip
+#: model:ir.model.fields,help:l10n_ch_payment_slip.field_account_invoice__l10n_ch_isr_subscription_formatted
+msgid ""
+"ISR subscription number your company or your bank, formated with '-' and "
+"without the padding zeros, to generate ISR report."
+msgstr ""
+
+#. module: l10n_ch_payment_slip
 #: model:ir.model.fields,field_description:l10n_ch_payment_slip.field_res_company__isr_add_vert
 #: model:ir.model.fields,field_description:l10n_ch_payment_slip.field_res_config_settings__isr_add_vert
 msgid "ISR vert. position for address (inch)"
@@ -245,6 +249,21 @@ msgstr "Position vert. de la ligne de montant du BVR (pouce)"
 #: model:ir.model.fields,field_description:l10n_ch_payment_slip.field_res_config_settings__isr_scan_line_vert
 msgid "ISR vert. position for scan line (inch)"
 msgstr "Décalage vertical de la ligne scannée en pouces"
+
+#. module: l10n_ch_payment_slip
+#: model:ir.model.fields,help:l10n_ch_payment_slip.field_account_setup_bank_manual_config__l10n_ch_isrb_id_number
+#: model:ir.model.fields,help:l10n_ch_payment_slip.field_res_partner_bank__l10n_ch_isrb_id_number
+msgid ""
+"ISR-B Customer ID number for ISR. Used only when generating ISR reference "
+"through a bank. This will prefix your references. It is not necessary for "
+"standard ISR from Postfinance. e.g. 999999"
+msgstr ""
+
+#. module: l10n_ch_payment_slip
+#: model:ir.model.fields,field_description:l10n_ch_payment_slip.field_account_setup_bank_manual_config__l10n_ch_isrb_id_number
+#: model:ir.model.fields,field_description:l10n_ch_payment_slip.field_res_partner_bank__l10n_ch_isrb_id_number
+msgid "ISR-B Internal ID"
+msgstr ""
 
 #. module: l10n_ch_payment_slip
 #: model:ir.model.fields,field_description:l10n_ch_payment_slip.field_res_company__isr_background
@@ -267,6 +286,16 @@ msgstr "Factures"
 #: model:ir.model,name:l10n_ch_payment_slip.model_account_move_line
 msgid "Journal Item"
 msgstr "Écriture comptable"
+
+#. module: l10n_ch_payment_slip
+#: model:ir.model.fields,field_description:l10n_ch_payment_slip.field_account_invoice__l10n_ch_isr_subscription
+msgid "L10N Ch Isr Subscription"
+msgstr ""
+
+#. module: l10n_ch_payment_slip
+#: model:ir.model.fields,field_description:l10n_ch_payment_slip.field_account_invoice__l10n_ch_isr_subscription_formatted
+msgid "L10N Ch Isr Subscription Formatted"
+msgstr ""
 
 #. module: l10n_ch_payment_slip
 #: model:ir.model.fields,field_description:l10n_ch_payment_slip.field_isr_batch_print_wizard____last_update
@@ -300,7 +329,7 @@ msgid "Merge Slips on Disk, slower but safer"
 msgstr "Fuisonne les rapports BVR sur le disque. Plus lent mais plus sûr"
 
 #. module: l10n_ch_payment_slip
-#: code:addons/l10n_ch_payment_slip/models/payment_slip.py:341
+#: code:addons/l10n_ch_payment_slip/models/payment_slip.py:393
 #, python-format
 msgid "No invoice related to move line %s"
 msgstr "Aucune facture liée à la ligne %s"
@@ -308,7 +337,7 @@ msgstr "Aucune facture liée à la ligne %s"
 #. module: l10n_ch_payment_slip
 #: model_terms:ir.ui.view,arch_db:l10n_ch_payment_slip.invoice_form_add_isr_ref
 msgid "Open Payment Slips"
-msgstr "BVR ouverts"
+msgstr "Afficher les BVRs"
 
 #. module: l10n_ch_payment_slip
 #: selection:ir.actions.report,report_type:0
@@ -343,16 +372,10 @@ msgid "Payment Slips Merge Mode"
 msgstr "Mode de fusion des rapports BVR"
 
 #. module: l10n_ch_payment_slip
-#: code:addons/l10n_ch_payment_slip/models/payment_slip.py:561
+#: code:addons/l10n_ch_payment_slip/models/payment_slip.py:606
 #, python-format
 msgid "Payment slip related to invoice %s due on the %s"
 msgstr "Bulletin relatif à la facture %s due le %s"
-
-#. module: l10n_ch_payment_slip
-#: code:addons/l10n_ch_payment_slip/models/payment_slip.py:226
-#, python-format
-msgid "Please enter a correct postal number like: 01-23456-1"
-msgstr "Veuillez saisir un CCP valide exemple: 01-23456-1"
 
 #. module: l10n_ch_payment_slip
 #: model:ir.model.fields,field_description:l10n_ch_payment_slip.field_account_setup_bank_manual_config__print_account
@@ -509,17 +532,6 @@ msgid "XLSX"
 msgstr ""
 
 #. module: l10n_ch_payment_slip
-#: code:addons/l10n_ch_payment_slip/models/payment_slip.py:347
-#, python-format
-msgid ""
-"Your bank ISR number should be of the form 0X-XXX-X! Please check your "
-"company information for the invoice:\n"
-"%s"
-msgstr ""
-"Le CCP doit respecter le format suivant 0X-XXX-X pour la facture\n"
-"%s"
-
-#. module: l10n_ch_payment_slip
 #: model:ir.model.fields,help:l10n_ch_payment_slip.field_res_company__isr_delta_horz
 #: model:ir.model.fields,help:l10n_ch_payment_slip.field_res_config_settings__isr_delta_horz
 msgid ""
@@ -534,6 +546,24 @@ msgid ""
 "vert. delta in inch 1.2 will print the ISR 1.2 inch lower, negative value is "
 "possible"
 msgstr "Décalage global vertical du BVR en pouces"
+
+#~ msgid ""
+#~ "- The bank account {} used in invoice needs to be a postal account or "
+#~ "have a bank CCP."
+#~ msgstr ""
+#~ "- Le compte bancaire {} utilisé dans la facture doit être un compte "
+#~ "postal ou avoir un CCP bancaire."
+
+#~ msgid "Please enter a correct postal number like: 01-23456-1"
+#~ msgstr "Veuillez saisir un CCP valide exemple: 01-23456-1"
+
+#~ msgid ""
+#~ "Your bank ISR number should be of the form 0X-XXX-X! Please check your "
+#~ "company information for the invoice:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Le CCP doit respecter le format suivant 0X-XXX-X pour la facture\n"
+#~ "%s"
 
 #~ msgid "ISR Data"
 #~ msgstr "Données BVR"

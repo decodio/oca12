@@ -47,10 +47,12 @@ class AccountAssetProfile(models.Model):
         comodel_name='res.company',
         string='Company', required=True,
         default=lambda self: self._default_company_id())
-    parent_id = fields.Many2one(
-        comodel_name='account.asset',
-        string='Parent Asset',
-        domain=[('type', '=', 'view')])
+    group_ids = fields.Many2many(
+        comodel_name='account.asset.group',
+        relation="account_asset_profile_group_rel",
+        column1="profile_id",
+        column2="group_id",
+        string='Asset Groups')
     method = fields.Selection(
         selection=lambda self: self._selection_method(),
         string='Computation Method',
@@ -88,6 +90,22 @@ class AccountAssetProfile(models.Model):
              "number of depreciation lines.\n"
              "  * Number of Years: Specify the number of years "
              "for the depreciation.\n")
+    days_calc = fields.Boolean(
+        string='Calculate by days',
+        default=False,
+        help="Use number of days to calculate depreciation amount")
+    use_leap_years = fields.Boolean(
+        string='Use leap years',
+        default=False,
+        help="If not set, the system will distribute evenly the amount to "
+             "amortize across the years, based on the number of years. "
+             "So the amount per year will be the "
+             "depreciation base / number of years.\n "
+             "If set, the system will consider if the current year "
+             "is a leap year. The amount to depreciate per year will be "
+             "calculated as depreciation base / (depreciation end date - "
+             "start date + 1) * days in the current year.",
+    )
     prorata = fields.Boolean(
         string='Prorata Temporis',
         help="Indicates that the first depreciation entry for this asset "
@@ -135,7 +153,7 @@ class AccountAssetProfile(models.Model):
         'Number' and 'End' Time Methods.
         """
         return [
-            ('year', _('Number of Years')),
+            ('year', _('Number of Years or end date')),
         ]
 
     @api.multi

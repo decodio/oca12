@@ -4,7 +4,6 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.addons import decimal_precision as dp
-from odoo.tools.misc import formatLang
 
 
 class BusinessRequirementDeliverable(models.Model):
@@ -16,14 +15,6 @@ class BusinessRequirementDeliverable(models.Model):
     sequence = fields.Integer('Sequence')
     state = fields.Selection(
         related='business_requirement_id.state',
-        selection=[('draft', 'Draft'),
-                   ('confirmed', 'Confirmed'),
-                   ('approved', 'Approved'),
-                   ('in_progress', 'In progress'),
-                   ('done', 'Done'),
-                   ('cancel', 'Cancel'),
-                   ('drop', 'Drop'),
-                   ],
         store=True,
     )
     name = fields.Text('Name', required=True)
@@ -68,7 +59,6 @@ class BusinessRequirementDeliverable(models.Model):
         string='Total Deliverable',
         store=True,
         readonly=True,
-        track_visibility='onchange'
     )
     currency_id = fields.Many2one(
         comodel_name='res.currency',
@@ -163,16 +153,13 @@ class BusinessRequirementDeliverable(models.Model):
     def name_get(self):
         result = []
         for rec in self:
-            name = '#{0}: {1} ({2})'
+            name = '#{0}: {1}'
             args = [
                 rec.sequence,
                 rec.name,
-                formatLang(
-                    self.env, rec.price_total, currency_obj=rec.currency_id,
-                ),
             ]
             if rec.section_id:
-                name = '[{3}] #{0}: {1} ({2})'
+                name = '[{2}] #{0}: {1}'
                 args.append(rec.section_id.name)
             result.append((rec.id, name.format(*args)))
         return result

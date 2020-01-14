@@ -55,6 +55,9 @@
                                    groups="base.group_multi_company"
                                    options="{'no_create': True}"/>
                             <field name="sequence"/>
+                            <field name="notify_on_create"/>
+                            <field name="has_comment"/>
+                            <field name="approve_sequence"/>
                         </group>
                     </group>
                     <group name="bottom">

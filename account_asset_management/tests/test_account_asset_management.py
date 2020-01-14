@@ -415,7 +415,7 @@ class TestAssetManagement(SavepointCase):
                                    'account_asset_profile_car_5Y'),
             'purchase_value': 5000,
             'salvage_value': 0,
-            'date_start': time.strftime('%Y-01-01'),
+            'date_start': '2019-01-01',
             'method_time': 'year',
             'method_number': 5,
             'method_period': 'quarter',
@@ -428,7 +428,7 @@ class TestAssetManagement(SavepointCase):
             'early_removal': True,
         }
         wiz = self.remove_model.with_context(wiz_ctx).create({
-            'date_remove': time.strftime('%Y-01-31'),
+            'date_remove': '2019-01-31',
             'sale_value': 0.0,
             'posting_regime': 'gain_loss_on_sale',
             'account_plus_value_id': self.ref('account.a_sale'),
@@ -515,3 +515,86 @@ class TestAssetManagement(SavepointCase):
             dlines = dlines.sorted(key=lambda l: l.line_date)
             self.assertAlmostEqual(dlines[0].depreciated_value, 0.0)
             self.assertAlmostEqual(dlines[-1].remaining_value, 0.0)
+
+    def test_12_prorata_days_calc(self):
+        """Prorata temporis depreciation with days calc option."""
+        asset = self.asset_model.create({
+            'name': 'test asset',
+            'profile_id': self.ref('account_asset_management.'
+                                   'account_asset_profile_car_5Y'),
+            'purchase_value': 3333,
+            'salvage_value': 0,
+            'date_start': '2019-07-07',
+            'method_time': 'year',
+            'method_number': 5,
+            'method_period': 'month',
+            'prorata': True,
+            'days_calc': True,
+            'use_leap_years': False,
+        })
+        asset.compute_depreciation_board()
+        asset.refresh()
+        day_rate = 3333 / 1827  # 3333 / 1827 depreciation days
+        for i in range(1, 10):
+            self.assertAlmostEqual(
+                asset.depreciation_line_ids[i].amount,
+                asset.depreciation_line_ids[i].line_days * day_rate, places=2)
+        # Last depreciation remaining
+        self.assertAlmostEqual(
+            asset.depreciation_line_ids[-1].amount, 11.05, places=2)
+
+    def test_13_use_leap_year(self):
+        # When you use the depreciation with years method and using lap years,
+        # the depreciation amount is calculated as 10000 / 1826 days * 365 days
+        # = yearly depreciation amount of 1998.90.
+        # Then 1998.90 / 12 = 166.58
+        asset = self.asset_model.create({
+            'name': 'test asset',
+            'profile_id': self.ref('account_asset_management.'
+                                   'account_asset_profile_car_5Y'),
+            'purchase_value': 10000,
+            'salvage_value': 0,
+            'date_start': time.strftime('2019-01-01'),
+            'method_time': 'year',
+            'method_number': 5,
+            'method_period': 'month',
+            'prorata': False,
+            'days_calc': False,
+            'use_leap_years': True,
+        })
+        asset.compute_depreciation_board()
+        asset.refresh()
+        for i in range(2, 11):
+            self.assertAlmostEqual(
+                asset.depreciation_line_ids[i].amount, 166.58, places=2)
+        self.assertAlmostEqual(
+            asset.depreciation_line_ids[13].depreciated_value, 1998.90,
+            places=2)
+
+    def test_14_not_use_leap_year(self):
+        # When you run a depreciation with method = 'year' and no not use
+        # lap years you divide 1000 / 5 years = 2000, then divided by 12 months
+        # to get 166.67 per month, equal for all periods.
+        asset = self.asset_model.create({
+            'name': 'test asset',
+            'profile_id': self.ref('account_asset_management.'
+                                   'account_asset_profile_car_5Y'),
+            'purchase_value': 10000,
+            'salvage_value': 0,
+            'date_start': time.strftime('2019-01-01'),
+            'method_time': 'year',
+            'method_number': 5,
+            'method_period': 'month',
+            'prorata': False,
+            'days_calc': False,
+            'use_leap_years': False,
+        })
+        asset.compute_depreciation_board()
+        asset.refresh()
+        for i in range(1, 11):
+            self.assertAlmostEqual(
+                asset.depreciation_line_ids[1].amount, 166.67, places=2)
+        # In the last month of the fiscal year we compensate for the small
+        # deviations if that is necessary.
+        self.assertAlmostEqual(
+            asset.depreciation_line_ids[12].amount, 166.63, places=2)

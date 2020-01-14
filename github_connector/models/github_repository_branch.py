@@ -4,11 +4,11 @@
 
 import logging
 import os
+import shutil
 
 from subprocess import check_output
 from datetime import datetime
 
-from .github import _GITHUB_URL
 from odoo import _, api, exceptions, fields, models, modules, tools
 from odoo.tools.safe_eval import safe_eval
 
@@ -86,6 +86,13 @@ class GithubRepository(models.Model):
     # Init Section
     def __init__(self, pool, cr):
         source_path = tools.config.get('source_code_local_path', False)
+        if not os.path.exists(source_path):
+            try:
+                os.makedirs(source_path)
+            except Exception as e:
+                _logger.error(_(
+                    "Error when trying to create the main folder %s\n"
+                    " Please check Odoo Access Rights.\n %s"), source_path, e)
         if source_path and source_path not in modules.module.ad_paths:
             modules.module.ad_paths.append(source_path)
         super(GithubRepository, self).__init__(pool, cr)
@@ -122,6 +129,7 @@ class GithubRepository(models.Model):
 
     @api.multi
     def _download_code(self):
+        client = self.get_github_connector("")
         for branch in self:
             if not os.path.exists(branch.local_path):
                 _logger.info(
@@ -137,7 +145,7 @@ class GithubRepository(models.Model):
 
                 command = (
                     "git clone %s%s/%s.git -b %s %s") % (
-                        _GITHUB_URL,
+                        client.get_http_url(),
                         branch.repository_id.organization_id.github_login,
                         branch.repository_id.name,
                         branch.name,
@@ -156,7 +164,7 @@ class GithubRepository(models.Model):
                         ['git', 'pull', 'origin', branch.name],
                         cwd=branch.local_path)
                     if branch.state == 'to_download' or\
-                            'up-to-date' not in res:
+                            b'up-to-date' not in res:
                         branch.write({
                             'last_download_date': datetime.today(),
                             'state': 'to_analyze',
@@ -171,9 +179,15 @@ class GithubRepository(models.Model):
                         "Error when updating the branch %s in the local folder"
                         " %s.\n Deleting the local folder and trying"
                         " again."), branch.name, branch.local_path)
-                    command = "rm -r %s" % branch.local_path
-                    os.system(command)
-                    branch._download_code()
+                    try:
+                        shutil.rmtree(branch.local_path)
+                    except Exception:
+                        _logger.error(
+                            "Error deleting the branch %s in the local folder "
+                            "%s. You need to check manually what is happening "
+                            "there.")
+                    else:
+                        branch._download_code()
         return True
 
     def _get_analyzable_files(self, existing_folder):
@@ -185,12 +199,11 @@ class GithubRepository(models.Model):
                         res.append(os.path.join(root, fic))
         return res
 
-    @api.model
-    def analyze_code_one(self, branch):
+    def analyze_code_one(self):
         """Overload Me in custom Module that manage Source Code analysis.
         """
         self.ensure_one()
-        path = branch.local_path
+        path = self.local_path
         # Compute Files Sizes
         size = 0
         for file_path in self._get_analyzable_files(path):
@@ -223,7 +236,7 @@ class GithubRepository(models.Model):
             else:
                 _logger.info("Analyzing Source Code in %s ...", path)
                 try:
-                    vals = branch.analyze_code_one(branch)
+                    vals = branch.analyze_code_one()
                     vals.update({
                         'last_analyze_date': datetime.today(),
                         'state': 'analyzed',

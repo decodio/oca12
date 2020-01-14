@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
     Copyright 2018-2019 Brainbean Apps (https://brainbeanapps.com)
-    License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+    License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 -->
 <odoo>
 
@@ -19,6 +19,12 @@
                     string="Assignments"
                 />
             </button>
+            <page name="settings">
+                <group name="roles" string="Assignments">
+                    <field name="inherit_assignments"/>
+                    <field name="limit_role_to_assignments"/>
+                </group>
+            </page>
         </field>
     </record>
 

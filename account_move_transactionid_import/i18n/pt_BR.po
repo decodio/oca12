@@ -34,6 +34,11 @@ msgstr ""
 
 #. module: account_move_transactionid_import
 #: selection:account.move.completion.rule,function_to_call:0
+msgid "From line name (based on SO number)"
+msgstr ""
+
+#. module: account_move_transactionid_import
+#: selection:account.move.completion.rule,function_to_call:0
 msgid "From line name (based on customer invoice number)"
 msgstr ""
 
@@ -68,8 +73,14 @@ msgid "Journal"
 msgstr "Diário"
 
 #. module: account_move_transactionid_import
-#: code:addons/account_move_transactionid_import/models/account_move.py:40
-#: code:addons/account_move_transactionid_import/models/account_move.py:69
+#: code:addons/account_move_transactionid_import/models/account_move.py:77
+#, python-format
+msgid "Line named \"%s\" was matched by more than one invoice."
+msgstr ""
+
+#. module: account_move_transactionid_import
+#: code:addons/account_move_transactionid_import/models/account_move.py:41
+#: code:addons/account_move_transactionid_import/models/account_move.py:71
 #, python-format
 msgid "Line named \"%s\" was matched by more than one partner."
 msgstr ""

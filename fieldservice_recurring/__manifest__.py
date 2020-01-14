@@ -3,8 +3,8 @@
 
 {
     'name': 'Field Service Recurring Work Orders',
-    'summary': 'Manage recurring field service works',
-    'version': '12.0.1.0.0',
+    'summary': 'Manage recurring Field Service orders',
+    'version': '12.0.1.1.1',
     'category': 'Field Service',
     'author':
         'Brian McMaster, '

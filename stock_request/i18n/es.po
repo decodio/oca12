@@ -113,12 +113,6 @@ msgid "Cancel"
 msgstr "Cancelar"
 
 #. module: stock_request
-#: code:addons/stock_request/models/stock_request.py:13
-#, python-format
-msgid "Cancelled"
-msgstr "Cancelado"
-
-#. module: stock_request
 #: model_terms:ir.actions.act_window,help:stock_request.action_stock_request_form
 msgid "Click to add a Stock Request."
 msgstr "Pulse para añadir una solicitud de existencias."
@@ -191,17 +185,9 @@ msgid "Display Name"
 msgstr "Nombre mostrado"
 
 #. module: stock_request
-#: code:addons/stock_request/models/stock_request.py:12
 #: model_terms:ir.ui.view,arch_db:stock_request.view_stock_request_form
-#, python-format
 msgid "Done"
 msgstr "Hecho"
-
-#. module: stock_request
-#: code:addons/stock_request/models/stock_request.py:10
-#, python-format
-msgid "Draft"
-msgstr "Borrador"
 
 #. module: stock_request
 #: model_terms:ir.ui.view,arch_db:stock_request.res_config_settings_view_form
@@ -299,12 +285,6 @@ msgstr ""
 #: model:ir.model.fields,help:stock_request.field_stock_request_order__message_has_error
 msgid "If checked, some messages have a delivery error."
 msgstr ""
-
-#. module: stock_request
-#: code:addons/stock_request/models/stock_request.py:11
-#, python-format
-msgid "In progress"
-msgstr "En progreso"
 
 #. module: stock_request
 #: model:ir.model,name:stock_request.model_stock_location
@@ -477,7 +457,7 @@ msgid "Number of unread messages"
 msgstr ""
 
 #. module: stock_request
-#: code:addons/stock_request/models/stock_request_order.py:266
+#: code:addons/stock_request/models/stock_request_order.py:267
 #, python-format
 msgid "Only orders on draft state can be unlinked"
 msgstr "Solo los pedidos en estado borrado pueden ser eliminadas"
@@ -872,13 +852,13 @@ msgstr "Usar Compras con las Solicitudes de Existencias"
 
 #. module: stock_request
 #: code:addons/stock_request/models/stock_move.py:38
-#: code:addons/stock_request/models/stock_request_order.py:283
+#: code:addons/stock_request/models/stock_request_order.py:284
 #, python-format
 msgid "The company of the stock request must match with that of the location."
 msgstr "La compañía de la solicitud debe coincidir con la de la localización."
 
 #. module: stock_request
-#: code:addons/stock_request/models/stock_request_order.py:274
+#: code:addons/stock_request/models/stock_request_order.py:275
 #, python-format
 msgid "The company of the stock request must match with that of the warehouse."
 msgstr "La compañía de la solicitud debe coincidir con la del almacén."
@@ -900,7 +880,7 @@ msgid "The picking policy must be equal to the order"
 msgstr "La política de albaranes debe coincidir"
 
 #. module: stock_request
-#: code:addons/stock_request/models/stock_request_order.py:292
+#: code:addons/stock_request/models/stock_request_order.py:293
 #, python-format
 msgid "This action only works in the context of products"
 msgstr ""
@@ -924,7 +904,7 @@ msgid "Transfers"
 msgstr "Transferencias"
 
 #. module: stock_request
-#: code:addons/stock_request/models/stock_request_order.py:313
+#: code:addons/stock_request/models/stock_request_order.py:314
 #, python-format
 msgid ""
 "Unfortunately it seems you do not have the necessary rights for creating "
@@ -1074,6 +1054,15 @@ msgid ""
 msgstr ""
 "Debe seleccionada una unidad de medida de producto de la misma categoría que "
 "la unidad de medida por defecto del producto"
+
+#~ msgid "Cancelled"
+#~ msgstr "Cancelado"
+
+#~ msgid "Draft"
+#~ msgstr "Borrador"
+
+#~ msgid "In progress"
+#~ msgstr "En progreso"
 
 #~ msgid "Packing Operation"
 #~ msgstr "Operación de empaquetado"

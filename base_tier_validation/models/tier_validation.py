@@ -35,11 +35,43 @@ class TierValidation(models.AbstractModel):
         search="_search_reviewer_ids",
     )
     can_review = fields.Boolean(compute="_compute_can_review")
+    has_comment = fields.Boolean(
+        compute='_compute_has_comment',
+    )
+    approve_sequence = fields.Boolean(
+        compute='_compute_approve_sequence',
+    )
+
+    @api.multi
+    def _compute_approve_sequence(self):
+        for rec in self:
+            approve_sequence = rec.review_ids.filtered(
+                lambda r: r.status in ('pending', 'rejected') and
+                (self.env.user in r.reviewer_ids)).mapped('approve_sequence')
+            rec.approve_sequence = True in approve_sequence
+
+    @api.multi
+    def _compute_has_comment(self):
+        for rec in self:
+            has_comment = rec.review_ids.filtered(
+                lambda r: r.status in ('pending', 'rejected') and
+                (self.env.user in r.reviewer_ids)).mapped('has_comment')
+            rec.has_comment = True in has_comment
 
     @api.multi
     def _compute_can_review(self):
         for rec in self:
             rec.can_review = self.env.user in rec.reviewer_ids
+            if rec.can_review and rec.approve_sequence:
+                sequence = rec.review_ids.filtered(
+                    lambda r: r.status in ('pending', 'rejected') and
+                    (self.env.user in r.reviewer_ids)).mapped('sequence')
+                sequence.sort()
+                my_sequence = sequence[0]
+                tier_bf = rec.review_ids.filtered(
+                    lambda r: r.status != 'approved' and r.sequence < my_sequence)
+                if tier_bf:
+                    rec.can_review = False
 
     @api.multi
     @api.depends('review_ids')
@@ -164,30 +196,62 @@ class TierValidation(models.AbstractModel):
             )
 
     def _notify_accepted_reviews_body(self):
+        has_comment = self.review_ids.filtered(
+            lambda r: (self.env.user in r.reviewer_ids) and r.comment)
+        if has_comment:
+            comment = has_comment.mapped('comment')[0]
+            return _(('A review was accepted. (%s)') % (comment))
         return _('A review was accepted')
+
+    def _add_comment(self, validate_reject):
+        wizard = self.env.ref(
+            'base_tier_validation.view_comment_wizard')
+        definition_ids = self.env['tier.definition'].search([
+            ('model', '=', self._name),
+            '|', ('reviewer_id', '=', self.env.user.id),
+                 ('reviewer_group_id', 'in',
+                  self.env.user.groups_id.ids)
+        ])
+        return {
+            'name': _('Comment'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'comment.wizard',
+            'views': [(wizard.id, 'form')],
+            'view_id': wizard.id,
+            'target': 'new',
+            'context': {
+                'default_res_id': self.id,
+                'default_res_model': self._name,
+                'default_definition_ids': definition_ids.ids,
+                'default_validate_reject': validate_reject
+            },
+        }
 
     @api.multi
     def validate_tier(self):
-        for rec in self:
-            rec._validate_tier()
+        self.ensure_one()
+        if self.has_comment:
+            return self._add_comment('validate')
+        self._validate_tier()
         self._update_counter()
 
     @api.multi
     def reject_tier(self):
-        for rec in self:
-            user_reviews = rec.review_ids.filtered(
-                lambda r: r.status in ('pending', 'approved') and
-                (r.reviewer_id == self.env.user or
-                 r.reviewer_group_id in self.env.user.groups_id))
-            user_reviews.write({
-                'status': 'rejected',
-                'done_by': self.env.user.id,
-                'reviewed_date': fields.Datetime.now(),
-            })
-            rec._notify_rejected_review()
+        self.ensure_one()
+        if self.has_comment:
+            return self._add_comment('reject')
+        self._rejected_tier()
         self._update_counter()
 
     def _notify_rejected_review_body(self):
+        has_comment = self.review_ids.filtered(
+            lambda r: (self.env.user in r.reviewer_ids) and r.comment)
+        if has_comment:
+            comment = has_comment.mapped('comment')[0]
+            return _(('A review was rejected by %s. (%s)')
+                     % (self.env.user.name, comment))
         return _('A review was rejected by %s.') % (self.env.user.name)
 
     def _notify_rejected_review(self):
@@ -197,6 +261,41 @@ class TierValidation(models.AbstractModel):
                 subtype='mt_comment',
                 body=self._notify_rejected_review_body()
             )
+
+    def _rejected_tier(self, tiers=False):
+        self.ensure_one()
+        tier_reviews = tiers or self.review_ids
+        user_reviews = tier_reviews.filtered(
+            lambda r: r.status in ('pending', 'approved') and
+            (r.reviewer_id == self.env.user or
+             r.reviewer_group_id in self.env.user.groups_id))
+        user_reviews.write({
+            'status': 'rejected',
+            'done_by': self.env.user.id,
+            'reviewed_date': fields.Datetime.now(),
+        })
+        for review in user_reviews:
+            rec = self.env[review.model].browse(review.res_id)
+            rec._notify_rejected_review()
+
+    def _notify_requested_review_body(self):
+        return _('A review has been requested by %s.') % (self.env.user.name)
+
+    def _notify_review_requested(self, tier_reviews):
+        if hasattr(self, 'message_post') and \
+                hasattr(self, 'message_subscribe'):
+            for rec in self:
+                users_to_notify = tier_reviews.filtered(
+                    lambda r: r.definition_id.notify_on_create and
+                    r.res_id == rec.id).mapped(
+                    "reviewer_ids")
+                # Subscribe reviewers and notify
+                getattr(rec, 'message_subscribe')(
+                    partner_ids=users_to_notify.mapped("partner_id").ids)
+                getattr(rec, 'message_post')(
+                    subtype='mt_comment',
+                    body=rec._notify_requested_review_body()
+                )
 
     @api.multi
     def request_validation(self):
@@ -209,7 +308,7 @@ class TierValidation(models.AbstractModel):
                         ('model', '=', self._name)], order="sequence desc")
                     sequence = 0
                     for td in tier_definitions:
-                        if self.evaluate_tier(td):
+                        if rec.evaluate_tier(td):
                             sequence += 1
                             created_trs += tr_obj.create({
                                 'model': self._name,
@@ -219,6 +318,7 @@ class TierValidation(models.AbstractModel):
                                 'requested_by': self.env.uid,
                             })
                     self._update_counter()
+        self._notify_review_requested(created_trs)
         return created_trs
 
     @api.multi

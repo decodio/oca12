@@ -14,6 +14,7 @@ odoo.define('web_responsive', function (require) {
     var Menu = require("web.Menu");
     var RelationalFields = require('web.relational_fields');
     var Chatter = require('mail.Chatter');
+    var DocumentViewer = require('mail.DocumentViewer');
 
     /*
      * Helper function to know if are waiting
@@ -442,22 +443,24 @@ odoo.define('web_responsive', function (require) {
         * The executed action
         */
         _hideMenusByAction: function (action) {
-            var uniq_sel = '[data-action-id='+action.id+']';
-            // Need close AppDrawer?
-            var menu_apps_dropdown = document.querySelector(
-                '.o_menu_apps .dropdown');
-            $(menu_apps_dropdown).has('.dropdown-menu.show')
-                .has(uniq_sel).find('> a').dropdown('toggle');
-            // Need close Sections Menu?
-            // TODO: Change to 'hide' in modern Bootstrap >4.1
-            var menu_sections = document.querySelector(
-                '.o_menu_sections li.show');
-            $(menu_sections).has(uniq_sel).find('.dropdown-toggle')
-                .dropdown('toggle');
-            // Need close Mobile?
-            var menu_sections_mobile = document.querySelector(
-                '.o_menu_sections.show');
-            $(menu_sections_mobile).has(uniq_sel).collapse('hide');
+            _.defer(function () {
+                var uniq_sel = '[data-action-id='+action.id+']';
+                // Need close AppDrawer?
+                var menu_apps_dropdown = document.querySelector(
+                    '.o_menu_apps .dropdown');
+                $(menu_apps_dropdown).has('.dropdown-menu.show')
+                    .has(uniq_sel).find('> a').dropdown('toggle');
+                // Need close Sections Menu?
+                // TODO: Change to 'hide' in modern Bootstrap >4.1
+                var menu_sections = document.querySelector(
+                    '.o_menu_sections li.show');
+                $(menu_sections).has(uniq_sel).find('.dropdown-toggle')
+                    .dropdown('toggle');
+                // Need close Mobile?
+                var menu_sections_mobile = document.querySelector(
+                    '.o_menu_sections.show');
+                $(menu_sections_mobile).has(uniq_sel).collapse('hide');
+            });
         },
 
         _handleAction: function (action) {
@@ -523,4 +526,25 @@ odoo.define('web_responsive', function (require) {
     // Include the SHIFT+ALT mixin wherever
     // `KeyboardNavigationMixin` is used upstream
     AbstractWebClient.include(KeyboardNavigationShiftAltMixin);
+
+    // DocumentViewer: Add support to maximize/minimize
+    DocumentViewer.include({
+        events: _.extend(DocumentViewer.prototype.events, {
+            'click .o_maximize_btn': '_onClickMaximize',
+            'click .o_minimize_btn': '_onClickMinimize',
+        }),
+
+        start: function () {
+            this.$btnMaximize = this.$('.o_maximize_btn');
+            this.$btnMinimize = this.$('.o_minimize_btn');
+            return this._super.apply(this, arguments);
+        },
+
+        _onClickMaximize: function () {
+            this.$el.removeClass('o_responsive_document_viewer');
+        },
+        _onClickMinimize: function () {
+            this.$el.addClass('o_responsive_document_viewer');
+        },
+    });
 });

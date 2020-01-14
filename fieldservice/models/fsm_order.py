@@ -13,10 +13,28 @@ class FSMOrder(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     def _default_stage_id(self):
-        return self.env.ref('fieldservice.fsm_stage_new')
+        stage_ids = self.env['fsm.stage'].\
+            search([('stage_type', '=', 'order'),
+                    ('is_default', '=', True),
+                    ('company_id', 'in', (self.env.user.company_id.id,
+                                          False))],
+                   order='sequence asc', limit=1)
+        if stage_ids:
+            return stage_ids[0]
+        else:
+            raise ValidationError(_(
+                "You must create an FSM order stage first."))
 
     def _default_team_id(self):
-        return self.env.ref('fieldservice.fsm_team_default')
+        team_ids = self.env['fsm.team'].\
+            search([('company_id', 'in', (self.env.user.company_id.id,
+                                          False))],
+                   order='sequence asc', limit=1)
+        if team_ids:
+            return team_ids[0]
+        else:
+            raise ValidationError(_(
+                "You must create an FSM team first."))
 
     @api.depends('date_start', 'date_end')
     def _compute_duration(self):
@@ -47,50 +65,44 @@ class FSMOrder(models.Model):
                                help="Classify and analyze your orders")
     color = fields.Integer('Color Index', default=0)
     team_id = fields.Many2one('fsm.team', string='Team',
-                              default=_default_team_id,
+                              default=lambda self: self._default_team_id(),
                               index=True, required=True,
                               track_visibility='onchange')
 
     # Request
     name = fields.Char(string='Name', required=True, index=True, copy=False,
                        default=lambda self: _('New'))
-    customer_id = fields.Many2one('res.partner', string='Contact',
-                                  domain=[('customer', '=', True)],
-                                  change_default=True,
-                                  index=True,
-                                  track_visibility='always')
+
     location_id = fields.Many2one('fsm.location', string='Location',
                                   index=True, required=True)
     location_directions = fields.Char(string='Location Directions')
     request_early = fields.Datetime(string='Earliest Request Date',
                                     default=datetime.now())
-    request_late = fields.Datetime(string='Latest Request Date',
-                                   compute='_compute_request_late')
     color = fields.Integer('Color Index')
     company_id = fields.Many2one(
         'res.company', string='Company', required=True, index=True,
         default=lambda self: self.env.user.company_id,
         help="Company related to this order")
 
-    def _compute_request_late(self):
-        for rec in self:
-            if not rec.request_late:
-                if rec.priority == '0':
-                    if rec.request_early:
-                        rec.request_late = fields.Datetime.from_string(
-                            rec.request_early) + timedelta(days=3)
-                    else:
-                        rec.request_late = datetime.now() + timedelta(days=3)
-                elif rec.priority == '1':
-                    rec.request_late = fields.Datetime.from_string(
-                        rec.request_early) + timedelta(days=2)
-                elif rec.priority == '2':
-                    rec.request_late = fields.Datetime.from_string(
-                        rec.request_early) + timedelta(days=1)
-                elif rec.priority == '3':
-                    rec.request_late = fields.Datetime.from_string(
-                        rec.request_early) + timedelta(hours=8)
+    def _compute_request_late(self, vals):
+        if vals.get('priority') == '0':
+            if vals.get('request_early'):
+                vals['request_late'] = fields.Datetime.\
+                    from_string(vals.get('request_early')) + timedelta(days=3)
+            else:
+                vals['request_late'] = datetime.now() + timedelta(days=3)
+        elif vals.get('priority') == '1':
+            vals['request_late'] = fields.Datetime.\
+                from_string(vals.get('request_early')) + timedelta(days=2)
+        elif vals.get('priority') == '2':
+            vals['request_late'] = fields.Datetime.\
+                from_string(vals.get('request_early')) + timedelta(days=1)
+        elif vals.get('priority') == '3':
+            vals['request_late'] = fields.Datetime.\
+                from_string(vals.get('request_early')) + timedelta(hours=8)
+        return vals
 
+    request_late = fields.Datetime(string='Latest Request Date')
     description = fields.Text(string='Description')
 
     person_ids = fields.Many2many('fsm.person',
@@ -102,23 +114,12 @@ class FSMOrder(models.Model):
             fsm_equipment_rec = self.env['fsm.equipment'].search([
                 ('current_location_id', '=', self.location_id.id)])
             self.equipment_ids = [(6, 0, fsm_equipment_rec.ids)]
-        if self.location_id:
-            return {'domain': {'customer_id': [('service_location_id', '=',
-                                                self.location_id.name)]}}
-        else:
-            return {'domain': {'customer_id': [('id', '!=', None)]}}
-
-    @api.onchange('customer_id')
-    def _onchange_customer_id_location(self):
-        if self.customer_id:
-            self.location_id = self.customer_id.service_location_id
 
     # Planning
     person_id = fields.Many2one('fsm.person', string='Assigned To',
                                 index=True)
     person_phone = fields.Char(related="person_id.phone",
                                string="Worker Phone")
-    route_id = fields.Many2one('fsm.route', string='Route', index=True)
     scheduled_date_start = fields.Datetime(string='Scheduled Start (ETA)')
     scheduled_duration = fields.Float(string='Scheduled duration',
                                       help='Scheduled duration of the work in'
@@ -178,12 +179,13 @@ class FSMOrder(models.Model):
 
     # Equipment used for all other Service Orders
     equipment_ids = fields.Many2many('fsm.equipment', string='Equipments')
-    type = fields.Selection([], string='Type')
+    type = fields.Many2one('fsm.order.type', string="Type")
 
     @api.model
     def _read_group_stage_ids(self, stages, domain, order):
-        stage_ids = self.env['fsm.stage'].search([('stage_type',
-                                                   '=', 'order')])
+        stage_ids = self.env['fsm.stage'].\
+            search([('stage_type', '=', 'order'),
+                    ('company_id', '=', self.env.user.company_id.id)])
         return stage_ids
 
     @api.model
@@ -198,83 +200,86 @@ class FSMOrder(models.Model):
             req_date = req_date.replace(minute=0, second=0)
             vals.update({'scheduled_date_start': str(req_date),
                          'request_early': str(req_date)})
+        vals.update(
+            {'scheduled_date_end': self._context.get(
+                'default_scheduled_date_end') or False})
         self._calc_scheduled_dates(vals)
+        if not vals.get('request_late'):
+            if vals.get('priority') == '0':
+                if vals.get('request_early'):
+                    vals['request_late'] = \
+                        fields.Datetime.from_string(vals.get('request_early'))\
+                        + timedelta(days=3)
+                else:
+                    vals['request_late'] = datetime.now() + timedelta(days=3)
+            elif vals.get('priority') == '1':
+                vals['request_late'] = fields.Datetime.\
+                    from_string(vals.get('request_early')) + timedelta(days=2)
+            elif vals.get('priority') == '2':
+                vals['request_late'] = fields.Datetime.\
+                    from_string(vals.get('request_early')) + timedelta(days=1)
+            elif vals.get('priority') == '3':
+                vals['request_late'] = fields.Datetime.\
+                    from_string(vals.get('request_early')) + timedelta(hours=8)
         return super(FSMOrder, self).create(vals)
 
     @api.multi
     def write(self, vals):
         self._calc_scheduled_dates(vals)
         res = super(FSMOrder, self).write(vals)
-        for order in self:
-            if 'customer_id' not in vals and order.customer_id is False:
-                order.customer_id = order.location_id.customer_id.id
         return res
+
+    def can_unlink(self):
+        """:return True if the order can be deleted, False otherwise"""
+        return self.stage_id == self._default_stage_id()
+
+    @api.multi
+    def unlink(self):
+        for order in self:
+            if order.can_unlink():
+                return super(FSMOrder, order).unlink()
+            else:
+                raise ValidationError(_(
+                    "You cannot delete this order."))
 
     def _calc_scheduled_dates(self, vals):
         """Calculate scheduled dates and duration"""
-        if 'scheduled_date_end' in vals:
-            date_to_with_delta = fields.Datetime.from_string(
-                vals.get('scheduled_date_end')) - \
-                timedelta(hours=self.scheduled_duration)
-            vals['scheduled_date_start'] = str(date_to_with_delta)
-        if 'scheduled_duration' in vals:
-            date_to_with_delta = fields.Datetime.from_string(
-                vals.get('scheduled_date_start', self.scheduled_date_start))\
-                + timedelta(hours=vals.get('scheduled_duration'))
-            vals['scheduled_date_end'] = str(date_to_with_delta)
-        if 'scheduled_date_end' not in vals and 'scheduled_date_start' in vals:
-            if vals['scheduled_date_start']:
+
+        if (vals.get('scheduled_duration')
+            or vals.get('scheduled_date_start')
+                or vals.get('scheduled_date_end')):
+
+            if (vals.get('scheduled_date_start')
+                    and vals.get('scheduled_date_end')):
+                new_date_start = fields.Datetime.from_string(vals.get(
+                    'scheduled_date_start', False))
+                new_date_end = fields.Datetime.from_string(
+                    vals.get('scheduled_date_end', False))
+                hours = new_date_end.replace(
+                    second=0) - new_date_start.replace(second=0)
+                hrs = hours.total_seconds() / 3600
+                vals['scheduled_duration'] = float(hrs)
+
+            elif vals.get('scheduled_date_end'):
+                hrs = vals.get('scheduled_duration',
+                               False) or self.scheduled_duration or 0
                 date_to_with_delta = fields.Datetime.from_string(
-                    vals.get('scheduled_date_start')) + \
-                    timedelta(hours=self.scheduled_duration)
+                    vals.get('scheduled_date_end', False)
+                ) - timedelta(hours=hrs)
+                vals['scheduled_date_start'] = str(date_to_with_delta)
+
+            elif (vals.get('scheduled_duration', False)
+                  or (vals.get('scheduled_date_start', False)
+                      and (self.scheduled_date_start != vals.get(
+                          'scheduled_date_start', False)))):
+                hours = vals.get('scheduled_duration', False)
+                start_date_val = vals.get('scheduled_date_start',
+                                          self.scheduled_date_start)
+                start_date = fields.Datetime.from_string(start_date_val)
+                date_to_with_delta = start_date + timedelta(hours=hours)
                 vals['scheduled_date_end'] = str(date_to_with_delta)
 
-    def action_confirm(self):
-        return self.write({'stage_id': self.env.ref(
-            'fieldservice.fsm_stage_confirmed').id})
-
-    def action_request(self):
-        if not self.person_ids:
-            raise ValidationError(_("Cannot move to Requested " +
-                                    "until 'Request Workers' is filled in"))
-        return self.write({'stage_id': self.env.ref(
-            'fieldservice.fsm_stage_requested').id})
-
-    def action_assign(self):
-        if self.person_id:
-            return self.write({'stage_id': self.env.ref(
-                'fieldservice.fsm_stage_assigned').id})
-        else:
-            raise ValidationError(_("Cannot move to Assigned " +
-                                    "until 'Assigned To' is filled in"))
-
-    def action_schedule(self):
-        if self.scheduled_date_start and self.person_id:
-            return self.write({'stage_id': self.env.ref(
-                'fieldservice.fsm_stage_scheduled').id})
-        else:
-            raise ValidationError(_("Cannot move to Scheduled " +
-                                    "until both 'Assigned To' and " +
-                                    "'Scheduled Start Date' are filled in"))
-
-    def action_enroute(self):
-        return self.write({'stage_id': self.env.ref(
-            'fieldservice.fsm_stage_enroute').id})
-
-    def action_start(self):
-        if not self.date_start:
-            raise ValidationError(_("Cannot move to Start " +
-                                    "until 'Actual Start' is filled in"))
-        return self.write({'stage_id': self.env.ref(
-            'fieldservice.fsm_stage_started').id})
-
     def action_complete(self):
-        if not self.date_end:
-            raise ValidationError(_("Cannot move to Complete " +
-                                    "until 'Actual End' is filled in"))
-        if not self.resolution:
-            raise ValidationError(_("Cannot move to Complete " +
-                                    "until 'Resolution' is filled in"))
         return self.write({'stage_id': self.env.ref(
             'fieldservice.fsm_stage_completed').id})
 
@@ -300,7 +305,7 @@ class FSMOrder(models.Model):
 
     def copy_notes(self):
         self.description = ""
-        if self.type not in ['repair', 'maintenance']:
+        if self.type and self.type.name not in ['repair', 'maintenance']:
             for equipment_id in self.equipment_ids:
                 if equipment_id:
                     if equipment_id.notes is not False:
@@ -319,7 +324,7 @@ class FSMOrder(models.Model):
                         self.description = (self.equipment_id.notes + '\n ')
         if self.location_id:
             s = self.location_id.direction
-            if s is not False and s is not '<p><br></p>':
+            if s is not False and s != '<p><br></p>':
                 s = s.replace('<p>', '')
                 s = s.replace('<br>', '')
                 s = s.replace('</p>', '\n')
@@ -350,6 +355,8 @@ class FSMOrder(models.Model):
             self.category_ids = self.template_id.category_ids
             self.scheduled_duration = self.template_id.hours
             self.copy_notes()
+            self.type = self.template_id.type_id
+            self.team_id = self.template_id.team_id
 
 
 class FSMTeam(models.Model):
