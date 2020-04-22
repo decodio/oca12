@@ -1,12 +1,12 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-#	* business_requirement
+# 	* business_requirement
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2019-09-17 14:24+0000\n"
+"PO-Revision-Date: 2020-03-21 19:13+0000\n"
 "Last-Translator: Rodrigo Macedo <rmsolucoeseminformatic4@gmail.com>\n"
 "Language-Team: none\n"
 "Language: pt_BR\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 3.8\n"
+"X-Generator: Weblate 3.10\n"
 
 #. module: business_requirement
 #: model_terms:ir.ui.view,arch_db:business_requirement.portal_br_page
@@ -146,6 +146,11 @@ msgid "Business Requirement"
 msgstr "Requisito de Negócios"
 
 #. module: business_requirement
+#: model_terms:ir.ui.view,arch_db:business_requirement.portal_my_br
+msgid "Business Requirement #"
+msgstr "Requisito de Negócios #"
+
+#. module: business_requirement
 #: model_terms:ir.ui.view,arch_db:business_requirement.br_report
 msgid "Business Requirement Document"
 msgstr "Documento de Requisito de Negócios"
@@ -253,8 +258,9 @@ msgid "Customer Story"
 msgstr "História do Cliente"
 
 #. module: business_requirement
-#: code:addons/business_requirement/controllers/portal.py:73
+#: code:addons/business_requirement/controllers/portal.py:60
 #: model:ir.model.fields,field_description:business_requirement.field_business_requirement__date
+#: model_terms:ir.ui.view,arch_db:business_requirement.portal_my_br
 #, python-format
 msgid "Date"
 msgstr "Data"
@@ -469,8 +475,10 @@ msgstr "Número de mensagens não lidas"
 
 #. module: business_requirement
 #: model_terms:ir.actions.act_window,help:business_requirement.act_view_project_br_all
-msgid "Odoo's Business Requirement management allows you to manage the list\n"
-"                of Business requirement from a Stakeholder for efficient follow up. You can\n"
+msgid ""
+"Odoo's Business Requirement management allows you to manage the list\n"
+"                of Business requirement from a Stakeholder for efficient "
+"follow up. You can\n"
 "                track progress, discuss on tasks, attach documents, etc."
 msgstr ""
 "O gerenciamento de requisitos de negócios do Odoo permite gerenciar a lista\n"
@@ -568,7 +576,7 @@ msgid "Security Token"
 msgstr "Token de Segurança"
 
 #. module: business_requirement
-#: code:addons/business_requirement/controllers/portal.py:74
+#: code:addons/business_requirement/controllers/portal.py:61
 #: model:ir.model.fields,field_description:business_requirement.field_business_requirement__sequence
 #, python-format
 msgid "Sequence"
@@ -585,7 +593,7 @@ msgstr "Origem"
 #: model_terms:ir.ui.view,arch_db:business_requirement.portal_br_page
 #: model_terms:ir.ui.view,arch_db:business_requirement.view_business_requirement_search
 msgid "Stakeholder"
-msgstr "Stakeholder"
+msgstr "Interessado"
 
 #. module: business_requirement
 #: model_terms:ir.ui.view,arch_db:business_requirement.view_business_requirement_form
@@ -605,7 +613,8 @@ msgstr "Situação"
 
 #. module: business_requirement
 #: model:ir.model.fields,help:business_requirement.field_business_requirement__activity_state
-msgid "Status based on activities\n"
+msgid ""
+"Status based on activities\n"
 "Overdue: Due date is already passed\n"
 "Today: Activity date is today\n"
 "Planned: Future activities."

@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from . import (
+    fsm_territory,
     fsm_location,
     fsm_order,
     stock_move_line,
@@ -9,6 +10,7 @@ from . import (
     procurement_group,
     stock_rule,
     stock_picking,
+    stock_picking_type,
     fsm_equipment,
     product_template,
     stock_production_lot,

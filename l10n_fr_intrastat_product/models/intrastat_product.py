@@ -164,6 +164,16 @@ class L10nFrIntrastatProductDeclaration(models.Model):
                     },
                 'width': 28,
                 },
+            'fr_partner_vat': {
+                'header': {
+                    'type': 'string',
+                    'value': self._('Partner VAT'),
+                    },
+                'line': {
+                    'value': self._render('line.fr_partner_id.vat'),
+                },
+                'width': 18,
+                },
             })
         return res
 
@@ -171,14 +181,14 @@ class L10nFrIntrastatProductDeclaration(models.Model):
     def _xls_computation_line_fields(self):
         field_list = super(L10nFrIntrastatProductDeclaration, self).\
             _xls_computation_line_fields()
-        field_list += ['fr_partner', 'fr_department']
+        field_list += ['fr_partner', 'fr_partner_vat', 'fr_department']
         return field_list
 
     @api.model
     def _xls_declaration_line_fields(self):
         field_list = super(L10nFrIntrastatProductDeclaration, self).\
             _xls_declaration_line_fields()
-        field_list += ['fr_partner', 'fr_department']
+        field_list += ['fr_partner', 'fr_partner_vat', 'fr_department']
         return field_list
 
     def _generate_xml(self):
@@ -393,11 +403,11 @@ class L10nFrIntrastatProductDeclaration(models.Model):
         for company in companies:
             if company.country_id.code != 'FR':
                 continue
-            for type in ['arrivals', 'dispatches']:
+            for type_ in ['arrivals', 'dispatches']:
                 # Check if a declaration already exists for month N-1
                 intrastats = self.search([
                     ('year_month', '=', previous_month),
-                    ('type', '=', type),
+                    ('type', '=', type_),
                     ('company_id', '=', company.id)
                     ])
                 if intrastats:
@@ -405,34 +415,34 @@ class L10nFrIntrastatProductDeclaration(models.Model):
                     logger.info(
                         'An %s Intrastat Product for month %s already '
                         'exists for company %s'
-                        % (type, previous_month, company.name))
+                        % (type_, previous_month, company.name))
                     continue
                 else:
                     # If not, we create one for month N-1
                     reporting_level = False
-                    if type == 'arrivals':
+                    if type_ == 'arrivals':
                         reporting_level = company.intrastat_arrivals
-                    elif type == 'dispatches':
+                    elif type_ == 'dispatches':
                         reporting_level = company.intrastat_dispatches
                     if not reporting_level:
                         logger.warning(
                             "Missing reporting level for %s "
-                            "on company '%s'." % (type, company.name))
+                            "on company '%s'." % (type_, company.name))
                         continue
                     if reporting_level == 'exempt':
                         logger.info(
                             'Reporting level is exempt for %s '
-                            'on company %s.' % (type, company.name))
+                            'on company %s.' % (type_, company.name))
                         continue
                     intrastat = self.create({
                         'company_id': company.id,
-                        'type': type,
+                        'type': type_,
                         'reporting_level': reporting_level,
                         })
                     logger.info(
                         'An %s Intrastat Product for month %s '
                         'has been created by Odoo for company %s'
-                        % (type, previous_month, company.name))
+                        % (type_, previous_month, company.name))
                     try:
                         intrastat.action_gather()
                     except Warning as e:

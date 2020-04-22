@@ -119,15 +119,15 @@ class TestPayment(AccountingTestCase):
                  })
         self.bank_journal.bank_account_id = self.partner_bank_id.id
 
-    def create_invoice(self, amount=100, type='out_invoice', currency_id=None):
+    def create_invoice(self, amount=100, inv_type='out_invoice', currency_id=None):
         """ Returns an open invoice """
         invoice = self.invoice_model.create({
             'partner_id': self.partner_agrolait.id,
             'currency_id': currency_id,
-            'name': type == 'out_invoice' and
+            'name': inv_type == 'out_invoice' and
             'invoice to client' or 'invoice to supplier',
             'account_id': self.account_receivable.id,
-            'type': type,
+            'type': inv_type,
             'date_invoice': time.strftime('%Y-%m-%d'),
         })
         self.invoice_line_model.create({
@@ -172,6 +172,7 @@ class TestPayment(AccountingTestCase):
                         'payment_date': time.strftime('%Y-%m-%d'),
                         'journal_id': self.check_journal.id,
                         'payment_method_id': self.payment_method_manual_in.id,
+                        'group_invoices': True,
                         })
         register_payments.create_payments()
         payment = self.payment_model.search([], order="id desc", limit=1)

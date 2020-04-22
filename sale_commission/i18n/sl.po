@@ -273,7 +273,7 @@ msgid "Company"
 msgstr ""
 
 #. module: sale_commission
-#: code:addons/sale_commission/models/settlement.py:189
+#: code:addons/sale_commission/models/settlement.py:193
 #, python-format
 msgid "Company must be the same"
 msgstr ""
@@ -685,6 +685,11 @@ msgid "Price subtotal"
 msgstr ""
 
 #. module: sale_commission
+#: model:ir.model.fields,field_description:sale_commission.field_sale_commission_analysis_report__price_subtotal_signed
+msgid "Price subtotal signed"
+msgstr ""
+
+#. module: sale_commission
 #: model:ir.model.fields,field_description:sale_commission.field_sale_commission_analysis_report__price_unit
 msgid "Price unit"
 msgstr ""
@@ -938,7 +943,7 @@ msgid "Up to"
 msgstr ""
 
 #. module: sale_commission
-#: code:addons/sale_commission/models/settlement.py:138
+#: code:addons/sale_commission/models/settlement.py:151
 #, python-format
 msgid "Value cannot be negative"
 msgstr ""
@@ -967,7 +972,7 @@ msgid "You can't delete invoiced settlements."
 msgstr ""
 
 #. module: sale_commission
-#: code:addons/sale_commission/models/account_invoice.py:170
+#: code:addons/sale_commission/models/account_invoice.py:180
 #, python-format
 msgid "You can't modify a settled line"
 msgstr ""

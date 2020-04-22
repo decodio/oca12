@@ -4,6 +4,7 @@ from . import (
     account_invoice_line,
     analytic_account,
     fsm_location,
-    fsm_location_person,
     fsm_order,
+    res_company,
+    res_config_settings
 )

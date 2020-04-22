@@ -1,5 +1,5 @@
 # Copyright 2016 Ucamco - Wim Audenaert <wim.audenaert@ucamco.com>
-# Copyright 2016-19 Eficent Business and IT Consulting Services S.L.
+# Copyright 2016-19 ForgeFlow S.L. (https://www.forgeflow.com)
 # - Jordi Ballester Alomar <jordi.ballester@eficent.com>
 # - Lois Rilo <lois.rilo@eficent.com>
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html).
@@ -55,25 +55,21 @@ class MultiLevelMrp(models.TransientModel):
             origin = 'po'
             po = move.purchase_line_id.order_id.id
             po_line = move.purchase_line_id.id
-        if move.production_id:
+        elif move.production_id:
             order_number = move.production_id.name
             origin = 'mo'
             mo = move.production_id.id
+        elif move.move_dest_ids:
+            for move_dest_id in move.move_dest_ids.filtered("production_id"):
+                order_number = move_dest_id.production_id.name
+                origin = "mo"
+                mo = move_dest_id.production_id.id
+                parent_product_id = (
+                    move_dest_id.production_id.product_id or
+                    move_dest_id.product_id).id
         else:
-            if move.move_dest_ids:
-                # move_dest_id = move.move_dest_ids[:1]
-                for move_dest_id in move.move_dest_ids:
-                    if move_dest_id.production_id:
-                        order_number = move_dest_id.production_id.name
-                        origin = 'mo'
-                        mo = move_dest_id.production_id.id
-                        if move_dest_id.production_id.product_id:
-                            parent_product_id = \
-                                move_dest_id.production_id.product_id.id
-                        else:
-                            parent_product_id = move_dest_id.product_id.id
-        if order_number is None:
-            order_number = move.name
+            order_number = (move.picking_id or move).name
+            origin = "mv"
         mrp_date = date.today()
         if move.date_expected.date() > date.today():
             mrp_date = move.date_expected.date()
@@ -108,7 +104,8 @@ class MultiLevelMrp(models.TransientModel):
             'order_release_date': mrp_action_date,
             'mrp_action': product_mrp_area.supply_method,
             'qty_released': 0.0,
-            'name': 'Supply: ' + name,
+            'name': 'Planned supply for: ' + name,
+            'fixed': False,
         }
 
     @api.model
@@ -121,26 +118,27 @@ class MultiLevelMrp(models.TransientModel):
                 _("No MRP product found"))
 
         return {
-            'mrp_area_id': product.mrp_area_id.id,
-            'product_id': bomline.product_id.id,
-            'product_mrp_area_id': product_mrp_area.id,
-            'production_id': None,
-            'purchase_order_id': None,
-            'purchase_line_id': None,
-            'stock_move_id': None,
-            'mrp_qty': -(qty * bomline.product_qty),  # TODO: review with UoM
-            'current_qty': None,
-            'mrp_date': mrp_date_demand_2,
-            'current_date': None,
-            'mrp_type': 'd',
-            'mrp_origin': 'mrp',
-            'mrp_order_number': None,
-            'parent_product_id': bom.product_id.id,
-            'name':
-                ('Demand Bom Explosion: ' + name).replace(
-                    'Demand Bom Explosion: Demand Bom '
-                    'Explosion: ',
-                    'Demand Bom Explosion: '),
+            "mrp_area_id": product.mrp_area_id.id,
+            "product_id": bomline.product_id.id,
+            "product_mrp_area_id": product_mrp_area.id,
+            "production_id": None,
+            "purchase_order_id": None,
+            "purchase_line_id": None,
+            "stock_move_id": None,
+            "mrp_qty": -(qty * bomline.product_qty),  # TODO: review with UoM
+            "current_qty": None,
+            "mrp_date": mrp_date_demand_2,
+            "current_date": None,
+            "mrp_type": "d",
+            "mrp_origin": "mrp",
+            "mrp_order_number": None,
+            "parent_product_id": bom.product_id.id,
+            "name": (
+                "Demand Bom Explosion: %s"
+                % (name or product.product_id.default_code or product.product_id.name)
+            ).replace(
+                "Demand Bom Explosion: Demand Bom Explosion: ", "Demand Bom Explosion: "
+            ),
         }
 
     @api.model
@@ -628,6 +626,33 @@ class MultiLevelMrp(models.TransientModel):
         return query, params
 
     @api.model
+    def _prepare_mrp_inventory_data(
+        self,
+        product_mrp_area,
+        mdt,
+        on_hand_qty,
+        running_availability,
+        demand_qty_by_date,
+        supply_qty_by_date,
+        planned_qty_by_date,
+    ):
+        """Return dict to create mrp.inventory records on MRP Multi Level Scheduler"""
+        mrp_inventory_data = {"product_mrp_area_id": product_mrp_area.id, "date": mdt}
+        demand_qty = demand_qty_by_date.get(mdt, 0.0)
+        mrp_inventory_data["demand_qty"] = abs(demand_qty)
+        supply_qty = supply_qty_by_date.get(mdt, 0.0)
+        mrp_inventory_data["supply_qty"] = abs(supply_qty)
+        mrp_inventory_data["initial_on_hand_qty"] = on_hand_qty
+        on_hand_qty += supply_qty + demand_qty
+        mrp_inventory_data["final_on_hand_qty"] = on_hand_qty
+        # Consider that MRP plan is followed exactly:
+        running_availability += (
+            supply_qty + demand_qty + planned_qty_by_date.get(mdt, 0.0)
+        )
+        mrp_inventory_data["running_availability"] = running_availability
+        return mrp_inventory_data, running_availability
+
+    @api.model
     def _init_mrp_inventory(self, product_mrp_area):
         mrp_move_obj = self.env['mrp.move']
         planned_order_obj = self.env['mrp.planned.order']
@@ -663,23 +688,16 @@ class MultiLevelMrp(models.TransientModel):
             product_mrp_area.product_id.id]['qty_available']
         running_availability = on_hand_qty
         for mdt in sorted(mrp_dates):
-            mrp_inventory_data = {
-                'product_mrp_area_id': product_mrp_area.id,
-                'date': mdt,
-            }
-            demand_qty = demand_qty_by_date.get(mdt, 0.0)
-            mrp_inventory_data['demand_qty'] = abs(demand_qty)
-            supply_qty = supply_qty_by_date.get(mdt, 0.0)
-            mrp_inventory_data['supply_qty'] = abs(supply_qty)
-            mrp_inventory_data['initial_on_hand_qty'] = on_hand_qty
-            on_hand_qty += (supply_qty + demand_qty)
-            mrp_inventory_data['final_on_hand_qty'] = on_hand_qty
-            # Consider that MRP plan is followed exactly:
-            running_availability += supply_qty \
-                + demand_qty + planned_qty_by_date.get(mdt, 0.0)
-            mrp_inventory_data['running_availability'] = running_availability
-
-            inv_id = self.env['mrp.inventory'].create(mrp_inventory_data)
+            mrp_inventory_data, running_availability = self._prepare_mrp_inventory_data(
+                product_mrp_area,
+                mdt,
+                on_hand_qty,
+                running_availability,
+                demand_qty_by_date,
+                supply_qty_by_date,
+                planned_qty_by_date,
+            )
+            inv_id = self.env["mrp.inventory"].create(mrp_inventory_data)
             # attach planned orders to inventory
             planned_order_obj.search([
                 ('due_date', '=', mdt),

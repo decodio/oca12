@@ -38,7 +38,7 @@ msgid "Additional information on return reason."
 msgstr ""
 
 #. module: account_payment_return
-#: code:addons/account_payment_return/models/payment_return.py:336
+#: code:addons/account_payment_return/models/payment_return.py:333
 #, python-format
 msgid "All payments must be owned by the same partner"
 msgstr ""
@@ -239,7 +239,7 @@ msgid "Invoice has been included on a payment that has been returned later."
 msgstr ""
 
 #. module: account_payment_return
-#: code:addons/account_payment_return/models/payment_return.py:363
+#: code:addons/account_payment_return/models/payment_return.py:360
 #, python-format
 msgid "Invoice: %s"
 msgstr "Fattura: %s"
@@ -287,7 +287,7 @@ msgid "Last Updated on"
 msgstr "Ultimo Aggiornamento il"
 
 #. module: account_payment_return
-#: code:addons/account_payment_return/models/account_invoice.py:39
+#: code:addons/account_payment_return/models/account_invoice.py:45
 #, python-format
 msgid "Less Payment"
 msgstr ""
@@ -324,19 +324,19 @@ msgid "Messages"
 msgstr "Messaggi"
 
 #. module: account_payment_return
-#: code:addons/account_payment_return/models/payment_return.py:397
+#: code:addons/account_payment_return/models/payment_return.py:394
 #, python-format
 msgid "More than one matches to move reference: %s"
 msgstr ""
 
 #. module: account_payment_return
-#: code:addons/account_payment_return/models/payment_return.py:384
+#: code:addons/account_payment_return/models/payment_return.py:381
 #, python-format
 msgid "Move lines: %s"
 msgstr ""
 
 #. module: account_payment_return
-#: code:addons/account_payment_return/models/payment_return.py:403
+#: code:addons/account_payment_return/models/payment_return.py:400
 #, python-format
 msgid "Move: %s"
 msgstr ""

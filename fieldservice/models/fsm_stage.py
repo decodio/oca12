@@ -3,7 +3,7 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
-# from odoo.addons.base_geoengine import geo_model
+
 
 AVAILABLE_PRIORITIES = [
     ('0', 'Normal'),
@@ -17,6 +17,10 @@ class FSMStage(models.Model):
     _name = 'fsm.stage'
     _description = 'Field Service Stage'
     _order = 'sequence, name, id'
+
+    def _default_team_ids(self):
+        default_team_id = self.env.context.get('default_team_id')
+        return [default_team_id] if default_team_id else None
 
     name = fields.Char(string='Name', required=True)
     sequence = fields.Integer('Sequence', default=1,
@@ -35,7 +39,8 @@ class FSMStage(models.Model):
                                     'as closed.')
     is_default = fields.Boolean('Is a default stage',
                                 help='Used a default stage')
-    custom_color = fields.Char("Color Code", default="#FFFFFF")
+    custom_color = fields.Char("Color Code", default="#FFFFFF",
+                               help="Use Hex Code only Ex:-#FFFFFF")
     description = fields.Text(translate=True)
     stage_type = fields.Selection([('order', 'Order'),
                                    ('equipment', 'Equipment'),
@@ -45,6 +50,10 @@ class FSMStage(models.Model):
     company_id = fields.Many2one(
         'res.company', string='Company',
         default=lambda self: self.env.user.company_id.id)
+    team_ids = fields.Many2many(
+        'fsm.team', 'order_team_stage_rel', 'stage_id', 'team_id',
+        string='Teams',
+        default=lambda self: self._default_team_ids())
 
     @api.multi
     def get_color_information(self):
@@ -70,3 +79,10 @@ class FSMStage(models.Model):
                                         "it has the same Type and Sequence "
                                         "of an existing FSM Stage."))
         return super(FSMStage, self).create(vals)
+
+    @api.constrains('custom_color')
+    def _check_custom_color_hex_code(self):
+        if self.custom_color and not self.custom_color.startswith(
+                '#') or len(self.custom_color) != 7:
+            raise ValidationError(
+                _('Color code should be Hex Code. Ex:-#FFFFFF'))

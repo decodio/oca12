@@ -268,7 +268,7 @@ msgid "Company"
 msgstr "公司"
 
 #. module: sale_commission
-#: code:addons/sale_commission/models/settlement.py:189
+#: code:addons/sale_commission/models/settlement.py:193
 #, python-format
 msgid "Company must be the same"
 msgstr "公司必须相同"
@@ -679,6 +679,13 @@ msgid "Price subtotal"
 msgstr "价格小计"
 
 #. module: sale_commission
+#: model:ir.model.fields,field_description:sale_commission.field_sale_commission_analysis_report__price_subtotal_signed
+#, fuzzy
+#| msgid "Price subtotal"
+msgid "Price subtotal signed"
+msgstr "价格小计"
+
+#. module: sale_commission
 #: model:ir.model.fields,field_description:sale_commission.field_sale_commission_analysis_report__price_unit
 msgid "Price unit"
 msgstr "单价"
@@ -932,7 +939,7 @@ msgid "Up to"
 msgstr "取决于"
 
 #. module: sale_commission
-#: code:addons/sale_commission/models/settlement.py:138
+#: code:addons/sale_commission/models/settlement.py:151
 #, python-format
 msgid "Value cannot be negative"
 msgstr "值不能为负"
@@ -961,7 +968,7 @@ msgid "You can't delete invoiced settlements."
 msgstr "您无法删除已开具发票的结算。"
 
 #. module: sale_commission
-#: code:addons/sale_commission/models/account_invoice.py:170
+#: code:addons/sale_commission/models/account_invoice.py:180
 #, python-format
 msgid "You can't modify a settled line"
 msgstr "您无法修改已结算的行"

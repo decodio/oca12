@@ -24,15 +24,15 @@ msgstr ""
 "Project-Id-Version: Odoo Server 10.0c\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-09-07 08:56+0000\n"
-"PO-Revision-Date: 2019-11-26 11:58+0000\n"
-"Last-Translator: David Vidal <david.vidal@tecnativa.com>\n"
+"PO-Revision-Date: 2020-02-06 17:13+0000\n"
+"Last-Translator: Pedro M. Baeza <pedro.baeza@gmail.com>\n"
 "Language-Team: Spanish (https://www.transifex.com/odoo/teams/41243/es/)\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.8\n"
+"X-Generator: Weblate 3.10\n"
 
 #. module: hr_timesheet_sheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet_sheet.res_config_settings_view_form
@@ -45,6 +45,16 @@ msgstr ""
 "nivel específico de cada compañía.\" aria-label=\"Se establecen los valores "
 "a nivel específico de cada compañía.\" groups=\"base.group_multi_company\" "
 "role=\"img\"/>"
+
+#. module: hr_timesheet_sheet
+#: model_terms:ir.ui.view,arch_db:hr_timesheet_sheet.view_hr_timesheet_sheet_kanban
+msgid "<span class=\"text-muted text-nowrap\">Period</span>"
+msgstr ""
+
+#. module: hr_timesheet_sheet
+#: model_terms:ir.ui.view,arch_db:hr_timesheet_sheet.view_hr_timesheet_sheet_kanban
+msgid "<span class=\"text-muted text-nowrap\">Total time</span>"
+msgstr ""
 
 #. module: hr_timesheet_sheet
 #: model:ir.model,name:hr_timesheet_sheet.model_hr_timesheet_sheet_line_abstract
@@ -98,6 +108,7 @@ msgstr "Línea Analítica"
 
 #. module: hr_timesheet_sheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet_sheet.hr_timesheet_sheet_form
+#: model_terms:ir.ui.view,arch_db:hr_timesheet_sheet.view_hr_timesheet_sheet_kanban
 msgid "Approve"
 msgstr "Aprobar"
 
@@ -139,19 +150,19 @@ msgid "Can Review"
 msgstr "Puede revisar"
 
 #. module: hr_timesheet_sheet
-#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:593
+#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:579
 #, python-format
 msgid "Cannot approve a non-submitted sheet."
 msgstr "No es posible aprobar una hoja de servicios sin confirmar."
 
 #. module: hr_timesheet_sheet
-#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:603
+#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:589
 #, python-format
 msgid "Cannot reject a non-submitted sheet."
 msgstr "No es posible rechazar una hoja de servicios sin confirmar."
 
 #. module: hr_timesheet_sheet
-#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:577
+#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:563
 #, python-format
 msgid "Cannot revert to draft a non-approved sheet."
 msgstr ""
@@ -245,6 +256,11 @@ msgid "Day"
 msgstr "Día"
 
 #. module: hr_timesheet_sheet
+#: model_terms:ir.ui.view,arch_db:hr_timesheet_sheet.view_hr_timesheet_sheet_kanban
+msgid "Delete"
+msgstr ""
+
+#. module: hr_timesheet_sheet
 #: model:ir.model.fields,field_description:hr_timesheet_sheet.field_hr_timesheet_sheet__department_id
 #: model_terms:ir.ui.view,arch_db:hr_timesheet_sheet.view_hr_timesheet_sheet_filter
 msgid "Department"
@@ -267,6 +283,16 @@ msgstr "Nombre a mostrar"
 #: model_terms:ir.ui.view,arch_db:hr_timesheet_sheet.view_hr_timesheet_sheet_filter
 msgid "Draft Timesheet Sheets"
 msgstr "Hojas de Servicio en borrador"
+
+#. module: hr_timesheet_sheet
+#: model_terms:ir.ui.view,arch_db:hr_timesheet_sheet.view_hr_timesheet_sheet_kanban
+msgid "Dropdown menu"
+msgstr ""
+
+#. module: hr_timesheet_sheet
+#: model_terms:ir.ui.view,arch_db:hr_timesheet_sheet.view_hr_timesheet_sheet_kanban
+msgid "Edit"
+msgstr ""
 
 #. module: hr_timesheet_sheet
 #: model:ir.model,name:hr_timesheet_sheet.model_hr_employee
@@ -402,7 +428,7 @@ msgid "In Draft"
 msgstr "En borrador"
 
 #. module: hr_timesheet_sheet
-#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:514
+#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:494
 #, python-format
 msgid ""
 "In order to create a sheet for this employee, you must link him/her to an "
@@ -411,7 +437,7 @@ msgstr ""
 "Para crear una hoja para este empleado, debe enlazarlo con un usuario: %s"
 
 #. module: hr_timesheet_sheet
-#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:617
+#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:603
 #, python-format
 msgid ""
 "In order to review a timesheet sheet, your user needs to be linked to an "
@@ -563,7 +589,7 @@ msgid "Number of unread messages"
 msgstr "Mensajes por leer"
 
 #. module: hr_timesheet_sheet
-#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:627
+#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:613
 #, python-format
 msgid "Only a HR Officer or Manager can review the sheet."
 msgstr "Sólo un Oficals o Responsable de RRHH puede revisar la hoja."
@@ -619,6 +645,7 @@ msgstr "Cantidad"
 
 #. module: hr_timesheet_sheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet_sheet.hr_timesheet_sheet_form
+#: model_terms:ir.ui.view,arch_db:hr_timesheet_sheet.view_hr_timesheet_sheet_kanban
 msgid "Refuse"
 msgstr "Rechazar"
 
@@ -649,7 +676,7 @@ msgid "Saturday"
 msgstr "Sábado"
 
 #. module: hr_timesheet_sheet
-#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:899
+#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:926
 #, python-format
 msgid "Save the Timesheet Sheet first."
 msgstr "Guarde primero la Hoja de Servicios."
@@ -676,6 +703,7 @@ msgstr "Escoja una tarea"
 
 #. module: hr_timesheet_sheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet_sheet.hr_timesheet_sheet_form
+#: model_terms:ir.ui.view,arch_db:hr_timesheet_sheet.view_hr_timesheet_sheet_kanban
 msgid "Set to Draft"
 msgstr "Cambiar a borrador"
 
@@ -719,6 +747,7 @@ msgstr "Estado de la hoja"
 
 #. module: hr_timesheet_sheet
 #: model_terms:ir.ui.view,arch_db:hr_timesheet_sheet.hr_timesheet_sheet_form
+#: model_terms:ir.ui.view,arch_db:hr_timesheet_sheet.view_hr_timesheet_sheet_kanban
 msgid "Submit to Reviewer"
 msgstr "Enviar a Revisor"
 
@@ -755,7 +784,7 @@ msgid "Temporary Timesheets"
 msgstr "Hojas de Servicio Temporales"
 
 #. module: hr_timesheet_sheet
-#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:342
+#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:321
 #, python-format
 msgid ""
 "The Company in the Timesheet Sheet and in the Department must be the same."
@@ -763,7 +792,7 @@ msgstr ""
 "La Compañia de la Hoja de Servicios y la del Departamento deben ser la misma."
 
 #. module: hr_timesheet_sheet
-#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:332
+#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:311
 #, python-format
 msgid ""
 "The Company in the Timesheet Sheet and in the Employee must be the same."
@@ -771,13 +800,13 @@ msgstr ""
 "La Compañía de la Hoja de Servicios y la del Empleado deben ser la misma."
 
 #. module: hr_timesheet_sheet
-#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:352
+#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:331
 #, python-format
 msgid "The Company in the Timesheet Sheet and in the Project must be the same."
 msgstr "La Compañía de la Hoja de Servicios y la del Proyecto deben coincidir."
 
 #. module: hr_timesheet_sheet
-#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:362
+#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:341
 #, python-format
 msgid "The Company in the Timesheet Sheet and in the Task must be the same."
 msgstr "La Compañía de la Hoja de Servicios y de la Tarea debe coincidir."
@@ -789,7 +818,7 @@ msgid "The range of your Timesheet Sheet."
 msgstr "Rango de tu Hoja de Servicios."
 
 #. module: hr_timesheet_sheet
-#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:284
+#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:263
 #, python-format
 msgid "The start date cannot be later than the end date."
 msgstr ""
@@ -978,7 +1007,7 @@ msgid "Waiting review"
 msgstr "Esperando revisión"
 
 #. module: hr_timesheet_sheet
-#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:898
+#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:925
 #, python-format
 msgid "Warning"
 msgstr "Alerta"
@@ -999,11 +1028,15 @@ msgid "Wednesday"
 msgstr "Miércoles"
 
 #. module: hr_timesheet_sheet
-#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:226
 #: selection:res.company,sheet_range:0
-#, python-format
 msgid "Week"
 msgstr "Semana"
+
+#. module: hr_timesheet_sheet
+#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:206
+#, python-format
+msgid "Week %s"
+msgstr "Semana %s"
 
 #. module: hr_timesheet_sheet
 #: model:ir.model.fields,field_description:hr_timesheet_sheet.field_res_config_settings__timesheet_week_start
@@ -1016,10 +1049,10 @@ msgid "Week start day"
 msgstr "Día de comienzo de la semana"
 
 #. module: hr_timesheet_sheet
-#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:231
+#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:210
 #, python-format
-msgid "Weeks"
-msgstr "Semanas"
+msgid "Weeks %s - %s"
+msgstr "Semana %s - %s"
 
 #. module: hr_timesheet_sheet
 #: code:addons/hr_timesheet_sheet/models/account_analytic_account.py:17
@@ -1044,7 +1077,7 @@ msgstr ""
 " - %s de %s"
 
 #. module: hr_timesheet_sheet
-#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:555
+#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:535
 #, python-format
 msgid ""
 "You cannot delete a timesheet sheet which is already submitted or confirmed: "
@@ -1053,13 +1086,13 @@ msgstr ""
 "No puede eliminar una hoja de servicios que ya está enviada o confirmada: %s"
 
 #. module: hr_timesheet_sheet
-#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:526
+#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:506
 #, python-format
 msgid "You cannot duplicate a sheet."
 msgstr "No puede duplicar una hoja de servicios."
 
 #. module: hr_timesheet_sheet
-#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:321
+#: code:addons/hr_timesheet_sheet/models/hr_timesheet_sheet.py:300
 #, python-format
 msgid ""
 "You cannot have 2 or more sheets that overlap!\n"
@@ -1115,6 +1148,9 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_timesheet_sheet.hr_timesheet_sheet_form
 msgid "to"
 msgstr "a"
+
+#~ msgid "Weeks"
+#~ msgstr "Semanas"
 
 #~ msgid "Possible Reviewers"
 #~ msgstr "Posibles Revisores"
@@ -1189,10 +1225,6 @@ msgstr "a"
 
 #~ msgid "Note"
 #~ msgstr "Nota"
-
-#, fuzzy
-#~ msgid "Week %s"
-#~ msgstr "Semana "
 
 #~ msgid ""
 #~ " * The 'Open' status is used when a user is encoding a new and "

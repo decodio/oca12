@@ -7,7 +7,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from odoo.tools.translate import _
 
 
@@ -92,6 +92,30 @@ class ContractContract(models.Model):
         index=True
     )
     tag_ids = fields.Many2many(comodel_name="contract.tag", string="Tags")
+    note = fields.Text(string="Notes")
+    is_terminated = fields.Boolean(
+        string="Terminated", readonly=True, copy=False
+    )
+    terminate_reason_id = fields.Many2one(
+        comodel_name="contract.terminate.reason",
+        string="Termination Reason",
+        ondelete="restrict",
+        readonly=True,
+        copy=False,
+        track_visibility="onchange",
+    )
+    terminate_comment = fields.Text(
+        string="Termination Comment",
+        readonly=True,
+        copy=False,
+        track_visibility="onchange",
+    )
+    terminate_date = fields.Date(
+        string="Termination Date",
+        readonly=True,
+        copy=False,
+        track_visibility="onchange",
+    )
 
     @api.multi
     def _inverse_partner_id(self):
@@ -210,7 +234,8 @@ class ContractContract(models.Model):
                     field.name in self.NO_SYNC,
                 )
             ):
-                self[field_name] = self.contract_template_id[field_name]
+                if self.contract_template_id[field_name]:
+                    self[field_name] = self.contract_template_id[field_name]
 
     @api.onchange('partner_id')
     def _onchange_partner_id(self):
@@ -284,6 +309,7 @@ class ContractContract(models.Model):
         vinvoice = self.env['account.invoice'].with_context(
             force_company=self.company_id.id,
         ).new({
+            'company_id': self.company_id.id,
             'partner_id': self.invoice_partner_id.id,
             'type': invoice_type,
         })
@@ -295,7 +321,6 @@ class ContractContract(models.Model):
             'date_invoice': date_invoice,
             'journal_id': journal.id,
             'origin': self.name,
-            'company_id': self.company_id.id,
             'user_id': self.user_id.id,
         })
         if self.payment_term_id:
@@ -330,56 +355,32 @@ class ContractContract(models.Model):
 
     @api.model
     def _finalize_invoice_values(self, invoice_values):
-        """
-        This method adds the missing values in the invoice lines dictionaries.
-
-        If no account on the product, the invoice lines account is
-        taken from the invoice's journal in _onchange_product_id
-        This code is not in finalize_creation_from_contract because it's
-        not possible to create an invoice line with no account
-
-        :param invoice_values: dictionary (invoice values)
-        :return: updated dictionary (invoice values)
-        """
-        # If no account on the product, the invoice lines account is
-        # taken from the invoice's journal in _onchange_product_id
-        # This code is not in finalize_creation_from_contract because it's
-        # not possible to create an invoice line with no account
-        new_invoice = self.env['account.invoice'].with_context(
-            force_company=invoice_values['company_id'],
-        ).new(invoice_values)
-        for invoice_line in new_invoice.invoice_line_ids:
-            name = invoice_line.name
-            account_analytic_id = invoice_line.account_analytic_id
-            price_unit = invoice_line.price_unit
-            invoice_line.invoice_id = new_invoice
-            invoice_line._onchange_product_id()
-            invoice_line.update(
-                {
-                    'name': name,
-                    'account_analytic_id': account_analytic_id,
-                    'price_unit': price_unit,
-                }
-            )
-        return new_invoice._convert_to_write(new_invoice._cache)
+        """Provided for keeping compatibility in this version."""
+        # TODO: Must be removed in >=13.0
+        return invoice_values
 
     @api.model
     def _finalize_invoice_creation(self, invoices):
+        """This method is called right after the creation of the invoices.
+
+        Override it when you need to do something after the records are created
+        in the DB. If you need to modify any value, better to do it on the
+        _prepare_* methods on contract or contract line.
+        """
         invoices.compute_taxes()
 
     @api.model
     def _finalize_and_create_invoices(self, invoices_values):
-        """
-        This method:
-         - finalizes the invoices values (onchange's...)
+        """This method:
+
          - creates the invoices
-         - finalizes the created invoices (onchange's, tax computation...)
+         - finalizes the created invoices (tax computation...)
+
         :param invoices_values: list of dictionaries (invoices values)
         :return: created invoices (account.invoice)
         """
-        if isinstance(invoices_values, dict):
-            invoices_values = [invoices_values]
         final_invoices_values = []
+        # TODO: This call must be removed in >=13.0
         for invoice_values in invoices_values:
             final_invoices_values.append(
                 self._finalize_invoice_values(invoice_values)
@@ -440,7 +441,7 @@ class ContractContract(models.Model):
             for line in contract_lines:
                 invoice_values.setdefault('invoice_line_ids', [])
                 invoice_line_values = line._prepare_invoice_line(
-                    invoice_id=False
+                    invoice_values=invoice_values,
                 )
                 if invoice_line_values:
                     invoice_values['invoice_line_ids'].append(
@@ -456,7 +457,17 @@ class ContractContract(models.Model):
         This method triggers the creation of the next invoices of the contracts
         even if their next invoicing date is in the future.
         """
-        return self._recurring_create_invoice()
+        invoice = self._recurring_create_invoice()
+        if invoice:
+            self.message_post(
+                body=_(
+                    'Contract manually invoiced: '
+                    '<a href="#" data-oe-model="%s" data-oe-id="%s">Invoice'
+                    '</a>'
+                )
+                % (invoice._name, invoice.id)
+            )
+        return invoice
 
     @api.multi
     def _recurring_create_invoice(self, date_ref=False):
@@ -464,8 +475,49 @@ class ContractContract(models.Model):
         return self._finalize_and_create_invoices(invoices_values)
 
     @api.model
-    def cron_recurring_create_invoice(self):
-        domain = self._get_contracts_to_invoice_domain()
+    def cron_recurring_create_invoice(self, date_ref=None):
+        if not date_ref:
+            date_ref = fields.Date.context_today(self)
+        domain = self._get_contracts_to_invoice_domain(date_ref)
         contracts_to_invoice = self.search(domain)
-        date_ref = fields.Date.context_today(contracts_to_invoice)
-        contracts_to_invoice._recurring_create_invoice(date_ref)
+        return contracts_to_invoice._recurring_create_invoice(date_ref)
+
+    @api.multi
+    def action_terminate_contract(self):
+        self.ensure_one()
+        context = {"default_contract_id": self.id}
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Terminate Contract'),
+            'res_model': 'contract.contract.terminate',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': context,
+        }
+
+    @api.multi
+    def _terminate_contract(
+        self, terminate_reason_id, terminate_comment, terminate_date
+    ):
+        self.ensure_one()
+        if not self.env.user.has_group("contract.can_terminate_contract"):
+            raise UserError(_('You are not allowed to terminate contracts.'))
+        self.contract_line_ids.filtered('is_stop_allowed').stop(terminate_date)
+        self.write({
+            'is_terminated': True,
+            'terminate_reason_id': terminate_reason_id.id,
+            'terminate_comment': terminate_comment,
+            'terminate_date': terminate_date,
+        })
+        return True
+
+    @api.multi
+    def action_cancel_contract_termination(self):
+        self.ensure_one()
+        self.write({
+            'is_terminated': False,
+            'terminate_reason_id': False,
+            'terminate_comment': False,
+            'terminate_date': False,
+        })

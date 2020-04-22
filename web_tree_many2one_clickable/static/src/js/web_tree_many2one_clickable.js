@@ -11,6 +11,7 @@ odoo.define('web_tree_many2one_clickable.many2one_clickable', function (require)
 
     var ListRenderer = require('web.ListRenderer');
     var ListFieldMany2One = require('web.relational_fields').ListFieldMany2One;
+    var rpc = require('web.rpc');
 
     ListRenderer.include({
         _renderBodyCell: function (record, node, colIndex, options) {
@@ -31,29 +32,28 @@ odoo.define('web_tree_many2one_clickable.many2one_clickable', function (require)
             var self = this;
 
             if (!this.noOpen && this.value) {
-                // Replace '<a>' element
-                this.$el.removeClass('o_form_uri');
-                this.$el = $('<span/>', {
-                    html: this.$el.html(),
-                    class: this.$el.attr('class') + ' o_field_text',
-                    name: this.$el.attr('name'),
-                });
+                // Disable 'click' events
+                this.$el.off('click');
+                this.$el.on('click', function (ev) {
+                    ev.preventDefault();
+                })
 
                 // Append button
                 var $a = $('<a/>', {
                     href: '#',
                     class: 'o_form_uri btn btn-sm btn-secondary' +
-                           ' fa fa-angle-double-right',
+                           ' fa fa-angle-double-right many2one_clickable',
+                    tabindex: '-1',
                 }).on('click', function (ev) {
                     ev.preventDefault();
                     ev.stopPropagation();
 
-                    self.do_action({
-                        type: 'ir.actions.act_window',
-                        res_model: self.field.relation,
-                        res_id: self.value.res_id,
-                        views: [[false, 'form']],
-                        target: 'target',
+                    rpc.query({
+                        model: self.field.relation,
+                        method: 'get_formview_action',
+                        args: [[self.value.res_id]],
+                    }).then(function (action) {
+                        return self.do_action(action);
                     });
                 });
                 this.$el.append($a);

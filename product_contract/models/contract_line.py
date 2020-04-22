@@ -19,9 +19,9 @@ class ContractLine(models.Model):
     display_name = fields.Char(compute='_compute_display_name_2')
 
     @api.multi
-    def _prepare_invoice_line(self, invoice_id=False):
+    def _prepare_invoice_line(self, invoice_id=False, invoice_values=False):
         res = super(ContractLine, self)._prepare_invoice_line(
-            invoice_id=invoice_id
+            invoice_id=invoice_id, invoice_values=invoice_values,
         )
         if self.sale_order_line_id and res:
             res['sale_line_ids'] = [(6, 0, [self.sale_order_line_id.id])]
@@ -46,8 +46,8 @@ class ContractLine(models.Model):
                 )
                 rec.recurring_interval = 1
                 rec.is_auto_renew = rec.product_id.is_auto_renew
-                rec.auto_renew_interval = rec.product_id.default_qty
-                rec.auto_renew_rule_type = rec._get_auto_renew_rule_type()
+                rec.auto_renew_interval = rec.product_id.auto_renew_interval
+                rec.auto_renew_rule_type = rec.product_id.auto_renew_rule_type
                 rec.termination_notice_interval = (
                     rec.product_id.termination_notice_interval
                 )

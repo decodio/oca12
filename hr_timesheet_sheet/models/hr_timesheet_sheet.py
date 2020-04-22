@@ -1,5 +1,5 @@
 # Copyright 2018 Eficent Business and IT Consulting Services, S.L.
-# Copyright 2018-2019 Brainbean Apps (https://brainbeanapps.com)
+# Copyright 2018-2020 Brainbean Apps (https://brainbeanapps.com)
 # Copyright 2018-2019 Onestein (<https://www.onestein.eu>)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
@@ -8,7 +8,7 @@ import logging
 import re
 from collections import namedtuple
 from datetime import datetime, time
-from dateutil.relativedelta import relativedelta
+from dateutil.relativedelta import relativedelta, SU
 from dateutil.rrule import MONTHLY, WEEKLY
 
 from odoo import api, fields, models, SUPERUSER_ID, _
@@ -28,35 +28,16 @@ class Sheet(models.Model):
     _rec_name = 'complete_name'
 
     def _default_date_start(self):
-        user = self.env['res.users'].browse(self.env.uid)
-        r = user.company_id and user.company_id.sheet_range or WEEKLY
-        today = fields.Date.context_today(self)
-        if r == WEEKLY:
-            if user.company_id.timesheet_week_start:
-                delta = relativedelta(
-                    weekday=int(user.company_id.timesheet_week_start),
-                    days=6)
-            else:
-                delta = relativedelta(days=today.weekday())
-            return today - delta
-        elif r == MONTHLY:
-            return today + relativedelta(day=1)
-        return today
+        return self._get_period_start(
+            self.env.user.company_id,
+            fields.Date.context_today(self)
+        )
 
     def _default_date_end(self):
-        user = self.env['res.users'].browse(self.env.uid)
-        r = user.company_id and user.company_id.sheet_range or WEEKLY
-        today = fields.Date.context_today(self)
-        if r == WEEKLY:
-            if user.company_id.timesheet_week_start:
-                delta = relativedelta(weekday=(int(
-                    user.company_id.timesheet_week_start) + 6) % 7)
-            else:
-                delta = relativedelta(days=6-today.weekday())
-            return today + delta
-        elif r == MONTHLY:
-            return today + relativedelta(months=1, day=1, days=-1)
-        return today
+        return self._get_period_end(
+            self.env.user.company_id,
+            fields.Date.context_today(self)
+        )
 
     def _selection_review_policy(self):
         ResCompany = self.env['res.company']
@@ -221,14 +202,12 @@ class Sheet(models.Model):
                 '%V, %Y'
             )
 
-            if period_start == period_end:
-                sheet.name = '%s %s' % (
-                    _('Week'),
-                    period_start,
+            if sheet.date_end <= sheet.date_start + relativedelta(weekday=SU):
+                sheet.name = _('Week %s') % (
+                    period_end,
                 )
             else:
-                sheet.name = '%s %s - %s' % (
-                    _('Weeks'),
+                sheet.name = _('Weeks %s - %s') % (
                     period_start,
                     period_end,
                 )
@@ -410,7 +389,8 @@ class Sheet(models.Model):
             for key in sorted(matrix,
                               key=lambda key: self._get_matrix_sortby(key)):
                 vals_list.append(sheet._get_default_sheet_line(matrix, key))
-                sheet.clean_timesheets(matrix[key])
+                if sheet.state in ['new', 'draft']:
+                    sheet.clean_timesheets(matrix[key])
             sheet.line_ids = SheetLine.create(vals_list)
 
     @api.model
@@ -564,10 +544,16 @@ class Sheet(models.Model):
         self.ensure_one()
         return self.employee_id.parent_id.user_id.partner_id
 
+    def _get_subscribers(self):
+        """ Hook for extensions """
+        self.ensure_one()
+        subscribers = self._get_possible_reviewers().mapped('partner_id')
+        subscribers |= self._get_informables()
+        return subscribers
+
     def _timesheet_subscribe_users(self):
         for sheet in self.sudo():
-            subscribers = sheet._get_possible_reviewers().mapped('partner_id')
-            subscribers |= sheet._get_informables()
+            subscribers = sheet._get_subscribers()
             if subscribers:
                 self.message_subscribe(partner_ids=subscribers.ids)
 
@@ -668,12 +654,15 @@ class Sheet(models.Model):
     def _get_line_name(self, project_id, task_id=None, **kwargs):
         self.ensure_one()
         if task_id:
-            return '%s - %s' % (project_id.name, task_id.name)
+            return '%s - %s' % (
+                project_id.name_get()[0][1],
+                task_id.name_get()[0][1]
+            )
 
-        return project_id.name
+        return project_id.name_get()[0][1]
 
     @api.multi
-    def _get_new_line_name_values(self):
+    def _get_new_line_unique_id(self):
         """ Hook for extensions """
         self.ensure_one()
         return {
@@ -712,17 +701,18 @@ class Sheet(models.Model):
         }
 
     def add_line(self):
-        if self.add_line_project_id:
-            values = self._prepare_empty_analytic_line()
-            name_line = self._get_line_name(
-                **self._get_new_line_name_values()
-            )
-            name_list = list(set(self.line_ids.mapped('value_y')))
-            if name_list:
-                self.delete_empty_lines(False)
-            if name_line not in name_list:
-                self.timesheet_ids |= \
-                    self.env['account.analytic.line']._sheet_create(values)
+        if not self.add_line_project_id:
+            return
+        values = self._prepare_empty_analytic_line()
+        new_line_unique_id = self._get_new_line_unique_id()
+        existing_unique_ids = list(set(
+            [frozenset(line.get_unique_id().items()) for line in self.line_ids]
+        ))
+        if existing_unique_ids:
+            self.delete_empty_lines(False)
+        if frozenset(new_line_unique_id.items()) not in existing_unique_ids:
+            self.timesheet_ids |= \
+                self.env['account.analytic.line']._sheet_create(values)
 
     def link_timesheets_to_sheet(self, timesheets):
         self.ensure_one()
@@ -827,18 +817,46 @@ class Sheet(models.Model):
         self._sheet_write('new_line_ids', self.new_line_ids | new_line)
         line.new_line_id = new_line.id
 
+    @api.model
+    def _get_period_start(self, company, date):
+        r = company and company.sheet_range or WEEKLY
+        if r == WEEKLY:
+            if company.timesheet_week_start:
+                delta = relativedelta(
+                    weekday=int(company.timesheet_week_start),
+                    days=6)
+            else:
+                delta = relativedelta(days=date.weekday())
+            return date - delta
+        elif r == MONTHLY:
+            return date + relativedelta(day=1)
+        return date
+
+    @api.model
+    def _get_period_end(self, company, date):
+        r = company and company.sheet_range or WEEKLY
+        if r == WEEKLY:
+            if company.timesheet_week_start:
+                delta = relativedelta(weekday=(int(
+                    company.timesheet_week_start) + 6) % 7)
+            else:
+                delta = relativedelta(days=6-date.weekday())
+            return date + delta
+        elif r == MONTHLY:
+            return date + relativedelta(months=1, day=1, days=-1)
+        return date
+
     # ------------------------------------------------
     # OpenChatter methods and notifications
     # ------------------------------------------------
 
     @api.multi
     def _track_subtype(self, init_values):
-        if self:
-            record = self[0]
-            if 'state' in init_values and record.state == 'confirm':
-                return 'hr_timesheet_sheet.mt_timesheet_confirmed'
-            elif 'state' in init_values and record.state == 'done':
-                return 'hr_timesheet_sheet.mt_timesheet_approved'
+        self.ensure_one()
+        if 'state' in init_values and self.state == 'confirm':
+            return 'hr_timesheet_sheet.mt_timesheet_confirmed'
+        elif 'state' in init_values and self.state == 'done':
+            return 'hr_timesheet_sheet.mt_timesheet_approved'
         return super()._track_subtype(init_values)
 
 
@@ -871,6 +889,15 @@ class AbstractSheetLine(models.AbstractModel):
         comodel_name='hr.employee',
         string='Employee',
     )
+
+    @api.multi
+    def get_unique_id(self):
+        """ Hook for extensions """
+        self.ensure_one()
+        return {
+            'project_id': self.project_id,
+            'task_id': self.task_id,
+        }
 
 
 class SheetLine(models.TransientModel):

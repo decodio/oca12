@@ -5,10 +5,11 @@
 
     <template id="report_invoice_document" inherit_id="account.report_invoice_document">
         <xpath expr="//p[@t-field='o.date_due']/.." position="attributes">
-            <attribute name="t-att-class">'hidden' if o.multi_due else 'col-xs-2'</attribute>
+            <attribute name="t-att-class">'hidden'</attribute>
         </xpath>
         <xpath expr="//span[@t-field='o.payment_term_id.note']" position="after">
-            <div class="row" t-if="o.multi_due">
+            <t t-set="due_list" t-value="o.get_multi_due_list()"/>
+            <div class="row" t-if="due_list" style="page-break-inside: avoid;">
                 <div class="col-4">
                     <table class="table table-striped">
                         <thead>
@@ -18,7 +19,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr t-foreach="o.get_multi_due_list()" t-as="due_tuple">
+                            <tr t-foreach="due_list" t-as="due_tuple">
                                 <td>
                                     <span t-esc="due_tuple[0]" t-esc-options="{'widget': 'date'}"/>
                                 </td>

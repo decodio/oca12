@@ -263,13 +263,14 @@ class L10nEsVatBook(models.Model):
             base_line = next(filter(
                 lambda l: not l['special_tax_group'], implied_lines))
             special_line = next(filter(
-                lambda l: l['special_tax_group'], implied_lines))
-            base_line.update({
-                'special_tax_id': special_line['tax_id'],
-                'special_tax_amount': special_line['tax_amount'],
-                'total_amount_special_include':
-                    base_line['total_amount'] + special_line['tax_amount'],
-            })
+                lambda l: l['special_tax_group'], implied_lines), None)
+            if special_line:
+                base_line.update({
+                    'special_tax_id': special_line['tax_id'],
+                    'special_tax_amount': special_line['tax_amount'],
+                    'total_amount_special_include':
+                        base_line['total_amount'] + special_line['tax_amount'],
+                })
 
     def _clear_old_data(self):
         """
@@ -459,7 +460,7 @@ class L10nEsVatBook(models.Model):
         lang = lang_model._lang_get(self.env.user.lang)
         date_format = lang.date_format
         return datetime.datetime.strftime(
-            fields.Date.from_string(date), date_format)
+            fields.Date.to_date(date), date_format)
 
     def get_report_file_name(self):
         return '{}{}C{}'.format(self.year, self.company_vat,

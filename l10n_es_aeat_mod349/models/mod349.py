@@ -1,15 +1,14 @@
 # Copyright 2004-2011 - Pexego Sistemas Informáticos. (http://pexego.es)
 # Copyright 2013 - Top Consultant Software Creations S.L.
 #                - (http://www.topconsultant.es/)
-# Copyright 2014 - Serv. Tecnol. Avanzados
-#                - Pedro M. Baeza (http://www.serviciosbaeza.com)
+# Copyright 2014-2020 Tecnativa - Pedro M. Baeza
 # Copyright 2016 - Tecnativa - Angel Moya <odoo@tecnativa.com>
 # Copyright 2017 - Tecnativa - Luis M. Ontalba <luis.martinez@tecnativa.com>
 # Copyright 2017 - Eficent Business and IT Consulting Services, S.L.
 #                  <contact@eficent.com>
 # Copyright 2018 - Tecnativa - Carlos Dauden
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-
+import math
 import re
 from odoo import models, fields, api, exceptions, _
 from odoo.tools import float_is_zero
@@ -231,7 +230,7 @@ class Mod349(models.Model):
                 if self.period_type == '0A':
                     period_type = '0A'
                 elif self.period_type in ('1T', '2T', '3T', '4T'):
-                    period_type = '%sT' % (int(month) % 4)
+                    period_type = '%sT' % int(math.ceil(int(month) / 3.0))
                 else:
                     period_type = month
             key = (partner, op_key, period_type, year)
@@ -271,28 +270,27 @@ class Mod349(models.Model):
 
     @api.model
     def _get_taxes(self):
-        tax_obj = self.env['account.tax']
-        # Obtain all the taxes to be considered
+        """Obtain all the taxes to be considered for 349."""
         map_lines = self.env['aeat.349.map.line'].search([])
-        tax_templates = map_lines.mapped('tax_tmpl_ids').mapped('description')
+        tax_templates = map_lines.mapped('tax_tmpl_ids')
         if not tax_templates:
             raise exceptions.Warning(_('No Tax Mapping was found'))
-        # search the account.tax referred to by the template
-        taxes = tax_obj.search(
-            [('description', 'in', tax_templates),
-             ('company_id', 'child_of', self.company_id.id)])
-        return taxes
+        return self.get_taxes_from_templates(tax_templates)
+
+    def _cleanup_report(self):
+        """Remove previous partner records and partner refunds in report."""
+        self.ensure_one()
+        self.partner_record_ids.unlink()
+        self.partner_refund_ids.unlink()
+        self.partner_record_detail_ids.unlink()
+        self.partner_refund_detail_ids.unlink()
 
     @api.multi
     def calculate(self):
         """Computes the records in report."""
         self.ensure_one()
         with self.env.norecompute():
-            # Remove previous partner records and partner refunds in report
-            self.partner_record_ids.unlink()
-            self.partner_refund_ids.unlink()
-            self.partner_record_detail_ids.unlink()
-            self.partner_refund_detail_ids.unlink()
+            self._cleanup_report()
             taxes = self._get_taxes()
             # Get all the account moves
             move_lines = self.env['account.move.line'].search(
@@ -317,6 +315,13 @@ class Mod349(models.Model):
         # Recompute all pending computed fields
         self.recompute()
         return True
+
+    def button_recover(self):
+        """Clean children records in this state for allowing things like
+        cancelling an invoice that is inside this report.
+        """
+        self._cleanup_report()
+        return super().button_recover()
 
     @api.multi
     def _check_report_lines(self):

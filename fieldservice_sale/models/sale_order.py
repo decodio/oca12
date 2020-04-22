@@ -1,7 +1,6 @@
 # Copyright (C) 2019 Brian McMaster
 # Copyright (C) 2019 Open Source Integrators
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
@@ -37,14 +36,16 @@ class SaleOrder(models.Model):
         the partner_shipping_id or the partner_id.commercial_partner_id if
         they are FS locations.
         """
-        res = super(SaleOrder, self).onchange_partner_id()
-
-        self.fsm_location_id = self.env['fsm.location'].search(
-            ['|', '|', ('partner_id', '=', self.partner_id.id),
-             ('partner_id', '=', self.partner_shipping_id.id),
-             ('partner_id', '=', self.partner_id.commercial_partner_id.id)])
-
-        return res
+        super(SaleOrder, self).onchange_partner_id()
+        domain = [
+            '|', '|',
+            ('partner_id', '=', self.partner_id.id),
+            ('partner_id', '=', self.partner_shipping_id.id),
+            ('partner_id', '=', self.partner_id.commercial_partner_id.id)]
+        if self.partner_id.fsm_location:
+            domain = [('partner_id', '=', self.partner_id.id)]
+        location_ids = self.env['fsm.location'].search(domain)
+        self.fsm_location_id = location_ids and location_ids[0] or False
 
     def _field_create_fsm_order_prepare_values(self):
         self.ensure_one()
@@ -105,7 +106,8 @@ class SaleOrder(models.Model):
         """
         # one search for all Sale Orders
         fsm_orders = self.env['fsm.order'].search([
-            ('sale_id', 'in', self.ids)])
+            ('sale_id', 'in', self.ids),
+            ('sale_line_id', '=', False)])
         fsm_order_mapping = {
             fsm_order.sale_id.id: fsm_order for fsm_order in fsm_orders}
         result = {}
@@ -155,10 +157,9 @@ class SaleOrder(models.Model):
                         inv = invoice.copy()
                         inv.write({'invoice_line_ids': [(6, 0, [])]})
                         lines_by_line[i].invoice_id = inv.id
+                        result.append(inv.id)
                     inv.fsm_order_ids = \
                         [(4, lines_by_line[i].fsm_order_id.id)]
-                    result.append(inv.id)
-
             # check for invoice lines with product
             # field_service_tracking = sale
             lines_by_sale = self.env['account.invoice.line'].search([
@@ -167,15 +168,15 @@ class SaleOrder(models.Model):
             ])
             if len(lines_by_sale) > 0:
                 fsm_order = self.env['fsm.order'].search([
-                    ('sale_id', '=', self.id)
+                    ('sale_id', '=', self.id),
+                    ('sale_line_id', '=', False)
                 ])
                 if len(lines_by_sale) == len(invoice.invoice_line_ids):
                     invoice.fsm_order_ids = [(4, fsm_order.id)]
                 elif len(invoice.invoice_line_ids) > len(lines_by_sale):
                     new = invoice.copy()
                     new.write({'invoice_line_ids': [(6, 0, [])]})
-                    lines_by_sale.invoice_id = new.id
-                    new.fsm_order_id = fsm_order.id
+                    lines_by_sale.write({'invoice_id': new.id})
                     result.append(new.id)
         return result
 

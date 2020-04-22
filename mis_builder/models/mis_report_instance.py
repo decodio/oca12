@@ -1,4 +1,4 @@
-# Copyright 2014-2018 ACSONE SA/NV (<http://acsone.eu>)
+# Copyright 2014 ACSONE SA/NV (<http://acsone.eu>)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 import datetime
@@ -10,6 +10,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 from .aep import AccountingExpressionProcessor as AEP
+from .expression_evaluator import ExpressionEvaluator
 
 _logger = logging.getLogger(__name__)
 
@@ -68,7 +69,6 @@ class MisReportInstancePeriod(models.Model):
     are defined as an offset relative to a pivot date.
     """
 
-    @api.multi
     @api.depends(
         "report_instance_id.pivot_date",
         "report_instance_id.comparison_mode",
@@ -254,6 +254,7 @@ class MisReportInstancePeriod(models.Model):
             ("field_id.name", "=", "account_id"),
             ("field_id.name", "=", "date"),
             ("field_id.name", "=", "company_id"),
+            ("field_id.model_id.model", "!=", "account.move.line"),
         ],
         help="A 'move line like' model, ie having at least debit, credit, "
         "date, account_id and company_id fields.",
@@ -272,6 +273,25 @@ class MisReportInstancePeriod(models.Model):
     )
     source_cmpcol_to_id = fields.Many2one(
         comodel_name="mis.report.instance.period", string="Compare"
+    )
+    # filters
+    analytic_account_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="Analytic Account",
+        help=(
+            "Filter column on journal entries that match this analytic account."
+            "This filter is combined with a AND with the report-level filters "
+            "and cannot be modified in the preview."
+        ),
+    )
+    analytic_tag_ids = fields.Many2many(
+        comodel_name="account.analytic.tag",
+        string="Analytic Tags",
+        help=(
+            "Filter column on journal entries that have all these analytic tags."
+            "This filter is combined with a AND with the report-level filters "
+            "and cannot be modified in the preview."
+        ),
     )
 
     _order = "sequence, id"
@@ -329,6 +349,14 @@ class MisReportInstancePeriod(models.Model):
         if self.source in (SRC_SUMCOL, SRC_CMPCOL):
             self.mode = MODE_NONE
 
+    def _get_aml_model_name(self):
+        self.ensure_one()
+        if self.source == SRC_ACTUALS:
+            return self.report_id.move_lines_source.model
+        elif self.source == SRC_ACTUALS_ALT:
+            return self.source_aml_model_name
+        return False
+
     @api.model
     def _get_filter_domain_from_context(self):
         filters = []
@@ -350,7 +378,6 @@ class MisReportInstancePeriod(models.Model):
                     filters.append((filter_name, operator, value))
         return filters
 
-    @api.multi
     def _get_additional_move_line_filter(self):
         """ Prepare a filter to apply on all move lines
 
@@ -368,9 +395,18 @@ class MisReportInstancePeriod(models.Model):
         Returns an Odoo domain expression (a python list)
         compatible with account.move.line."""
         self.ensure_one()
-        return self._get_filter_domain_from_context()
+        domain = self._get_filter_domain_from_context()
+        if (
+            self._get_aml_model_name() == "account.move.line"
+            and self.report_instance_id.target_move == "posted"
+        ):
+            domain.extend([("move_id.state", "=", "posted")])
+        if self.analytic_account_id:
+            domain.append(("analytic_account_id", "=", self.analytic_account_id.id))
+        for tag in self.analytic_tag_ids:
+            domain.append(("analytic_tag_ids", "=", tag.id))
+        return domain
 
-    @api.multi
     def _get_additional_query_filter(self, query):
         """ Prepare an additional filter to apply on the query
 
@@ -526,7 +562,6 @@ class MisReportInstance(models.Model):
         else:
             self.company_ids = False
 
-    @api.multi
     @api.depends("multi_company", "company_id", "company_ids")
     def _compute_query_company_ids(self):
         for rec in self:
@@ -558,7 +593,6 @@ class MisReportInstance(models.Model):
             )
         return filter_descriptions
 
-    @api.multi
     def save_report(self):
         self.ensure_one()
         self.write({"temporary": False})
@@ -579,7 +613,6 @@ class MisReportInstance(models.Model):
         _logger.debug("Vacuum %s Temporary MIS Builder Report", len(reports))
         return reports.unlink()
 
-    @api.multi
     def copy(self, default=None):
         self.ensure_one()
         default = dict(default or {})
@@ -593,7 +626,6 @@ class MisReportInstance(models.Model):
         date_format = lang.date_format
         return datetime.datetime.strftime(fields.Date.from_string(date), date_format)
 
-    @api.multi
     @api.depends("date_from")
     def _compute_comparison_mode(self):
         for instance in self:
@@ -601,7 +633,6 @@ class MisReportInstance(models.Model):
                 instance.date_from
             )
 
-    @api.multi
     def _inverse_comparison_mode(self):
         for record in self:
             if not record.comparison_mode:
@@ -630,7 +661,6 @@ class MisReportInstance(models.Model):
             ):
                 self.date_range_id = False
 
-    @api.multi
     def _add_analytic_filters_to_context(self, context):
         self.ensure_one()
         if self.analytic_account_id:
@@ -644,7 +674,6 @@ class MisReportInstance(models.Model):
                 "operator": "all",
             }
 
-    @api.multi
     def _context_with_filters(self):
         self.ensure_one()
         if "mis_report_filters" in self.env.context:
@@ -654,7 +683,6 @@ class MisReportInstance(models.Model):
         self._add_analytic_filters_to_context(context)
         return context
 
-    @api.multi
     def preview(self):
         self.ensure_one()
         view_id = self.env.ref("mis_builder." "mis_report_instance_result_view_form")
@@ -669,7 +697,6 @@ class MisReportInstance(models.Model):
             "context": self._context_with_filters(),
         }
 
-    @api.multi
     def print_pdf(self):
         self.ensure_one()
         context = dict(self._context_with_filters(), landscape=self.landscape_pdf)
@@ -679,7 +706,6 @@ class MisReportInstance(models.Model):
             .report_action(self, data=dict(dummy=True))  # required to propagate context
         )
 
-    @api.multi
     def export_xls(self):
         self.ensure_one()
         context = dict(self._context_with_filters())
@@ -689,7 +715,6 @@ class MisReportInstance(models.Model):
             .report_action(self, data=dict(dummy=True))  # required to propagate context
         )
 
-    @api.multi
     def display_settings(self):
         assert len(self.ids) <= 1
         view_id = self.env.ref("mis_builder.mis_report_instance_view_form")
@@ -704,47 +729,28 @@ class MisReportInstance(models.Model):
             "target": "current",
         }
 
-    def _add_column_actuals(self, aep, kpi_matrix, period, label, description):
+    def _add_column_move_lines(self, aep, kpi_matrix, period, label, description):
         if not period.date_from or not period.date_to:
             raise UserError(
-                _("Column %s with actuals source " "must have from/to dates.")
+                _("Column %s with move lines source must have from/to dates.")
                 % (period.name,)
             )
-        self.report_id.declare_and_compute_period(
-            kpi_matrix,
-            period.id,
-            label,
-            description,
+        expression_evaluator = ExpressionEvaluator(
             aep,
             period.date_from,
             period.date_to,
-            self.target_move,
-            period.subkpi_ids,
-            period._get_additional_move_line_filter,
-            period._get_additional_query_filter,
-            aml_model=self.report_id.move_lines_source.model,
-            no_auto_expand_accounts=self.no_auto_expand_accounts,
+            None,  # target_move now part of additional_move_line_filter
+            period._get_additional_move_line_filter(),
+            period._get_aml_model_name(),
         )
-
-    def _add_column_actuals_alt(self, aep, kpi_matrix, period, label, description):
-        if not period.date_from or not period.date_to:
-            raise UserError(
-                _("Column %s with actuals source " "must have from/to dates.")
-                % (period.name,)
-            )
-        self.report_id.declare_and_compute_period(
+        self.report_id._declare_and_compute_period(
+            expression_evaluator,
             kpi_matrix,
             period.id,
             label,
             description,
-            aep,
-            period.date_from,
-            period.date_to,
-            None,
             period.subkpi_ids,
-            period._get_additional_move_line_filter,
             period._get_additional_query_filter,
-            aml_model=period.source_aml_model_id.model,
             no_auto_expand_accounts=self.no_auto_expand_accounts,
         )
 
@@ -768,9 +774,11 @@ class MisReportInstance(models.Model):
 
     def _add_column(self, aep, kpi_matrix, period, label, description):
         if period.source == SRC_ACTUALS:
-            return self._add_column_actuals(aep, kpi_matrix, period, label, description)
+            return self._add_column_move_lines(
+                aep, kpi_matrix, period, label, description
+            )
         elif period.source == SRC_ACTUALS_ALT:
-            return self._add_column_actuals_alt(
+            return self._add_column_move_lines(
                 aep, kpi_matrix, period, label, description
             )
         elif period.source == SRC_SUMCOL:
@@ -778,7 +786,6 @@ class MisReportInstance(models.Model):
         elif period.source == SRC_CMPCOL:
             return self._add_column_cmpcol(aep, kpi_matrix, period, label, description)
 
-    @api.multi
     def _compute_matrix(self):
         """ Compute a report and return a KpiMatrix.
 
@@ -805,13 +812,11 @@ class MisReportInstance(models.Model):
         kpi_matrix.compute_sums()
         return kpi_matrix
 
-    @api.multi
     def compute(self):
         self.ensure_one()
         kpi_matrix = self._compute_matrix()
         return kpi_matrix.as_dict()
 
-    @api.multi
     def drilldown(self, arg):
         self.ensure_one()
         period_id = arg.get("period_id")
@@ -828,19 +833,15 @@ class MisReportInstance(models.Model):
                 expr,
                 period.date_from,
                 period.date_to,
-                self.target_move if period.source == SRC_ACTUALS else None,
+                None,  # target_move now part of additional_move_line_filter
                 account_id,
             )
             domain.extend(period._get_additional_move_line_filter())
-            if period.source == SRC_ACTUALS_ALT:
-                aml_model_name = period.source_aml_model_id.model
-            else:
-                aml_model_name = self.report_id.move_lines_source.model
             return {
                 "name": u"{} - {}".format(expr, period.name),
                 "domain": domain,
                 "type": "ir.actions.act_window",
-                "res_model": aml_model_name,
+                "res_model": period._get_aml_model_name(),
                 "views": [[False, "list"], [False, "form"]],
                 "view_type": "list",
                 "view_mode": "list",

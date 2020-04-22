@@ -65,21 +65,11 @@ class TestL10nEsFacturae(common.TransactionCase):
                 'bank_id': self.env['res.bank'].search(
                     [('bic', '=', 'PSSTFRPPXXX')], limit=1).id
             })
-        self.mandate = self.env['account.banking.mandate'].create({
-            'company_id': main_company.id,
-            'format': 'basic',
-            'partner_id': self.partner.id,
-            'state': 'valid',
-            'partner_bank_id': self.bank.id,
-            'signature_date': '2016-03-12',
-        })
-
         self.payment_method = self.env['account.payment.method'].create({
             'name': 'inbound_mandate',
             'code': 'inbound_mandate',
             'payment_type': 'inbound',
             'bank_account_required': False,
-            'mandate_required': True,
             'active': True
         })
         payment_methods = self.env['account.payment.method'].search([
@@ -141,7 +131,6 @@ class TestL10nEsFacturae(common.TransactionCase):
             'date_invoice': '2016-03-12',
             'partner_bank_id': self.bank.id,
             'payment_mode_id': self.payment_mode_02.id,
-            'mandate_id': self.mandate.id
         })
 
         self.invoice_line_02 = self.env['account.invoice.line'].create({
@@ -359,7 +348,7 @@ class TestL10nEsFacturae(common.TransactionCase):
             line.write({
                 'facturae_end_date': fields.Date.today(),
                 'facturae_start_date': fields.Date.to_string(
-                    fields.Date.from_string(fields.Date.today()) +
+                    fields.Date.to_date(fields.Date.today()) +
                     timedelta(days=1)
                 ),
             })
@@ -401,7 +390,7 @@ class TestL10nEsFacturae(common.TransactionCase):
             invoice.write({
                 'facturae_end_date': fields.Date.today(),
                 'facturae_start_date': fields.Date.to_string(
-                    fields.Date.from_string(fields.Date.today()) +
+                    fields.Date.to_date(fields.Date.today()) +
                     timedelta(days=1)
                 ),
             })
@@ -410,3 +399,56 @@ class TestL10nEsFacturae(common.TransactionCase):
         action = self.invoice_line.button_edit_facturae_fields()
         item = self.env[action['res_model']].browse(action['res_id'])
         self.assertEqual(item, self.invoice_line)
+
+    def _check_amounts(self, wo_discount, subtotal, base, tax, discount=0):
+        self.wizard.with_context(
+            active_ids=self.invoice.ids,
+            active_model='account.invoice').create_facturae_file()
+        facturae_xml = etree.fromstring(
+            base64.b64decode(self.wizard.facturae))
+        self.assertEqual(
+            facturae_xml.xpath('//InvoiceLine/TotalCost')[0].text, wo_discount,
+        )
+        self.assertEqual(
+            facturae_xml.xpath('//InvoiceLine/GrossAmount')[0].text, subtotal,
+        )
+        self.assertEqual(
+            facturae_xml.xpath(
+                '//TaxesOutputs//TaxableBase/TotalAmount')[0].text, base,
+        )
+        self.assertEqual(
+            facturae_xml.xpath(
+                '//TaxesOutputs//TaxAmount/TotalAmount')[0].text, tax,
+        )
+        if discount:
+            self.assertEqual(
+                facturae_xml.xpath(
+                    '//InvoiceLine//DiscountAmount')[0].text, discount,
+            )
+
+    def test_invoice_rounding(self):
+        self.main_company.tax_calculation_rounding_method = 'round_globally'
+        dp = self.env.ref('product.decimal_price')
+        dp.digits = 4
+        # We do this for refreshing the cached value in this env
+        self.assertEqual(dp.precision_get(dp.name), 4)
+        self.invoice_line.price_unit = 190.314
+        # Make sure the decimal precision is being applied
+        self.assertAlmostEqual(self.invoice_line.price_unit, 190.314, 4)
+        self.invoice.compute_taxes()
+        self._check_amounts('190.310000', '190.310000', '190.31', '39.97')
+
+    def test_invoice_rounding_with_discount(self):
+        self.main_company.tax_calculation_rounding_method = 'round_globally'
+        dp = self.env.ref('product.decimal_price')
+        dp.digits = 4
+        # We do this for refreshing the cached value in this env
+        self.assertEqual(dp.precision_get(dp.name), 4)
+        self.invoice_line.write({
+            'price_unit': 190.314,
+            'discount': 30,
+        })
+        self.invoice.compute_taxes()
+        self._check_amounts(
+            '190.310000', '133.220000', '133.22', '27.98', '57.090000',
+        )

@@ -16,11 +16,12 @@ class PurchaseOrder(models.Model):
         operating_unit = self.env['res.users'].operating_unit_default_get(
             self.env.uid
         )
-        types = type_obj.search([('code', '=', 'incoming'),
-                                 ('warehouse_id.operating_unit_id', '=',
-                                  operating_unit.id)])
-        if types:
-            res = types[:1].id
+        if operating_unit:
+            types = type_obj.search([('code', '=', 'incoming'),
+                                    ('warehouse_id.operating_unit_id', '=',
+                                    operating_unit.id)])
+            if types:
+                res = types[:1].id
         return res
 
     READONLY_STATES = {
@@ -63,7 +64,8 @@ class PurchaseOrder(models.Model):
             if not record.picking_type_id:
                 continue
             warehouse = picking_type.warehouse_id
-            if (picking_type.warehouse_id and
+            if (warehouse.operating_unit_id and
+                    picking_type.warehouse_id and
                     picking_type.warehouse_id.operating_unit_id and
                     record.operating_unit_id and
                     warehouse.operating_unit_id != record.operating_unit_id):
@@ -87,9 +89,10 @@ class PurchaseOrder(models.Model):
     def _onchange_operating_unit_id(self):
         type_obj = self.env['stock.picking.type']
         if self.operating_unit_id:
-            types = type_obj.search([('code', '=', 'incoming'),
-                                     ('warehouse_id.operating_unit_id', '=',
-                                      self.operating_unit_id.id)])
+            types = type_obj.\
+                search([('code', '=', 'incoming'),
+                        ('warehouse_id.operating_unit_id', 'in',
+                        (self.operating_unit_id.id, False))])
             if types:
                 self.picking_type_id = types[:1]
             else:

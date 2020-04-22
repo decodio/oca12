@@ -8,7 +8,9 @@ class StockInventoryValuationView(models.TransientModel):
     _name = 'stock.inventory.valuation.view'
     _description = 'Stock Inventory Valuation View'
 
-    display_name = fields.Char()
+    name = fields.Char()
+    reference = fields.Char()
+    barcode = fields.Char()
     qty_at_date = fields.Float()
     uom_id = fields.Many2one(
         comodel_name='uom.uom',
@@ -53,14 +55,21 @@ class StockInventoryValuationReport(models.TransientModel):
                               create=False, edit=False))
         ReportLine = self.env['stock.inventory.valuation.view']
         for product in products:
+            standard_price = product.standard_price
+            if self.date:
+                standard_price = product.get_history_price(
+                    self.env.user.company_id.id,
+                    date=self.date)
             line = {
-                'display_name': product.display_name,
+                'name': product.name,
+                'reference': product.default_code,
+                'barcode': product.barcode,
                 'qty_at_date': product.qty_at_date,
                 'uom_id': product.uom_id,
                 'currency_id': product.currency_id,
                 'cost_currency_id': product.cost_currency_id,
-                'standard_price': product.standard_price,
-                'stock_value': product.stock_value,
+                'standard_price': standard_price,
+                'stock_value': product.qty_at_date * standard_price,
                 'cost_method': product.cost_method,
             }
             if product.qty_at_date != 0:

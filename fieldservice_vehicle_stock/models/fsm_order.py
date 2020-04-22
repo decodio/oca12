@@ -1,17 +1,22 @@
-# Copyright (C) 2018 - TODAY, Brian McMaster
+# Copyright (C) 2019 Open Source Integrators
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-
 from odoo import api, models
 
 
-class StockRequest(models.Model):
-    _inherit = 'stock.request'
+class FSMOrder(models.Model):
+    _inherit = 'fsm.order'
 
     @api.multi
-    def _prepare_procurement_values(self, group_id=False):
-        values = super(StockRequest, self).\
-            _prepare_procurement_values(group_id)
-        values.update({'route_ids': self.env.ref(
-            'fieldservice_vehicle_stock.route_stock_to_vehicle_to_location')
-        })
-        return values
+    def assign_vehicle_to_pickings(self):
+        for rec in self:
+            for picking in rec.picking_ids:
+                if picking.state in ('waiting', 'confirmed', 'assigned'):
+                    picking.fsm_vehicle_id = self.vehicle_id.id or False
+
+    @api.multi
+    def write(self, vals):
+        res = super().write(vals)
+        for rec in self:
+            if vals.get('vehicle_id', False):
+                rec.assign_vehicle_to_pickings()
+        return res

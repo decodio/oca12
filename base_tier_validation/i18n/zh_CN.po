@@ -59,6 +59,14 @@ msgid "Active"
 msgstr "有效"
 
 #. module: base_tier_validation
+#. openerp-web
+#: code:addons/base_tier_validation/static/src/xml/systray.xml:45
+#, fuzzy, python-format
+#| msgid "Active"
+msgid "Activities"
+msgstr "有效"
+
+#. module: base_tier_validation
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_definition_view_search
 msgid "All"
 msgstr "所有"
@@ -73,13 +81,6 @@ msgstr "特定组中的任何用户。"
 #: model:ir.model.fields,help:base_tier_validation.field_tier_review__approve_sequence
 msgid "Approval order by the specified sequence number"
 msgstr ""
-
-#. module: base_tier_validation
-#: model:ir.model.fields,field_description:base_tier_validation.field_tier_validation__approve_sequence
-#, fuzzy
-#| msgid "Sequence"
-msgid "Approve Sequence"
-msgstr "序列"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_definition__approve_sequence
@@ -97,6 +98,13 @@ msgstr "批准"
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_validation__can_review
 msgid "Can Review"
 msgstr "可审批"
+
+#. module: base_tier_validation
+#: model:ir.model.fields,help:base_tier_validation.field_tier_review__can_review
+msgid ""
+"Can review will be marked if the review is pending and the\n"
+"        approve sequence has been achieved"
+msgstr ""
 
 #. module: base_tier_validation
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.view_comment_wizard
@@ -177,6 +185,13 @@ msgstr "显示名称"
 #: selection:tier.definition,definition_type:0
 msgid "Domain"
 msgstr "域"
+
+#. module: base_tier_validation
+#: selection:tier.definition,definition_type:0
+#, fuzzy
+#| msgid "Formula"
+msgid "Domain & Formula"
+msgstr "公式"
 
 #. module: base_tier_validation
 #: model:ir.model.fields,field_description:base_tier_validation.field_tier_review__done_by
@@ -477,3 +492,8 @@ msgstr "审批"
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_definition_view_form
 msgid "e.g. Tier Validation for..."
 msgstr "例如：层级审批对于..."
+
+#, fuzzy
+#~| msgid "Sequence"
+#~ msgid "Approve Sequence"
+#~ msgstr "序列"

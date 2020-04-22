@@ -1,5 +1,5 @@
 # Copyright 2016 Ucamco - Wim Audenaert <wim.audenaert@ucamco.com>
-# Copyright 2016-19 Eficent Business and IT Consulting Services S.L.
+# Copyright 2016-19 ForgeFlow S.L. (https://www.forgeflow.com)
 # - Jordi Ballester Alomar <jordi.ballester@eficent.com>
 # - Lois Rilo Antelo <lois.rilo@eficent.com>
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html).
@@ -7,6 +7,7 @@
 from math import ceil
 
 from odoo import api, fields, models, _
+from odoo.osv import expression
 from odoo.exceptions import ValidationError
 
 
@@ -34,6 +35,7 @@ class ProductMRPArea(models.Model):
         readonly=True,
         related='product_id.product_tmpl_id',
         store=True,
+        compute_sudo=True,
     )
     location_id = fields.Many2one(
         related="mrp_area_id.location_id",
@@ -75,11 +77,11 @@ class ProductMRPArea(models.Model):
     main_supplier_id = fields.Many2one(
         comodel_name='res.partner', string='Main Supplier',
         compute='_compute_main_supplier', store=True,
-        index=True,
+        index=True, compute_sudo=True,
     )
     main_supplierinfo_id = fields.Many2one(
         comodel_name='product.supplierinfo', string='Supplier Info',
-        compute='_compute_main_supplier', store=True,
+        compute='_compute_main_supplier', store=True, compute_sudo=True,
     )
     supply_method = fields.Selection(
         selection=[('buy', 'Buy'),
@@ -131,6 +133,21 @@ class ProductMRPArea(models.Model):
             area.mrp_area_id.name,
             area.product_id.display_name)) for area in self]
 
+    @api.model
+    def _name_search(self, name, args=None, operator='ilike', limit=100,
+                     name_get_uid=None):
+        if operator in ('ilike', 'like', '=', '=like', '=ilike'):
+            args = expression.AND([
+                args or [],
+                ['|', '|',
+                 ('product_id.name', operator, name),
+                 ('product_id.default_code', operator, name),
+                 ('mrp_area_id.name', operator, name)]
+            ])
+        return super(ProductMRPArea, self)._name_search(
+            name, args=args, operator=operator, limit=limit,
+            name_get_uid=name_get_uid)
+
     @api.multi
     def _compute_mrp_lead_time(self):
         produced = self.filtered(lambda r: r.supply_method == "manufacture")
@@ -169,11 +186,18 @@ class ProductMRPArea(models.Model):
         """Simplified and similar to procurement.rule logic."""
         for rec in self.filtered(lambda r: r.supply_method == 'buy'):
             suppliers = rec.product_id.seller_ids.filtered(
-                lambda r: (not r.product_id or r.product_id == rec.product_id))
+                lambda r: (not r.product_id or r.product_id == rec.product_id)
+                and (not r.company_id or r.company_id == rec.company_id)
+            )
             if not suppliers:
+                rec.main_supplierinfo_id = False
+                rec.main_supplier_id = False
                 continue
             rec.main_supplierinfo_id = suppliers[0]
             rec.main_supplier_id = suppliers[0].name
+        for rec in self.filtered(lambda r: r.supply_method != "buy"):
+            rec.main_supplierinfo_id = False
+            rec.main_supplier_id = False
 
     @api.multi
     def _adjust_qty_to_order(self, qty_to_order):
@@ -190,3 +214,9 @@ class ProductMRPArea(models.Model):
                 self.mrp_maximum_order_qty:
             return self.mrp_maximum_order_qty
         return qty_to_order
+
+    def update_min_qty_from_main_supplier(self):
+        for rec in self.filtered(
+            lambda r: r.main_supplierinfo_id and r.supply_method == "buy"
+        ):
+            rec.mrp_minimum_order_qty = rec.main_supplierinfo_id.min_qty

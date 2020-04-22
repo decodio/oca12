@@ -31,8 +31,8 @@ msgstr ""
 "Project-Id-Version: account-financial-tools (8.0)\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-11-13 03:39+0000\n"
-"PO-Revision-Date: 2016-11-25 14:56+0000\n"
-"Last-Translator: OCA Transbot <transbot@odoo-community.org>\n"
+"PO-Revision-Date: 2020-03-05 14:13+0000\n"
+"Last-Translator: Bole <bole@dajmi5.com>\n"
 "Language-Team: Croatian (http://www.transifex.com/oca/OCA-account-financial-"
 "tools-8-0/language/hr/)\n"
 "Language: hr\n"
@@ -41,19 +41,22 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 3.10\n"
 
 #. module: account_asset_management
-#: code:addons/account_asset_management/models/account_asset.py:1042
+#: code:addons/account_asset_management/models/account_asset.py:1043
 #, python-format
 msgid ""
 "\n"
 "Error while processing asset '%s': %s"
 msgstr ""
+"\n"
+"Greška pri obradi sredstva '%s': %s"
 
 #. module: account_asset_management
 #: model:ir.model,name:account_asset_management.model_account_account
 msgid "Account"
-msgstr ""
+msgstr "Konto"
 
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_search
@@ -74,12 +77,12 @@ msgstr "Dodaj internu bilješku ovdje..."
 #. module: account_asset_management
 #: model:ir.model.fields,help:account_asset_management.field_account_asset_compute__date_end
 msgid "All depreciation lines prior to this date will be automatically posted"
-msgstr ""
+msgstr "Sve stavke amortizacije prije ovog datuma će biti knjižene automatski"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_line__amount
 msgid "Amount"
-msgstr ""
+msgstr "Iznos"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_line__depreciated_value
@@ -100,7 +103,7 @@ msgstr "Analitički konto"
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Are you sure ?"
-msgstr ""
+msgstr "Jeste li sigurni?"
 
 #. module: account_asset_management
 #: model:ir.model,name:account_asset_management.model_account_asset
@@ -128,29 +131,26 @@ msgstr "Konto sredstva"
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_group_view_form
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_group_view_search
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_group_view_tree
-#, fuzzy
-#| msgid "Asset Account"
 msgid "Asset Group"
-msgstr "Konto sredstva"
+msgstr "Grupa sredstava"
 
 #. module: account_asset_management
 #: model:ir.actions.act_window,name:account_asset_management.account_asset_group_action
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__group_ids
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_profile__group_ids
 #: model:ir.ui.menu,name:account_asset_management.account_asset_group_menu
-#, fuzzy
 msgid "Asset Groups"
 msgstr "Grupe o. sredstava"
 
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Asset Line"
-msgstr ""
+msgstr "Stavka amortizacije"
 
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Asset Lines"
-msgstr ""
+msgstr "Stavke amortizacije"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__name
@@ -163,21 +163,19 @@ msgstr "Naziv imovine"
 #: model:ir.model.fields,field_description:account_asset_management.field_account_invoice_line__asset_profile_id
 #: model:ir.model.fields,field_description:account_asset_management.field_account_move_line__asset_profile_id
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_profile_view_search
-#, fuzzy
 msgid "Asset Profile"
-msgstr "Grupe o. sredstava"
+msgstr "Profil sredstva"
 
 #. module: account_asset_management
 #: model:ir.actions.act_window,name:account_asset_management.account_asset_profile_action
 #: model:ir.ui.menu,name:account_asset_management.account_asset_profile_menu
-#, fuzzy
 msgid "Asset Profiles"
-msgstr "Grupe o. sredstava"
+msgstr "Profili sredstava"
 
 #. module: account_asset_management
 #: selection:account.asset.line,type:0
 msgid "Asset Removal"
-msgstr ""
+msgstr "Otpis sredstva"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__date_remove
@@ -596,7 +594,7 @@ msgid "Entries"
 msgstr "Stavke"
 
 #. module: account_asset_management
-#: code:addons/account_asset_management/models/account_asset.py:1045
+#: code:addons/account_asset_management/models/account_asset.py:1046
 #, python-format
 msgid ""
 "Error while processing asset '%s': \n"
@@ -675,7 +673,7 @@ msgid ""
 msgstr ""
 
 #. module: account_asset_management
-#: code:addons/account_asset_management/models/account_asset.py:761
+#: code:addons/account_asset_management/models/account_asset.py:762
 #, python-format
 msgid "Illegal value %s in asset.method."
 msgstr ""
@@ -1046,7 +1044,7 @@ msgid "Status"
 msgstr "Status"
 
 #. module: account_asset_management
-#: code:addons/account_asset_management/models/account_asset.py:734
+#: code:addons/account_asset_management/models/account_asset.py:735
 #, python-format
 msgid ""
 "The '_compute_year_amount' method is only intended for Time Method 'Number "
@@ -1073,7 +1071,7 @@ msgid "The Start Date must precede the Ending Date."
 msgstr ""
 
 #. module: account_asset_management
-#: code:addons/account_asset_management/models/account_asset.py:522
+#: code:addons/account_asset_management/models/account_asset.py:523
 #, python-format
 msgid ""
 "The duration of the asset conflicts with the posted depreciation table entry "
@@ -1127,7 +1125,7 @@ msgid ""
 msgstr ""
 
 #. module: account_asset_management
-#: code:addons/account_asset_management/models/account_move.py:139
+#: code:addons/account_asset_management/models/account_move.py:145
 #, python-format
 msgid "This option should only be used for a single id at a time."
 msgstr ""
@@ -1207,7 +1205,7 @@ msgstr "Godina"
 
 #. module: account_asset_management
 #: code:addons/account_asset_management/models/account_move.py:69
-#: code:addons/account_asset_management/models/account_move.py:134
+#: code:addons/account_asset_management/models/account_move.py:140
 #, python-format
 msgid ""
 "You are not allowed to link an accounting entry to an asset.\n"
@@ -1252,7 +1250,7 @@ msgid ""
 msgstr ""
 
 #. module: account_asset_management
-#: code:addons/account_asset_management/models/account_move.py:130
+#: code:addons/account_asset_management/models/account_move.py:136
 #, python-format
 msgid ""
 "You cannot change an accounting item linked to an asset depreciation line."
