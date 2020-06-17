@@ -89,6 +89,7 @@ msgid "Analytic accounting in Stock Requests"
 msgstr "Contabilidad analítica en solicitudes de stock"
 
 #. module: stock_request
+#: model_terms:ir.ui.view,arch_db:stock_request.stock_request_order_search
 #: model_terms:ir.ui.view,arch_db:stock_request.stock_request_search
 msgid "Archived"
 msgstr "Archivado"
@@ -116,6 +117,15 @@ msgid "Cancel"
 msgstr "Cancelar"
 
 #. module: stock_request
+#: code:addons/stock_request/models/stock_request.py:13
+#: model_terms:ir.ui.view,arch_db:stock_request.stock_request_order_search
+#: model_terms:ir.ui.view,arch_db:stock_request.stock_request_search
+#, fuzzy, python-format
+#| msgid "Cancelled"
+msgid "Cancelled"
+msgstr "Cancelado"
+
+#. module: stock_request
 #: model_terms:ir.actions.act_window,help:stock_request.action_stock_request_form
 msgid "Click to add a Stock Request."
 msgstr "Pulse para añadir una solicitud de existencias."
@@ -135,6 +145,7 @@ msgstr "Empresa"
 
 #. module: stock_request
 #: code:addons/stock_request/models/stock_request.py:189
+#: code:addons/stock_request/models/stock_request.py:199
 #, python-format
 msgid "Company must be equal to the order"
 msgstr "La compañía debe ser la misma que la de la petición"
@@ -165,6 +176,13 @@ msgid "Created on"
 msgstr "Creado el"
 
 #. module: stock_request
+#: model_terms:ir.ui.view,arch_db:stock_request.stock_request_search
+#, fuzzy
+#| msgid "Stock requests"
+msgid "Current requests"
+msgstr "Solicitudes de existencias"
+
+#. module: stock_request
 #: model:ir.model.fields,help:stock_request.field_stock_request__expected_date
 #: model:ir.model.fields,help:stock_request.field_stock_request_order__expected_date
 msgid "Date when you expect to receive the goods."
@@ -185,9 +203,19 @@ msgid "Display Name"
 msgstr "Nombre para mostrar"
 
 #. module: stock_request
+#: code:addons/stock_request/models/stock_request.py:12
 #: model_terms:ir.ui.view,arch_db:stock_request.view_stock_request_form
+#, python-format
 msgid "Done"
 msgstr "Hecho"
+
+#. module: stock_request
+#: code:addons/stock_request/models/stock_request.py:10
+#: model_terms:ir.ui.view,arch_db:stock_request.stock_request_order_search
+#: model_terms:ir.ui.view,arch_db:stock_request.stock_request_search
+#, python-format
+msgid "Draft"
+msgstr "Borrador"
 
 #. module: stock_request
 #: model_terms:ir.ui.view,arch_db:stock_request.res_config_settings_view_form
@@ -222,9 +250,16 @@ msgstr "Fecha prevista"
 
 #. module: stock_request
 #: code:addons/stock_request/models/stock_request.py:196
+#: code:addons/stock_request/models/stock_request.py:206
 #, python-format
 msgid "Expected date must be equal to the order"
 msgstr "La fecha prevista debe ser la misma que la del pedido"
+
+#. module: stock_request
+#: model_terms:ir.ui.view,arch_db:stock_request.stock_request_order_search
+#: model_terms:ir.ui.view,arch_db:stock_request.stock_request_search
+msgid "Finished"
+msgstr ""
 
 #. module: stock_request
 #: model:ir.model.fields,field_description:stock_request.field_stock_request__message_follower_ids
@@ -248,6 +283,7 @@ msgid "Followers (Partners)"
 msgstr "Seguidores (Socios)"
 
 #. module: stock_request
+#: model_terms:ir.ui.view,arch_db:stock_request.stock_request_order_search
 #: model_terms:ir.ui.view,arch_db:stock_request.stock_request_search
 msgid "Group By"
 msgstr "Agrupar por"
@@ -285,6 +321,21 @@ msgstr "Si está marcado, los nuevos mensajes requieren su atención."
 #: model:ir.model.fields,help:stock_request.field_stock_request_order__message_has_error
 msgid "If checked, some messages have a delivery error."
 msgstr "Si está marcado, algunos mensajes tienen un error de entrega."
+
+#. module: stock_request
+#: model_terms:ir.ui.view,arch_db:stock_request.stock_request_order_search
+#: model_terms:ir.ui.view,arch_db:stock_request.stock_request_search
+#, fuzzy
+#| msgid "In progress"
+msgid "In Progress"
+msgstr "En progreso"
+
+#. module: stock_request
+#: code:addons/stock_request/models/stock_request.py:11
+#, fuzzy, python-format
+#| msgid "In progress"
+msgid "In progress"
+msgstr "En progreso"
 
 #. module: stock_request
 #: model:ir.model,name:stock_request.model_stock_location
@@ -339,12 +390,14 @@ msgstr "Última actualización el"
 #: model:ir.model.fields,field_description:stock_request.field_stock_request__location_id
 #: model:ir.model.fields,field_description:stock_request.field_stock_request_abstract__location_id
 #: model:ir.model.fields,field_description:stock_request.field_stock_request_order__location_id
+#: model_terms:ir.ui.view,arch_db:stock_request.stock_request_order_search
 #: model_terms:ir.ui.view,arch_db:stock_request.stock_request_search
 msgid "Location"
 msgstr "Ubicación"
 
 #. module: stock_request
 #: code:addons/stock_request/models/stock_request.py:172
+#: code:addons/stock_request/models/stock_request.py:182
 #, python-format
 msgid "Location must be equal to the order"
 msgstr "La ubicación debe ser la misma que la del pedido"
@@ -457,13 +510,15 @@ msgid "Number of unread messages"
 msgstr "Número de mensajes no leídos"
 
 #. module: stock_request
-#: code:addons/stock_request/models/stock_request_order.py:267
+#: code:addons/stock_request/models/stock_request_order.py:265
+#: code:addons/stock_request/models/stock_request_order.py:266
 #, python-format
 msgid "Only orders on draft state can be unlinked"
 msgstr "Solo los pedidos en estado borrado pueden ser eliminadas"
 
 #. module: stock_request
 #: code:addons/stock_request/models/stock_request.py:334
+#: code:addons/stock_request/models/stock_request.py:353
 #, python-format
 msgid "Only requests on draft state can be unlinked"
 msgstr "Sólo se pueden eliminar peticiones en estado borrador"
@@ -518,6 +573,7 @@ msgstr "Grupo de abastecimiento"
 
 #. module: stock_request
 #: code:addons/stock_request/models/stock_request.py:182
+#: code:addons/stock_request/models/stock_request.py:192
 #, python-format
 msgid "Procurement group must be equal to the order"
 msgstr "El grupo de abastecimiento debe coincidir"
@@ -546,6 +602,13 @@ msgid "Purchases"
 msgstr "Compras"
 
 #. module: stock_request
+#: model:ir.model.fields,field_description:stock_request.field_stock_request__qty_cancelled
+#, fuzzy
+#| msgid "Cancelled"
+msgid "Qty Cancelled"
+msgstr "Cancelado"
+
+#. module: stock_request
 #: model:ir.model.fields,field_description:stock_request.field_stock_request__qty_done
 msgid "Qty Done"
 msgstr "Cantidad finalizada"
@@ -560,6 +623,13 @@ msgstr "Cantidad en progreso"
 #: model:ir.model.fields,field_description:stock_request.field_stock_request_abstract__product_uom_qty
 msgid "Quantity"
 msgstr "Cantidad"
+
+#. module: stock_request
+#: model:ir.model.fields,help:stock_request.field_stock_request__qty_cancelled
+#, fuzzy
+#| msgid "Quantity completed"
+msgid "Quantity cancelled"
+msgstr "Cantidad completada"
 
 #. module: stock_request
 #: model:ir.model.fields,help:stock_request.field_stock_request__qty_done
@@ -650,6 +720,7 @@ msgstr "Solicitado por"
 
 #. module: stock_request
 #: code:addons/stock_request/models/stock_request.py:158
+#: code:addons/stock_request/models/stock_request.py:168
 #, python-format
 msgid "Requested by must be equal to the order"
 msgstr "El solicitante debe coincidir"
@@ -768,6 +839,7 @@ msgstr "Pedido de existencias"
 #. module: stock_request
 #: model:ir.actions.act_window,name:stock_request.stock_request_order_action
 #: model:ir.ui.menu,name:stock_request.stock_request_order_menu
+#: model_terms:ir.ui.view,arch_db:stock_request.stock_request_order_search
 msgid "Stock Request Orders"
 msgstr "Pedidos de existencias"
 
@@ -819,6 +891,13 @@ msgid "Stock Requests Kanban integration"
 msgstr "Integración de solicitudes de existencias con tarjetas Kanbans"
 
 #. module: stock_request
+#: model_terms:ir.ui.view,arch_db:stock_request.stock_request_order_search
+#, fuzzy
+#| msgid "Stock Requests Search"
+msgid "Stock Requests Order Search"
+msgstr "Buscar solicitudes de existencias"
+
+#. module: stock_request
 #: model_terms:ir.ui.view,arch_db:stock_request.stock_request_search
 msgid "Stock Requests Search"
 msgstr "Buscar solicitudes de existencias"
@@ -851,13 +930,15 @@ msgstr "Estado enviado en solicitudes de stock"
 
 #. module: stock_request
 #: code:addons/stock_request/models/stock_move.py:38
-#: code:addons/stock_request/models/stock_request_order.py:284
+#: code:addons/stock_request/models/stock_request_order.py:282
+#: code:addons/stock_request/models/stock_request_order.py:283
 #, python-format
 msgid "The company of the stock request must match with that of the location."
 msgstr "La compañía de la solicitud debe coincidir con la de la localización."
 
 #. module: stock_request
-#: code:addons/stock_request/models/stock_request_order.py:275
+#: code:addons/stock_request/models/stock_request_order.py:273
+#: code:addons/stock_request/models/stock_request_order.py:274
 #, python-format
 msgid "The company of the stock request must match with that of the warehouse."
 msgstr "La compañía de la solicitud debe coincidir con la del almacén."
@@ -874,12 +955,14 @@ msgstr ""
 
 #. module: stock_request
 #: code:addons/stock_request/models/stock_request.py:206
+#: code:addons/stock_request/models/stock_request.py:216
 #, python-format
 msgid "The picking policy must be equal to the order"
 msgstr "La política de albaranes debe coincidir"
 
 #. module: stock_request
-#: code:addons/stock_request/models/stock_request_order.py:293
+#: code:addons/stock_request/models/stock_request_order.py:291
+#: code:addons/stock_request/models/stock_request_order.py:292
 #, python-format
 msgid "This action only works in the context of products"
 msgstr "Esta acción solo funciona en el contexto de productos"
@@ -903,7 +986,8 @@ msgid "Transfers"
 msgstr "Transferencias"
 
 #. module: stock_request
-#: code:addons/stock_request/models/stock_request_order.py:314
+#: code:addons/stock_request/models/stock_request_order.py:312
+#: code:addons/stock_request/models/stock_request_order.py:313
 #, python-format
 msgid ""
 "Unfortunately it seems you do not have the necessary rights for creating "
@@ -946,12 +1030,14 @@ msgstr "Usar Compras con las Solicitudes de Existencias"
 #: model:ir.model.fields,field_description:stock_request.field_stock_request__warehouse_id
 #: model:ir.model.fields,field_description:stock_request.field_stock_request_abstract__warehouse_id
 #: model:ir.model.fields,field_description:stock_request.field_stock_request_order__warehouse_id
+#: model_terms:ir.ui.view,arch_db:stock_request.stock_request_order_search
 #: model_terms:ir.ui.view,arch_db:stock_request.stock_request_search
 msgid "Warehouse"
 msgstr "Almacén"
 
 #. module: stock_request
 #: code:addons/stock_request/models/stock_request.py:165
+#: code:addons/stock_request/models/stock_request.py:175
 #, python-format
 msgid "Warehouse must be equal to the order"
 msgstr "El almacén debe coincidir"
@@ -1053,15 +1139,6 @@ msgid ""
 msgstr ""
 "Debe seleccionada una unidad de medida de producto de la misma categoría que "
 "la unidad de medida por defecto del producto"
-
-#~ msgid "Cancelled"
-#~ msgstr "Cancelado"
-
-#~ msgid "Draft"
-#~ msgstr "Borrador"
-
-#~ msgid "In progress"
-#~ msgstr "En progreso"
 
 #~ msgid "Packing Operation"
 #~ msgstr "Operación de empaquetado"

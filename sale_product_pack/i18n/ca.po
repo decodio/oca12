@@ -1,6 +1,6 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-#	* sale_product_pack
+# 	* sale_product_pack
 #
 msgid ""
 msgstr ""
@@ -33,9 +33,11 @@ msgstr "Línies en pack"
 
 #. module: sale_product_pack
 #: model:ir.model.fields,help:sale_product_pack.field_sale_order_line__pack_component_price
-msgid "On sale orders or purchase orders:\n"
+msgid ""
+"On sale orders or purchase orders:\n"
 "* Detailed per component: Detail lines with prices.\n"
-"* Totalized in main product: Detail lines merging lines prices on pack (don't show component prices).\n"
+"* Totalized in main product: Detail lines merging lines prices on pack "
+"(don't show component prices).\n"
 "* Ignored: Use product pack price (ignore detail line prices)."
 msgstr ""
 "Comandes de venda o comandes de compra:\n"
@@ -47,13 +49,14 @@ msgstr ""
 
 #. module: sale_product_pack
 #: model:ir.model.fields,help:sale_product_pack.field_sale_order_line__pack_type
-msgid "On sale orders or purchase orders:\n"
+msgid ""
+"On sale orders or purchase orders:\n"
 "* Detailed: Display components individually in the sale order.\n"
 "* Non Detailed: Do not display components individually in the sale order."
 msgstr ""
 "Comandes de venda o comandes de compra:\n"
-"* Detallat: mostra els components de forma individual en la comanda de venda."
-"\n"
+"* Detallat: mostra els components de forma individual en la comanda de "
+"venda.\n"
 "* No detallat: no mostren els components de forma individual en la comanda "
 "de venda."
 
@@ -61,6 +64,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:sale_product_pack.field_sale_order_line__pack_parent_line_id
 msgid "Pack"
 msgstr "Pack"
+
+#. module: sale_product_pack
+#: model:ir.model.fields,field_description:sale_product_pack.field_sale_order_line__pack_modifiable
+msgid "Pack Modifiable"
+msgstr ""
 
 #. module: sale_product_pack
 #: model:ir.model.fields,field_description:sale_product_pack.field_sale_order_line__pack_type
@@ -71,6 +79,17 @@ msgstr "Tipus de pack"
 #: model:ir.model.fields,field_description:sale_product_pack.field_sale_order_line__pack_component_price
 msgid "Pack component price"
 msgstr "Preu dels components"
+
+#. module: sale_product_pack
+#: model_terms:ir.ui.view,arch_db:sale_product_pack.view_order_form
+msgid "Parent Pack is not modifiable"
+msgstr ""
+
+#. module: sale_product_pack
+#: code:addons/sale_product_pack/models/sale_order_line.py:101
+#, python-format
+msgid "Parent Product"
+msgstr ""
 
 #. module: sale_product_pack
 #: model:ir.model,name:sale_product_pack.model_product_pack_line
@@ -98,9 +117,15 @@ msgid "The pack that contains this product."
 msgstr "El pack que conté aquest producte."
 
 #. module: sale_product_pack
-#: code:addons/sale_product_pack/models/sale_order_line.py:92
+#: model:ir.model.fields,help:sale_product_pack.field_sale_order_line__pack_modifiable
+msgid "The parent pack is modifiable"
+msgstr ""
+
+#. module: sale_product_pack
+#: code:addons/sale_product_pack/models/sale_order_line.py:93
 #, python-format
-msgid "You can not change this line because is part of a pack included in this order"
+msgid ""
+"You can not change this line because is part of a pack included in this order"
 msgstr ""
 "No podeu canviar aquesta línia perquè forma part d’un pack inclòs en aquest "
 "ordre"
@@ -108,7 +133,9 @@ msgstr ""
 #. module: sale_product_pack
 #: code:addons/sale_product_pack/models/sale_order.py:28
 #, python-format
-msgid "You can not delete this line because is part of a pack in this sale order. In order to delete this line you need to delete the pack itself"
+msgid ""
+"You can not delete this line because is part of a pack in this sale order. "
+"In order to delete this line you need to delete the pack itself"
 msgstr ""
 "No podeu suprimir aquesta línia perquè forma part d’un pack d’aquesta "
 "comanda de venda. Per eliminar aquesta línia, heu de suprimir el pack"

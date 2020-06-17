@@ -7,6 +7,25 @@ from odoo import api, models
 class AccountMove(models.Model):
     _inherit = "account.move"
 
+    def prepare_other_company_move_line_values(
+            self, line, account=False, partner=False, keep=False):
+        if keep:
+            debit = line.debit
+            credit = line.credit
+        else:
+            debit = line.credit
+            credit = line.debit
+        return {
+            'name': line.name,
+            'account_id':
+                account and account.id or
+                line.transfer_to_company_id.due_to_account_id.id,
+            'partner_id':
+                partner and partner.id or line.company_id.partner_id.id,
+            'debit': debit,
+            'credit': credit,
+        }
+
     @api.multi
     def post(self, invoice=False):
         res = super().post(invoice)
@@ -20,11 +39,13 @@ class AccountMove(models.Model):
                     company_id = line.transfer_to_company_id.id
                     # Add the lines for the current company journal entry
                     transfer_lines.append((0, 0, {
+                        'name': line.name,
                         'account_id': line.account_id.id,
                         'partner_id': line.partner_id.id,
                         'debit': line.credit,
                         'credit': line.debit}))
                     transfer_lines.append((0, 0, {
+                        'name': line.name,
                         'account_id':
                             self.env.user.company_id.due_from_account_id.id,
                         'partner_id':
@@ -32,59 +53,49 @@ class AccountMove(models.Model):
                         'debit': line.debit,
                         'credit': line.credit}))
 
-                    if line.transfer_to_company_id not in\
+                    if line.transfer_to_company_id.id not in\
                             dedicated_companies_vals:
-                        account_id = \
+                        account = \
                             self.env['account.account'].sudo().with_context(
                                 force_company=company_id).search([
                                     ('code', '=', line.account_id.code),
                                     ('company_id', '=', company_id)],
-                                limit=1).id
+                                limit=1)
                         # Add the lines for the other company journal entry
-                        dedicated_companies_vals[line.transfer_to_company_id]\
-                            = {
+                        dedicated_companies_vals[
+                            line.transfer_to_company_id.id] = {
                             'date': move.date,
                             'ref': move.ref,
                             'journal_id':
                                 line.transfer_to_company_id.
                                 due_fromto_payment_journal_id.id,
                             'company_id': company_id,
-                            'line_ids': [(0, 0, {
-                                'account_id':
-                                    line.transfer_to_company_id.
-                                    due_to_account_id.id,
-                                'partner_id': line.company_id.partner_id.id,
-                                'debit': line.credit,
-                                'credit': line.debit
-                            }), (0, 0, {
-                                'account_id': account_id,
-                                'partner_id': line.partner_id.id,
-                                'debit': line.debit,
-                                'credit': line.credit})]}
+                            'line_ids': [
+                                (0, 0,
+                                 self.prepare_other_company_move_line_values(
+                                     line)),
+                                (0, 0,
+                                 self.prepare_other_company_move_line_values(
+                                     line, account, line.partner_id, True))]}
                     else:
                         # Update the lines for the other company journal entry
                         dedicated_companies_vals[
-                            line.transfer_to_company_id]['line_ids'].append(
-                            (0, 0, {
-                                'account_id':
-                                line.transfer_to_company_id.
-                                due_to_account_id.id,
-                                'partner_id': line.company_id.partner_id.id,
-                                'debit': line.credit,
-                                'credit': line.debit}))
-                        account_id = \
+                            line.transfer_to_company_id.id]['line_ids'].append(
+                            (0, 0,
+                             self.prepare_other_company_move_line_values(line)
+                             ))
+                        account = \
                             self.env['account.account'].sudo().with_context(
                                 force_company=company_id).search([
                                     ('code', '=', line.account_id.code),
                                     ('company_id', '=', company_id)],
-                                limit=1).id
+                                limit=1)
                         dedicated_companies_vals[
-                            line.transfer_to_company_id]['line_ids'].append(
-                            (0, 0, {
-                                'account_id': account_id,
-                                'partner_id': line.partner_id.id,
-                                'debit': line.debit,
-                                'credit': line.credit}))
+                            line.transfer_to_company_id.id]['line_ids'].append(
+                            (0, 0,
+                             self.prepare_other_company_move_line_values(
+                                 line, account, line.partner_id, True)
+                             ))
                     lines_to_reconcile.append(line)
 
             # Create, post and reconcile the entries in the current company
@@ -112,11 +123,11 @@ class AccountMove(models.Model):
 
                 # Create and post the entries for the other companies
                 dedicated_company_move = self.env['account.move'].sudo()
-                for company in dedicated_companies_vals:
+                for company_id in dedicated_companies_vals:
                     dedicated_company_move += \
                         self.env['account.move'].sudo().with_context(
-                            force_company=company).create(
-                            dedicated_companies_vals[company])
+                            force_company=company_id).create(
+                            dedicated_companies_vals[company_id])
                 # TODO: Determine the conditions to auto-post this entry
                 # Left in draft to set analytic information
                 # dedicated_company_move.post()

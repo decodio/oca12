@@ -1,9 +1,9 @@
 # Copyright 2017 Tecnativa - Vicent Cubells
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 {
     "name": "CRM Phone Calls",
-    "version": "12.0.1.4.0",
+    "version": "12.0.1.4.1",
     "category": "Customer Relationship Management",
     "author": "Odoo S.A., "
               "Tecnativa, "

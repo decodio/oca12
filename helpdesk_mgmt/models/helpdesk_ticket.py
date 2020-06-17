@@ -12,10 +12,11 @@ class HelpdeskTicket(models.Model):
     def _get_default_stage_id(self):
         return self.env['helpdesk.ticket.stage'].search([], limit=1).id
 
+    active = fields.Boolean(default=True)
     number = fields.Char(string='Ticket number', default="/",
                          readonly=True)
     name = fields.Char(string='Title', required=True)
-    description = fields.Text(required=True)
+    description = fields.Html(required=True, sanitize_style=True)
     user_id = fields.Many2one(
         'res.users',
         string='Assigned user',)

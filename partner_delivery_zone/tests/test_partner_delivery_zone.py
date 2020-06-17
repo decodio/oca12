@@ -1,12 +1,11 @@
 # Copyright 2018 Tecnativa - Sergio Teruel
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from odoo.tests import SavepointCase
+from odoo.tests.common import Form
 from lxml import etree
 
 
 class TestPartnerDeliveryZone(SavepointCase):
-    at_install = False
-    post_install = True
 
     @classmethod
     def setUpClass(cls):
@@ -27,20 +26,12 @@ class TestPartnerDeliveryZone(SavepointCase):
         cls.product = cls.env['product.product'].create({
             'name': 'test',
         })
-        so = cls.env['sale.order'].new({
-            'partner_id': cls.partner.id,
-            'order_line': [(0, 0, {
-                'name': cls.product.name,
-                'product_id': cls.product.id,
-                'product_uom_qty': 10.0,
-                'product_uom': cls.product.uom_id.id,
-                'price_unit': 1000.00,
-            })],
-        })
-        so.onchange_partner_id()
-        so.onchange_partner_shipping_id_delivery_zone()
-        cls.order = cls.env['sale.order'].create(
-            so._convert_to_write(so._cache))
+        order_form = Form(cls.env['sale.order'])
+        order_form.partner_id = cls.partner
+        with order_form.order_line.new() as line_form:
+            line_form.product_id = cls.product
+            line_form.price_unit = 1000
+        cls.order = order_form.save()
         cls.View = cls.env['ir.ui.view']
 
     def test_partner_child_propagate(self):
@@ -117,3 +108,65 @@ class TestPartnerDeliveryZone(SavepointCase):
                 picking.delivery_zone_id,
                 self.order.partner_shipping_id.delivery_zone_id
             )
+
+    def test_order_assign_commercial_partner_delivery_zone(self):
+        # For contact type partners the delivery zone get from commercial
+        # partner
+        self.child_partner_contact = self.env['res.partner'].create({
+            'name': 'Partner contact',
+            'type': 'contact',
+            'parent_id': self.partner.id,
+        })
+        self.child_partner_delivery = self.env['res.partner'].create({
+            'name': 'Partner delivery',
+            'type': 'delivery',
+            'parent_id': self.partner.id,
+        })
+
+        self.order.partner_shipping_id = self.child_partner_contact
+        self.order.onchange_partner_shipping_id_delivery_zone()
+        self.assertEqual(self.order.delivery_zone_id,
+                         self.partner.delivery_zone_id)
+
+        self.order.partner_shipping_id = self.child_partner_delivery
+        self.order.onchange_partner_shipping_id_delivery_zone()
+        self.assertFalse(self.order.delivery_zone_id)
+
+    def test_picking_assign_commercial_partner_contact_zone(self):
+        # For contact type partners the delivery zone get from commercial
+        # partner
+        self.child_partner_contact = self.env['res.partner'].create({
+            'name': 'Partner contact',
+            'type': 'contact',
+            'parent_id': self.partner.id,
+        })
+        self.order.action_confirm()
+        picking = self.order.picking_ids[0]
+        picking.partner_id = self.child_partner_contact
+        picking.onchange_partner_id_zone()
+        self.assertEqual(picking.delivery_zone_id,
+                         self.partner.delivery_zone_id)
+
+    def test_picking_assign_commercial_partner_delivery_zone(self):
+        # For contact type partners the delivery zone get from commercial
+        # partner
+        self.child_partner_delivery = self.env['res.partner'].create({
+            'name': 'Partner delivery',
+            'type': 'delivery',
+            'parent_id': self.partner.id,
+        })
+        self.order.action_confirm()
+        picking = self.order.picking_ids[0]
+        picking.partner_id = self.child_partner_delivery
+        picking.onchange_partner_id_zone()
+        self.assertFalse(picking.delivery_zone_id)
+
+    def test_change_delivery_zone(self):
+        self.order.action_confirm()
+        self.assertEqual(
+            self.order.picking_ids.delivery_zone_id, self.delivery_zone_a)
+        self.order.picking_ids.delivery_zone_id = self.delivery_zone_b
+        self.assertEqual(self.order.delivery_zone_id, self.delivery_zone_b)
+        self.order.delivery_zone_id = self.delivery_zone_a
+        self.assertEqual(
+            self.order.picking_ids.delivery_zone_id, self.delivery_zone_a)

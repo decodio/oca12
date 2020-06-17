@@ -2,13 +2,17 @@
 # Copyright 2019-2020 Dataplug (https://dataplug.io)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
+from datetime import datetime
 from dateutil.relativedelta import relativedelta, MO
 from decimal import Decimal
+from html import escape
 import logging
+from pytz import timezone, utc
 from sys import exc_info
 
 from odoo import models, fields, api, _
 from odoo.addons.base.models.res_bank import sanitize_account_number
+from odoo.addons.base.models.res_partner import _tz_get
 
 _logger = logging.getLogger(__name__)
 
@@ -42,6 +46,15 @@ class OnlineBankStatementProvider(models.Model):
     )
     account_number = fields.Char(
         related='journal_id.bank_account_id.sanitized_acc_number'
+    )
+    tz = fields.Selection(
+        selection=_tz_get,
+        string='Timezone',
+        default=lambda self: self.env.context.get('tz'),
+        help=(
+            'Timezone to convert transaction timestamps to prior being'
+            ' saved into a statement.'
+        ),
     )
     service = fields.Selection(
         selection=lambda self: self._selection_service(),
@@ -156,6 +169,7 @@ class OnlineBankStatementProvider(models.Model):
             )
         AccountBankStatementLine = self.env['account.bank.statement.line']
         for provider in self:
+            provider_tz = timezone(provider.tz) if provider.tz else utc
             statement_date_since = provider._get_statement_date_since(
                 date_since
             )
@@ -169,7 +183,6 @@ class OnlineBankStatementProvider(models.Model):
                         statement_date_until
                     )
                 except:
-                    e = exc_info()[1]
                     if is_scheduled:
                         _logger.warning(
                             'Online Bank Statement Provider "%s" failed to'
@@ -182,16 +195,16 @@ class OnlineBankStatementProvider(models.Model):
                         )
                         provider.message_post(
                             body=_(
-                                'Online Bank Statement Provider "%s" failed to'
-                                ' obtain statement data since %s until %s:\n%s'
+                                'Failed to obtain statement data for period '
+                                'since %s until %s: %s. See server logs for '
+                                'more details.'
                             ) % (
-                                provider.name,
                                 statement_date_since,
                                 statement_date_until,
-                                str(e) if e else _('N/A'),
+                                escape(str(exc_info()[1])) or _('N/A')
                             ),
                             subject=_(
-                                'Online Bank Statement Provider failure'
+                                'Issue with Online Bank Statement Provider'
                             ),
                         )
                         break
@@ -201,9 +214,12 @@ class OnlineBankStatementProvider(models.Model):
                     statement_date_until,
                 )
                 if not data:
-                    statement_date_since = statement_date_until
-                    continue
+                    data = ([], {})
                 lines_data, statement_values = data
+                if not lines_data:
+                    lines_data = []
+                if not statement_values:
+                    statement_values = {}
                 statement = AccountBankStatement.search([
                     ('journal_id', '=', provider.journal_id.id),
                     ('state', '=', 'open'),
@@ -225,7 +241,14 @@ class OnlineBankStatementProvider(models.Model):
                     )
                 filtered_lines = []
                 for line_values in lines_data:
-                    date = fields.Datetime.from_string(line_values['date'])
+                    date = line_values['date']
+                    if not isinstance(date, datetime):
+                        date = fields.Datetime.from_string(date)
+
+                    if date.tzinfo is None:
+                        date = date.replace(tzinfo=utc)
+                    date = date.astimezone(utc).replace(tzinfo=None)
+
                     if date < statement_date_since or date < date_since:
                         if 'balance_start' in statement_values:
                             statement_values['balance_start'] = (
@@ -246,6 +269,11 @@ class OnlineBankStatementProvider(models.Model):
                                 )
                             )
                         continue
+
+                    date = date.replace(tzinfo=utc)
+                    date = date.astimezone(provider_tz).replace(tzinfo=None)
+                    line_values['date'] = date
+
                     unique_import_id = line_values.get('unique_import_id')
                     if unique_import_id:
                         unique_import_id = provider._generate_unique_import_id(
@@ -258,6 +286,7 @@ class OnlineBankStatementProvider(models.Model):
                                 [('unique_import_id', '=', unique_import_id)],
                                 limit=1):
                             continue
+
                     bank_account_number = line_values.get('account_number')
                     if bank_account_number:
                         line_values.update({
@@ -267,6 +296,7 @@ class OnlineBankStatementProvider(models.Model):
                                 )
                             ),
                         })
+
                     filtered_lines.append(line_values)
                 statement_values.update({
                     'line_ids': [[0, False, line] for line in filtered_lines],
@@ -344,6 +374,8 @@ class OnlineBankStatementProvider(models.Model):
         # NOTE: Statement date is treated by Odoo as start of period. Details
         #  - addons/account/models/account_journal_dashboard.py
         #  - def get_line_graph_datas()
+        tz = timezone(self.tz) if self.tz else utc
+        date_since = date_since.replace(tzinfo=utc).astimezone(tz)
         return date_since.date()
 
     @api.multi

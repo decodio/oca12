@@ -4,11 +4,12 @@
 
 {
     'name': 'Online Bank Statements',
-    'version': '12.0.1.3.1',
+    'version': '12.0.1.5.1',
     'author':
         'Brainbean Apps, '
         'Dataplug, '
         'Odoo Community Association (OCA)',
+    'maintainers': ['alexey-pelykh'],
     'website': 'https://github.com/OCA/bank-statement-import/',
     'license': 'AGPL-3',
     'category': 'Accounting',

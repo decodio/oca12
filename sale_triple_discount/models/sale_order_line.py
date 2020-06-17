@@ -4,8 +4,7 @@
 # Copyright 2018 Simone Rubino - Agile Business Group
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo import api, fields, models
 import odoo.addons.decimal_precision as dp
 
 
@@ -18,10 +17,6 @@ class SaleOrderLine(models.Model):
             return self._additive_discount()
         elif self.discounting_type == "multiplicative":
             return self._multiplicative_discount()
-        else:
-            raise ValidationError(_(
-                "Sale order line %s has unknown discounting type %s"
-            ) % (self.name, self.discounting_type))
 
     def _additive_discount(self):
         self.ensure_one()

@@ -4,7 +4,7 @@
 
 {
     'name': 'Stock Location Limit Product',
-    'version': '12.0.1.1.0',
+    'version': '12.0.1.3.0',
     'license': 'AGPL-3',
     'author': 'Open Source Integrators, Odoo Community Association (OCA),',
     'website': "https://github.com/OCA/stock-logistics-warehouse",
@@ -19,7 +19,7 @@
     ],
     'data': [
         'security/ir.model.access.csv',
-        'views/res_config_settings.xml',
+        'views/product_template.xml',
         'views/stock_location_view.xml',
     ],
     'installable': True,

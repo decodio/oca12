@@ -30,6 +30,8 @@ class SaleOrderLine(models.Model):
         'pack_parent_line_id',
         'Lines in pack'
     )
+    pack_modifiable = fields.Boolean(
+        help='The parent pack is modifiable')
 
     @api.multi
     def expand_pack_line(self, write=False):
@@ -39,7 +41,6 @@ class SaleOrderLine(models.Model):
         do_not_expand = self._context.get('update_prices') or \
             self._context.get('update_pricelist', False)
         if (
-                self.state == 'draft' and
                 self.product_id.pack_ok and
                 self.pack_type == 'detailed'):
             for subline in self.product_id.get_pack_lines():
@@ -88,7 +89,18 @@ class SaleOrderLine(models.Model):
         """ Do not let to edit a sale order line if this one belongs to pack
         """
         if self._origin.pack_parent_line_id and \
-           not self._origin.pack_parent_line_id.product_id.pack_modifiable:
+           not self._origin.pack_modifiable:
             raise UserError(_(
                 'You can not change this line because is part of a pack'
                 ' included in this order'))
+
+    @api.multi
+    def action_open_parent_pack_product_view(self):
+        domain = [('id', 'in', self.mapped(
+            'pack_parent_line_id').mapped('product_id').ids)]
+        return {'name': _('Parent Product'),
+                'type': 'ir.actions.act_window',
+                'res_model': 'product.product',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'domain': domain}
