@@ -95,45 +95,13 @@
                             <field name="partner_email"/>
                             <field name="category_id"/>
                             <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
+                            <field name="sequence" groups="base.group_no_one"/>
                         </group>
                     </group>
                     <group>
                         <notebook>
                             <page string="Description" name="description">
                                 <field name="description" widget="html"/>
-                            </page>
-                            <page string="Attachments" name="attachment">
-                                <field name="attachment_ids" readonly="True">
-                                    <kanban class="o_kanban_mobile" archivable="false"  default_group_by="attachment_ids" >
-                                        <field name="id"/>
-                                        <field name="mimetype"/>
-                                        <field name="type"/>
-                                        <field name="datas_fname"/>
-                                        <field name="name"/>
-                                        <templates>
-                                            <t t-name="kanban-box">
-                                                <div class="oe_kanban_global_click">
-                                                    <div class="oe_kanban_vignette">
-                                                        <div class="oe_attachment">
-                                                            <div class="oe_name">
-                                                                <field name="name"/>
-                                                            </div>
-                                                            <div t-if="record.type.raw_value == 'binary'">
-                                                                <a t-attf-href="/web/content/#{record.id.raw_value}?download=1">
-                                                                    <t t-set="webimage" t-value="new RegExp('image.*(gif|jpeg|jpg|png)').test(record.mimetype.value)"/>
-                                                                    <div t-if="!webimage" class="o_image" t-att-data-mimetype="record.mimetype.value"/>
-                                                                    <div t-if="webimage" class="o_attachment_image">
-                                                                        <img t-attf-src="/web/image/#{record.id.raw_value}?download=1"/>
-                                                                    </div>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </t>
-                                        </templates>
-                                    </kanban>
-                                </field>
                             </page>
                             <page string="Other Information" name="other_info">
                                 <group>
@@ -180,6 +148,7 @@
               <field name="name"/>
               <field name="partner_name"/>
               <field name="user_id"/>
+              <field name="sequence"/>
               <field name="color"/>
               <field name="stage_id"/>
               <field name="priority" widget="priority"/>

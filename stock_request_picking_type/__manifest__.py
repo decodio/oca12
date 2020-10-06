@@ -4,12 +4,12 @@
 {
     'name': 'Stock Request Picking Type',
     'summary': 'Add Stock Requests to the Inventory App',
-    'version': '12.0.2.1.0',
+    'version': '12.0.2.1.1',
     'license': 'LGPL-3',
     'website': 'https://github.com/stock-logistics-warehouse',
     'author': 'Open Source Integrators, '
               'Odoo Community Association (OCA)',
-    'category': 'Warehouse Management',
+    'category': 'Warehouse',
     'depends': [
         'stock_request_submit',
     ],

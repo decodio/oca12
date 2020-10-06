@@ -1,2 +1,2 @@
 This module provides online bank statements from
-`PayPal.com <https://paypal.com/>`_.
+`PayPal.com <https://paypal.com/>`__.

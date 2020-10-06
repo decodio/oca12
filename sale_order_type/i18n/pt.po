@@ -9,14 +9,15 @@ msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-27 03:53+0000\n"
-"PO-Revision-Date: 2018-01-27 03:53+0000\n"
-"Last-Translator: OCA Transbot <transbot@odoo-community.org>, 2017\n"
+"PO-Revision-Date: 2020-09-07 01:00+0000\n"
+"Last-Translator: Pedro Castro Silva <pedrocs@exo.pt>\n"
 "Language-Team: Portuguese (https://www.transifex.com/oca/teams/23907/pt/)\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Weblate 3.10\n"
 
 #. module: sale_order_type
 #: model:ir.model.fields,field_description:sale_order_type.field_sale_order_type__journal_id
@@ -128,6 +129,11 @@ msgid "Pricelist"
 msgstr ""
 
 #. module: sale_order_type
+#: model:ir.model.fields,field_description:sale_order_type.field_sale_order_type__route_id
+msgid "Route"
+msgstr ""
+
+#. module: sale_order_type
 #: model:ir.model,name:sale_order_type.model_sale_order
 #, fuzzy
 msgid "Sale Order"
@@ -136,6 +142,7 @@ msgstr "Ordem de Venda"
 #. module: sale_order_type
 #: model:ir.model.fields,field_description:sale_order_type.field_res_partner__sale_type
 #: model:ir.model.fields,field_description:sale_order_type.field_res_users__sale_type
+#: model_terms:ir.ui.view,arch_db:sale_order_type.view_sales_order_filter
 msgid "Sale Order Type"
 msgstr ""
 
@@ -145,15 +152,15 @@ msgid "Sale Type"
 msgstr ""
 
 #. module: sale_order_type
-#: model_terms:ir.ui.view,arch_db:sale_order_type.res_partner_sale_type_form_view
-msgid "Sales Order Type"
-msgstr ""
+#: model:ir.model,name:sale_order_type.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Linha de Encomenda de Venda"
 
 #. module: sale_order_type
 #: model:ir.actions.act_window,name:sale_order_type.sot_sale_order_type_action
 #: model:ir.ui.menu,name:sale_order_type.sot_sale_order_type_menu
 msgid "Sales Order Types"
-msgstr ""
+msgstr "Tipos de Encomendas de Venda"
 
 #. module: sale_order_type
 #: model:ir.model.fields,field_description:sale_order_type.field_sale_order_type__picking_policy
@@ -170,7 +177,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:sale_order_type.field_sale_order__type_id
 #: model_terms:ir.ui.view,arch_db:sale_order_type.sot_sale_order_type_form_view
 #: model_terms:ir.ui.view,arch_db:sale_order_type.sot_sale_order_type_search_view
-#: model_terms:ir.ui.view,arch_db:sale_order_type.sot_sale_order_type_tree_view
 msgid "Type"
 msgstr "Tipo"
 

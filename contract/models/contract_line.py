@@ -205,8 +205,8 @@ class ContractLine(models.Model):
                 ('date_end', '>=', today),
                 ('date_end', '=', False),
                 "|",
-                "&",
                 ('is_auto_renew', '=', True),
+                "&",
                 ('is_auto_renew', '=', False),
                 ('termination_notice_date', '>', today),
             ]
@@ -649,7 +649,13 @@ class ContractLine(models.Model):
                         % line.name
                     )
 
-    @api.depends('recurring_next_date', 'date_start', 'date_end')
+    @api.depends(
+        'display_type',
+        'is_recurring_note',
+        'recurring_next_date',
+        'date_start',
+        'date_end',
+    )
     def _compute_create_invoice_visibility(self):
         # TODO: depending on the lines, and their order, some sections
         # have no meaning in certain invoices

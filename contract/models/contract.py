@@ -34,8 +34,12 @@ class ContractContract(models.Model):
     )
     currency_id = fields.Many2one(
         compute="_compute_currency_id",
+        inverse="_inverse_currency_id",
         comodel_name="res.currency",
         string="Currency",
+    )
+    manual_currency_id = fields.Many2one(
+        comodel_name="res.currency",
         readonly=True,
     )
     contract_template_id = fields.Many2one(
@@ -87,6 +91,7 @@ class ContractContract(models.Model):
 
     commercial_partner_id = fields.Many2one(
         'res.partner',
+        compute_sudo=True,
         related='partner_id.commercial_partner_id',
         store=True,
         string='Commercial Entity',
@@ -148,23 +153,46 @@ class ContractContract(models.Model):
         )
         return invoices
 
-    @api.depends("pricelist_id", "partner_id", "journal_id", "company_id")
+    def _get_computed_currency(self):
+        """Helper method for returning the theoretical computed currency."""
+        self.ensure_one()
+        currency = self.env['res.currency']
+        if any(self.contract_line_ids.mapped('automatic_price')):
+            # Use pricelist currency
+            currency = (
+                self.pricelist_id.currency_id or
+                self.partner_id.with_context(
+                    force_company=self.company_id.id,
+                ).property_product_pricelist.currency_id
+            )
+        return (
+            currency or self.journal_id.currency_id or
+            self.company_id.currency_id
+        )
+
+    @api.depends(
+        "manual_currency_id",
+        "pricelist_id",
+        "partner_id",
+        "journal_id",
+        "company_id",
+    )
     def _compute_currency_id(self):
         for rec in self:
-            currency = self.env['res.currency']
-            if any(rec.contract_line_ids.mapped('automatic_price')):
-                # Use pricelist currency
-                currency = (
-                    rec.pricelist_id.currency_id or
-                    rec.partner_id.with_context(
-                        force_company=rec.company_id.id,
-                    ).property_product_pricelist.currency_id
-                )
-            rec.currency_id = (
-                currency.id or
-                rec.journal_id.currency_id.id or
-                rec.company_id.currency_id.id
-            )
+            if rec.manual_currency_id:
+                rec.currency_id = rec.manual_currency_id
+            else:
+                rec.currency_id = rec._get_computed_currency()
+
+    def _inverse_currency_id(self):
+        """If the currency is different from the computed one, then save it
+        in the manual field.
+        """
+        for rec in self:
+            if rec._get_computed_currency() != rec.currency_id:
+                rec.manual_currency_id = rec.currency_id
+            else:
+                rec.manual_currency_id = False
 
     @api.multi
     def _compute_invoice_count(self):
@@ -257,16 +285,21 @@ class ContractContract(models.Model):
                 if self.contract_template_id[field_name]:
                     self[field_name] = self.contract_template_id[field_name]
 
-    @api.onchange('partner_id')
+    @api.onchange('partner_id', 'company_id')
     def _onchange_partner_id(self):
-        self.pricelist_id = self.partner_id.property_product_pricelist.id
-        self.fiscal_position_id = self.partner_id.property_account_position_id
+        partner = (
+            self.partner_id
+            if not self.company_id
+            else self.partner_id.with_context(force_company=self.company_id.id)
+        )
+        self.pricelist_id = partner.property_product_pricelist.id
+        self.fiscal_position_id = partner.env[
+            'account.fiscal.position'
+        ].get_fiscal_position(partner.id)
         if self.contract_type == 'purchase':
-            self.payment_term_id = \
-                self.partner_id.property_supplier_payment_term_id
+            self.payment_term_id = partner.property_supplier_payment_term_id
         else:
-            self.payment_term_id = \
-                self.partner_id.property_payment_term_id
+            self.payment_term_id = partner.property_payment_term_id
         self.invoice_partner_id = self.partner_id.address_get(['invoice'])[
             'invoice'
         ]
@@ -496,17 +529,18 @@ class ContractContract(models.Model):
         This method triggers the creation of the next invoices of the contracts
         even if their next invoicing date is in the future.
         """
-        invoice = self._recurring_create_invoice()
-        if invoice:
-            self.message_post(
-                body=_(
-                    'Contract manually invoiced: '
-                    '<a href="#" data-oe-model="%s" data-oe-id="%s">Invoice'
-                    '</a>'
+        invoices = self._recurring_create_invoice()
+        if invoices:
+            for invoice in invoices:
+                self.message_post(
+                    body=_(
+                        'Contract manually invoiced: '
+                        '<a href="#" data-oe-model="%s" data-oe-id="%s">Invoice'
+                        '</a>'
+                    )
+                    % (invoice._name, invoice.id)
                 )
-                % (invoice._name, invoice.id)
-            )
-        return invoice
+        return invoices
 
     @api.multi
     def _recurring_create_invoice(self, date_ref=False):
@@ -518,8 +552,15 @@ class ContractContract(models.Model):
         if not date_ref:
             date_ref = fields.Date.context_today(self)
         domain = self._get_contracts_to_invoice_domain(date_ref)
-        contracts_to_invoice = self.search(domain)
-        return contracts_to_invoice._recurring_create_invoice(date_ref)
+        invoices = self.env["account.invoice"]
+        # Invoice by companies, so assignation emails get correct context
+        companies_to_invoice = self.read_group(domain, ["company_id"], ["company_id"])
+        for row in companies_to_invoice:
+            contracts_to_invoice = self.search(row["__domain"]).with_context(
+                allowed_company_ids=[row["company_id"][0]]
+            )
+            invoices |= contracts_to_invoice._recurring_create_invoice(date_ref)
+        return invoices
 
     @api.multi
     def action_terminate_contract(self):

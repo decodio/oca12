@@ -55,6 +55,17 @@ msgstr ""
 "der eingestellten Verkaufssteuern."
 
 #. module: product_standard_price_tax_included
+#: model:product.product,volume_uom_name:product_standard_price_tax_included.product_product
+#: model:product.template,volume_uom_name:product_standard_price_tax_included.product_product_product_template
+msgid "Liter(s)"
+msgstr ""
+
+#. module: product_standard_price_tax_included
+#: selection:product.pricelist.item,base:0
+msgid "Other Price"
+msgstr ""
+
+#. module: product_standard_price_tax_included
 #: selection:product.pricelist.item,base:0
 msgid "Other Pricelist"
 msgstr ""
@@ -82,7 +93,6 @@ msgstr ""
 #. module: product_standard_price_tax_included
 #: model:ir.model,name:product_standard_price_tax_included.model_product_product
 #, fuzzy
-#| msgid "Product Template"
 msgid "Product"
 msgstr "Produktvorlage"
 

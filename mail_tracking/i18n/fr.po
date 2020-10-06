@@ -64,7 +64,7 @@ msgstr ""
 "temporairement sur le serveur Mail Exchange (MX) du destinataire.\n"
 
 #. module: mail_tracking
-#: code:addons/mail_tracking/models/mail_message.py:216
+#: code:addons/mail_tracking/models/mail_message.py:217
 #, python-format
 msgid "-Unknown Author-"
 msgstr ""
@@ -184,7 +184,7 @@ msgid "Deferred"
 msgstr "Reporté"
 
 #. module: mail_tracking
-#: code:addons/mail_tracking/models/mail_message.py:76
+#: code:addons/mail_tracking/models/mail_message.py:77
 #: model_terms:ir.ui.view,arch_db:mail_tracking.view_mail_tracking_email_search
 #: model_terms:ir.ui.view,arch_db:mail_tracking.view_mail_tracking_event_search
 #: selection:mail.tracking.email,state:0
@@ -231,7 +231,6 @@ msgstr "Score du courriel"
 #. module: mail_tracking
 #: model:ir.model,name:mail_tracking.model_mail_thread
 #, fuzzy
-#| msgid "Email Score"
 msgid "Email Thread"
 msgstr "Score du courriel"
 
@@ -243,12 +242,11 @@ msgstr "Email retourné"
 #. module: mail_tracking
 #: model:ir.model,name:mail_tracking.model_mail_resend_message
 #, fuzzy
-#| msgid "Email Score"
 msgid "Email resend wizard"
 msgstr "Score du courriel"
 
 #. module: mail_tracking
-#: code:addons/mail_tracking/models/mail_message.py:75
+#: code:addons/mail_tracking/models/mail_message.py:76
 #: model_terms:ir.ui.view,arch_db:mail_tracking.view_mail_tracking_event_form
 #: selection:mail.tracking.email,state:0
 #, python-format
@@ -299,16 +297,23 @@ msgstr "Échec"
 #: model:ir.model.fields,field_description:mail_tracking.field_account_invoice__failed_message_ids
 #: model:ir.model.fields,field_description:mail_tracking.field_account_payment__failed_message_ids
 #: model:ir.model.fields,field_description:mail_tracking.field_calendar_event__failed_message_ids
+#: model:ir.model.fields,field_description:mail_tracking.field_event_event__failed_message_ids
+#: model:ir.model.fields,field_description:mail_tracking.field_event_registration__failed_message_ids
 #: model:ir.model.fields,field_description:mail_tracking.field_mail_blacklist__failed_message_ids
 #: model:ir.model.fields,field_description:mail_tracking.field_mail_channel__failed_message_ids
 #: model:ir.model.fields,field_description:mail_tracking.field_mail_mass_mailing_contact__failed_message_ids
+#: model:ir.model.fields,field_description:mail_tracking.field_mail_test__failed_message_ids
+#: model:ir.model.fields,field_description:mail_tracking.field_mail_test_activity__failed_message_ids
+#: model:ir.model.fields,field_description:mail_tracking.field_mail_test_full__failed_message_ids
+#: model:ir.model.fields,field_description:mail_tracking.field_mail_test_simple__failed_message_ids
+#: model:ir.model.fields,field_description:mail_tracking.field_mail_test_track__failed_message_ids
 #: model:ir.model.fields,field_description:mail_tracking.field_mail_thread__failed_message_ids
 #: model:ir.model.fields,field_description:mail_tracking.field_product_product__failed_message_ids
 #: model:ir.model.fields,field_description:mail_tracking.field_product_template__failed_message_ids
 #: model:ir.model.fields,field_description:mail_tracking.field_res_partner__failed_message_ids
 #: model:ir.model.fields,field_description:mail_tracking.field_res_users__failed_message_ids
+#: model:ir.model.fields,field_description:mail_tracking.field_test_performance_mail__failed_message_ids
 #, fuzzy
-#| msgid "Message"
 msgid "Failed Messages"
 msgstr "Message"
 
@@ -316,7 +321,6 @@ msgstr "Message"
 #. openerp-web
 #: code:addons/mail_tracking/static/src/xml/failed_message/thread.xml:39
 #, fuzzy, python-format
-#| msgid "Recipient"
 msgid "Failed Recipients:"
 msgstr "Destinataire"
 
@@ -407,7 +411,6 @@ msgstr "ir.mail_server"
 #: model:ir.model.fields,field_description:mail_tracking.field_mail_mail__mail_tracking_needs_action
 #: model:ir.model.fields,field_description:mail_tracking.field_mail_message__mail_tracking_needs_action
 #, fuzzy
-#| msgid "MailTracking event"
 msgid "Mail Tracking Needs Action"
 msgstr "Suivi du courriel: évènement"
 
@@ -417,7 +420,6 @@ msgstr "Suivi du courriel: évènement"
 #: model:ir.model.fields,field_description:mail_tracking.field_mail_mail__mail_tracking_ids
 #: model:ir.model.fields,field_description:mail_tracking.field_mail_message__mail_tracking_ids
 #, fuzzy
-#| msgid "MailTracking emails"
 msgid "Mail Trackings"
 msgstr "Suivi du courriel: courriels"
 
@@ -503,7 +505,7 @@ msgid "Open"
 msgstr "Ouverte"
 
 #. module: mail_tracking
-#: code:addons/mail_tracking/models/mail_message.py:77
+#: code:addons/mail_tracking/models/mail_message.py:78
 #: selection:mail.tracking.email,state:0
 #, python-format
 msgid "Opened"
@@ -529,7 +531,6 @@ msgstr "Partenaire"
 #: model:ir.model.fields,help:mail_tracking.field_mail_compose_message__email_to
 #: model:ir.model.fields,help:mail_tracking.field_mail_message__email_to
 #, fuzzy
-#| msgid "Recipient"
 msgid "Raw TO recipients"
 msgstr "Destinataire"
 
@@ -588,7 +589,7 @@ msgid "Sender email"
 msgstr "Courriel de l'expéditeur"
 
 #. module: mail_tracking
-#: code:addons/mail_tracking/models/mail_message.py:76
+#: code:addons/mail_tracking/models/mail_message.py:77
 #: model_terms:ir.ui.view,arch_db:mail_tracking.view_mail_tracking_email_search
 #: model_terms:ir.ui.view,arch_db:mail_tracking.view_mail_tracking_event_search
 #: selection:mail.tracking.email,state:0
@@ -635,7 +636,7 @@ msgid "State"
 msgstr "État"
 
 #. module: mail_tracking
-#: code:addons/mail_tracking/models/mail_message.py:78
+#: code:addons/mail_tracking/models/mail_message.py:79
 #, python-format
 msgid "Status: %s"
 msgstr ""
@@ -660,7 +661,7 @@ msgid "The message tracking will be considered to filter tracking issues"
 msgstr ""
 
 #. module: mail_tracking
-#: code:addons/mail_tracking/models/mail_message.py:84
+#: code:addons/mail_tracking/models/mail_message.py:85
 #, python-format
 msgid "The partner doesn't have a defined email"
 msgstr ""
@@ -678,7 +679,6 @@ msgstr "Heure"
 #: model:ir.model.fields,field_description:mail_tracking.field_mail_compose_message__email_to
 #: model:ir.model.fields,field_description:mail_tracking.field_mail_message__email_to
 #, fuzzy
-#| msgid "To:"
 msgid "To"
 msgstr "À :"
 
@@ -732,7 +732,7 @@ msgid "UTC timestamp"
 msgstr "Date et Heure en UTC"
 
 #. module: mail_tracking
-#: code:addons/mail_tracking/models/mail_message.py:77
+#: code:addons/mail_tracking/models/mail_message.py:78
 #, python-format
 msgid "Unknown"
 msgstr ""
@@ -779,7 +779,7 @@ msgid "User country"
 msgstr "Pays de l'utilisateur"
 
 #. module: mail_tracking
-#: code:addons/mail_tracking/models/mail_message.py:75
+#: code:addons/mail_tracking/models/mail_message.py:76
 #, python-format
 msgid "Waiting"
 msgstr ""

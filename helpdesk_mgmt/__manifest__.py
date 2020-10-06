@@ -4,7 +4,7 @@
     'name': 'Helpdesk Management',
     'summary': """
         Helpdesk""",
-    'version': '12.0.1.14.1',
+    'version': '12.0.1.22.0',
     'license': 'AGPL-3',
     'category': 'After-Sales',
     'author': 'AdaptiveCity, '
@@ -32,11 +32,12 @@
         'views/helpdesk_ticket_tag_view.xml',
         'views/helpdesk_ticket_view.xml',
         'views/helpdesk_dashboard_view.xml',
+        'views/report_helpdesk_ticket.xml',
     ],
     'demo': [
         'demo/helpdesk_demo.xml',
     ],
-    'development_status': 'Alpha',
+    'development_status': 'Beta',
     'application': True,
     'installable': True,
 }

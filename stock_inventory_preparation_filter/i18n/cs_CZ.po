@@ -51,7 +51,6 @@ msgid "Domain"
 msgstr ""
 
 #. module: stock_inventory_preparation_filter
-#: code:addons/stock_inventory_preparation_filter/models/stock_inventory.py:48
 #: code:addons/stock_inventory_preparation_filter/models/stock_inventory.py:50
 #, python-format
 msgid "Empty list"
@@ -77,7 +76,6 @@ msgstr "Inventář"
 #. module: stock_inventory_preparation_filter
 #: model:ir.model,name:stock_inventory_preparation_filter.model_stock_inventory_line_empty
 #, fuzzy
-#| msgid "Inventory"
 msgid "Inventory Line Empty"
 msgstr "Inventář"
 
@@ -117,21 +115,18 @@ msgid "Quantity"
 msgstr ""
 
 #. module: stock_inventory_preparation_filter
-#: code:addons/stock_inventory_preparation_filter/models/stock_inventory.py:42
 #: code:addons/stock_inventory_preparation_filter/models/stock_inventory.py:43
 #, python-format
 msgid "Selected Categories"
 msgstr ""
 
 #. module: stock_inventory_preparation_filter
-#: code:addons/stock_inventory_preparation_filter/models/stock_inventory.py:46
 #: code:addons/stock_inventory_preparation_filter/models/stock_inventory.py:48
 #, python-format
 msgid "Selected Lots"
 msgstr ""
 
 #. module: stock_inventory_preparation_filter
-#: code:addons/stock_inventory_preparation_filter/models/stock_inventory.py:43
 #: code:addons/stock_inventory_preparation_filter/models/stock_inventory.py:44
 #, python-format
 msgid "Selected Products"

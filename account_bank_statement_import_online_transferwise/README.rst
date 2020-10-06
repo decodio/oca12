@@ -26,7 +26,7 @@ Online Bank Statements: TransferWise.com
 |badge1| |badge2| |badge3| |badge4| |badge5| 
 
 This module provides online bank statements from
-`TransferWise.com <https://transferwise.com/>`_.
+`TransferWise.com <https://transferwise.com/>`__.
 
 **Table of contents**
 
@@ -83,13 +83,14 @@ Credits
 Authors
 ~~~~~~~
 
-* Brainbean Apps
-* Dataplug
+* CorporateHub
 
 Contributors
 ~~~~~~~~~~~~
 
-* Alexey Pelykh <alexey.pelykh@brainbeanapps.com>
+* `CorporateHub <https://corporatehub.eu/>`__
+
+  * Alexey Pelykh <alexey.pelykh@corphub.eu>
 
 Maintainers
 ~~~~~~~~~~~

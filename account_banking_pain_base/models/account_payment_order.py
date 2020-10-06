@@ -340,7 +340,6 @@ class AccountPaymentOrder(models.Model):
                 % self.company_id.name)
         return True
 
-    @api.model
     def generate_party_agent(
             self, parent_node, party_type, order, partner_bank, gen_args,
             bank_line=None):
@@ -437,7 +436,6 @@ class AccountPaymentOrder(models.Model):
 
         return True
 
-    @api.model
     def generate_party_block(
             self, parent_node, party_type, order, partner_bank, gen_args,
             bank_line=None):
@@ -451,7 +449,7 @@ class AccountPaymentOrder(models.Model):
             party_type_label = _("Creditor name")
         elif party_type == 'Dbtr':
             party_type_label = _("Debtor name")
-        name = 'partner_bank.partner_id.name'
+        name = 'partner_bank.acc_holder_name or partner_bank.partner_id.name'
         eval_ctx = {'partner_bank': partner_bank}
         party_name = self._prepare_field(
             party_type_label, name, eval_ctx, gen_args.get('name_maxsize'),

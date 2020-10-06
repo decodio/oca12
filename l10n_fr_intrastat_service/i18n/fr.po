@@ -39,7 +39,7 @@ msgid ""
 "year_month} and click on the button <em>Re-generate lines</em>.</p>\n"
 "\n"
 "% else:\n"
-"% if object.num_lines and object.num_decl_lines > 0:\n"
+"% if object.num_decl_lines > 0:\n"
 "<p>This draft DES contains ${object.num_decl_lines} ${object.num_decl_lines "
 "== 1 and 'line' or 'lines'} and the total amount is ${object.total_amount} "
 "${object.currency_id.symbol}.</p>\n"
@@ -209,7 +209,6 @@ msgstr ""
 #. module: l10n_fr_intrastat_service
 #: model:mail.template,subject:l10n_fr_intrastat_service.intrastat_service_reminder_email_template
 #, fuzzy
-#| msgid "Intrastat Service ${object.year_month} for ${object.company_id.name}"
 msgid "DES ${object.year_month} for ${object.company_id.name}"
 msgstr "DES ${object.year_month} pour ${object.company_id.name}"
 

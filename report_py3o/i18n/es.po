@@ -96,7 +96,6 @@ msgstr ""
 #. module: report_py3o
 #: model:ir.model.fields,field_description:report_py3o.field_py3o_report__ir_actions_report_id
 #, fuzzy
-#| msgid "Ir actions report xml id"
 msgid "Ir Actions Report"
 msgstr "Ir a los informes de acciones xml id"
 
@@ -217,7 +216,6 @@ msgid "Path to the libreoffice runtime"
 msgstr ""
 
 #. module: report_py3o
-#: selection:ir.actions.report,report_type:0
 #: model:ir.ui.menu,name:report_py3o.py3o_config_menu
 msgid "Py3o"
 msgstr "Programa Py3o"
@@ -244,14 +242,12 @@ msgstr "Modelos Py3o"
 #. module: report_py3o
 #: model:ir.model,name:report_py3o.model_py3o_template
 #, fuzzy
-#| msgid "Py3o Templates"
 msgid "Py3o template"
 msgstr "Modelos Py3o"
 
 #. module: report_py3o
 #: model:ir.model,name:report_py3o.model_ir_actions_report
 #, fuzzy
-#| msgid "Report"
 msgid "Report Action"
 msgstr "Informe"
 
@@ -263,7 +259,6 @@ msgstr "Reporte de Py30"
 #. module: report_py3o
 #: model:ir.model.fields,field_description:report_py3o.field_ir_actions_report__report_type
 #, fuzzy
-#| msgid "Report Py30"
 msgid "Report Type"
 msgstr "Reporte de Py30"
 
@@ -283,7 +278,7 @@ msgid "The implementer module that provides this report"
 msgstr "El módulo implementador que proporciona este informe"
 
 #. module: report_py3o
-#: code:addons/report_py3o/models/ir_actions_report.py:142
+#: code:addons/report_py3o/models/ir_actions_report.py:141
 #, python-format
 msgid ""
 "The libreoffice runtime is required to genereate the py3o report '%s' but is "
@@ -315,6 +310,11 @@ msgstr ""
 #. module: report_py3o
 #: selection:ir.actions.report,report_type:0
 msgid "csv"
+msgstr ""
+
+#. module: report_py3o
+#: selection:ir.actions.report,report_type:0
+msgid "py3o"
 msgstr ""
 
 #~ msgid "ir.actions.report.xml"

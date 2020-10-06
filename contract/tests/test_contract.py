@@ -806,7 +806,6 @@ class TestContract(TestContractBase):
                     'recurring_invoicing_type': recurring_invoicing_type,
                     'recurring_rule_type': recurring_rule_type,
                     'recurring_interval': recurring_interval,
-                    'max_date_end': max_date_end,
                 }
             )
 
@@ -2361,6 +2360,31 @@ class TestContract(TestContractBase):
         ).fields_view_get(view_type='form')
         self.assertEqual(view['view_id'], purchase_form_view.id)
 
+    def test_multicompany_partner_edited(self):
+        """Editing a partner with contracts in several companies works."""
+        company2 = self.env['res.company'].create({
+            "name": "Company 2",
+        })
+        unprivileged_user = self.env["res.users"].create({
+            "name": "unprivileged test user",
+            "login": "test",
+            "company_id": company2.id,
+            "company_ids": [(4, company2.id, False)],
+        })
+        parent_partner = self.env["res.partner"].create({
+            "name": "parent partner",
+            "is_company": True,
+        })
+        # Assume contract 2 is for company 2
+        self.contract2.company_id = company2
+        # Update the partner attached to both contracts
+        self.partner.sudo(unprivileged_user).with_context(
+            company_id=company2.id, force_company=company2.id
+        ).write({
+            "is_company": False,
+            "parent_id": parent_partner.id,
+        })
+
     def test_sale_fields_view_get(self):
         sale_form_view = self.env.ref(
             'contract.contract_line_customer_form_view'
@@ -2487,3 +2511,39 @@ class TestContract(TestContractBase):
                 'terminate_comment',
                 to_date('2018-02-13'),
             )
+
+    def test_currency(self):
+        currency_eur = self.env.ref("base.EUR")
+        currency_cad = self.env.ref("base.CAD")
+        # Get currency from company
+        self.contract2.journal_id = False
+        self.assertEqual(
+            self.contract2.currency_id, self.contract2.company_id.currency_id)
+        # Get currency from journal
+        journal = self.env["account.journal"].create({
+            "name": "Test journal CAD",
+            "code": "TCAD",
+            "type": "sale",
+            "currency_id": currency_cad.id,
+        })
+        self.contract2.journal_id = journal.id
+        self.assertEqual(self.contract2.currency_id, currency_cad)
+        # Get currency from contract pricelist
+        pricelist = self.env['product.pricelist'].create({
+            "name": "Test pricelist",
+            "currency_id": currency_eur.id,
+        })
+        self.contract2.pricelist_id = pricelist.id
+        self.contract2.contract_line_ids.automatic_price = True
+        self.assertEqual(self.contract2.currency_id, currency_eur)
+        # Get currency from partner pricelist
+        self.contract2.pricelist_id = False
+        self.contract2.partner_id.property_product_pricelist = pricelist.id
+        pricelist.currency_id = currency_cad.id
+        self.assertEqual(self.contract2.currency_id, currency_cad)
+        # Assign manual currency
+        self.contract2.manual_currency_id = currency_eur.id
+        self.assertEqual(self.contract2.currency_id, currency_eur)
+        # Assign same currency as computed one
+        self.contract2.currency_id = currency_cad.id
+        self.assertFalse(self.contract2.manual_currency_id)

@@ -31,7 +31,6 @@ msgstr ""
 #. module: packaging_uom
 #: model:ir.model.fields,field_description:packaging_uom.field_product_packaging__uom_id
 #, fuzzy
-#| msgid "Unit of Measure"
 msgid "Packaging Unit of Measure"
 msgstr "Unité de mesure"
 
@@ -41,7 +40,7 @@ msgid "Product Packaging"
 msgstr ""
 
 #. module: packaging_uom
-#: code:addons/packaging_uom/models/product_packaging.py:94
+#: code:addons/packaging_uom/models/product_packaging.py:95
 #, python-format
 msgid "The field Unit of Measure is required"
 msgstr ""

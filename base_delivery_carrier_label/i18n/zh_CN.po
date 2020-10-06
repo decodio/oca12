@@ -36,6 +36,7 @@ msgid "Account Password"
 msgstr "账户密码"
 
 #. module: base_delivery_carrier_label
+#: model:ir.model.fields,field_description:base_delivery_carrier_label.field_delivery_carrier_option__active
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_shipping_label__active
 msgid "Active"
 msgstr "有效"
@@ -109,7 +110,6 @@ msgid "Checksum/SHA1"
 msgstr "校验码/SHA1"
 
 #. module: base_delivery_carrier_label
-#: model:ir.model.fields,field_description:base_delivery_carrier_label.field_delivery_carrier__code
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_delivery_carrier_option__code
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_delivery_carrier_template_option__code
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_stock_picking__carrier_code
@@ -156,7 +156,6 @@ msgid "Default format of the carrier's label you want to print"
 msgstr "要打印的承运商标签的默认格式"
 
 #. module: base_delivery_carrier_label
-#: model:ir.model.fields,help:base_delivery_carrier_label.field_delivery_carrier__code
 #: model:ir.model.fields,help:base_delivery_carrier_label.field_stock_picking__carrier_code
 msgid "Delivery Method Code (according to carrier)"
 msgstr "交货方式代码（根据承运商）"
@@ -188,11 +187,9 @@ msgid "Delivery carrier template option"
 msgstr "送货承运商模板选项"
 
 #. module: base_delivery_carrier_label
-#: model:ir.model.fields,field_description:base_delivery_carrier_label.field_delivery_carrier__description
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_delivery_carrier_option__description
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_delivery_carrier_template_option__description
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_shipping_label__description
-#: model_terms:ir.ui.view,arch_db:base_delivery_carrier_label.view_delivery_carrier_form
 msgid "Description"
 msgstr "说明"
 
@@ -354,7 +351,7 @@ msgid "Name"
 msgstr "名称"
 
 #. module: base_delivery_carrier_label
-#: code:addons/base_delivery_carrier_label/models/stock_picking.py:38
+#: code:addons/base_delivery_carrier_label/models/stock_picking.py:44
 #, python-format
 msgid "No label is configured for the selected delivery method."
 msgstr "没有为所选的交货方法配置标签。"
@@ -448,6 +445,11 @@ msgid "Result"
 msgstr "结果"
 
 #. module: base_delivery_carrier_label
+#: model:ir.model.fields,field_description:base_delivery_carrier_label.field_carrier_account__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: base_delivery_carrier_label
 #: model:ir.model,name:base_delivery_carrier_label.model_shipping_label
 msgid "Shipping Label"
 msgstr "交货标签"
@@ -458,7 +460,12 @@ msgid "Shipping Label 🚚"
 msgstr "交货标签🚚"
 
 #. module: base_delivery_carrier_label
-#: code:addons/base_delivery_carrier_label/models/stock_picking.py:253
+#: model:ir.model.fields,field_description:base_delivery_carrier_label.field_stock_picking__show_label_button
+msgid "Show Label Button"
+msgstr ""
+
+#. module: base_delivery_carrier_label
+#: code:addons/base_delivery_carrier_label/models/stock_picking.py:276
 #, python-format
 msgid ""
 "Some labels already exist for the picking %s.\n"
@@ -559,7 +566,7 @@ msgid ""
 msgstr "您可以从计算机上传文件，也可以将互联网链接复制/粘贴到您的文件中。"
 
 #. module: base_delivery_carrier_label
-#: code:addons/base_delivery_carrier_label/models/stock_picking.py:163
+#: code:addons/base_delivery_carrier_label/models/stock_picking.py:173
 #, python-format
 msgid ""
 "You should not remove a mandatory option.Please cancel the edit or add back "

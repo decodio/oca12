@@ -6,7 +6,7 @@
 {
     'name': 'Github Connector',
     'summary': 'Synchronize information from Github repositories',
-    'version': '12.0.1.1.0',
+    'version': '12.0.2.2.0',
     'category': 'Connector',
     'license': 'AGPL-3',
     'author':
@@ -43,6 +43,7 @@
     'demo': [
         'demo/github_organization.xml',
         'demo/github_organization_serie.xml',
+        "demo/github_repository_branch_demo.xml",
     ],
     'installable': True,
     'external_dependencies': {

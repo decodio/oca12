@@ -34,7 +34,7 @@ class AccountAnalyticDimension(models.Model):
         ]
 
     def get_field_name(self, code=False):
-        return 'x_dimension_{}'.format(code or self.code)
+        return 'x_dimension_{}'.format(code or self.code).lower()
 
     @api.model
     def create(self, values):
@@ -50,6 +50,8 @@ class AccountAnalyticDimension(models.Model):
                 'relation': 'account.analytic.tag',
             })],
         })
+        # Launch this manually for taking the new dimension field
+        self.env["account.invoice.report"].init()
         return res
 
     def write(self, vals):

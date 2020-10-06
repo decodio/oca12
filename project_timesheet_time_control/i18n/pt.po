@@ -62,7 +62,6 @@ msgstr ""
 #. module: project_timesheet_time_control
 #: model:ir.model.fields,field_description:project_timesheet_time_control.field_hr_timesheet_switch__account_id
 #, fuzzy
-#| msgid "Analytic Line"
 msgid "Analytic Account"
 msgstr "Linha Analítica"
 
@@ -77,7 +76,7 @@ msgid "Cancel"
 msgstr ""
 
 #. module: project_timesheet_time_control
-#: code:addons/project_timesheet_time_control/models/account_analytic_line.py:86
+#: code:addons/project_timesheet_time_control/models/account_analytic_line.py:91
 #, python-format
 msgid ""
 "Cannot stop timer %d because it is not running. Refresh the page and check "
@@ -126,7 +125,6 @@ msgstr "Data"
 #: model:ir.model.fields,field_description:project_timesheet_time_control.field_account_analytic_line__date_time
 #: model:ir.model.fields,field_description:project_timesheet_time_control.field_hr_timesheet_switch__date_time
 #, fuzzy
-#| msgid "Date"
 msgid "Date Time"
 msgstr "Data"
 
@@ -268,7 +266,7 @@ msgid "Resume"
 msgstr ""
 
 #. module: project_timesheet_time_control
-#: code:addons/project_timesheet_time_control/models/account_analytic_line.py:71
+#: code:addons/project_timesheet_time_control/models/account_analytic_line.py:76
 #: model_terms:ir.ui.view,arch_db:project_timesheet_time_control.account_analytic_line_tree
 #: model_terms:ir.ui.view,arch_db:project_timesheet_time_control.hr_timesheet_line_form
 #: model_terms:ir.ui.view,arch_db:project_timesheet_time_control.view_kanban_account_analytic_line
@@ -296,7 +294,6 @@ msgstr ""
 #. module: project_timesheet_time_control
 #: model_terms:ir.ui.view,arch_db:project_timesheet_time_control.hr_timesheet_switch_form
 #, fuzzy
-#| msgid "Date"
 msgid "Start new timer"
 msgstr "Data"
 

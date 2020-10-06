@@ -1,17 +1,18 @@
 # Copyright 2014-2017 Akretion (http://www.akretion.com).
 # Copyright 2019 Tecnativa - Vicent Cubells
 # Copyright 2019-2020 Brainbean Apps (https://brainbeanapps.com)
+# Copyright 2020 CorporateHub (https://corporatehub.eu)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 {
     'name': 'PayPal CSV Format Bank Statements Import',
     'summary': 'Import PayPal CSV files as Bank Statements in Odoo',
-    'version': '12.0.2.2.1',
+    'version': '12.0.2.2.2',
     'category': 'Accounting',
     'website': 'https://github.com/OCA/bank-statement-import',
     'author':
         'Akretion, '
-        'Brainbean Apps, '
+        'CorporateHub, '
         'Odoo Community Association (OCA)',
     'license': 'AGPL-3',
     'installable': True,

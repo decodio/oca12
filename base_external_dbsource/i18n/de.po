@@ -51,7 +51,7 @@ msgstr ""
 "    "
 
 #. module: base_external_dbsource
-#: code:addons/base_external_dbsource/models/base_external_dbsource.py:347
+#: code:addons/base_external_dbsource/models/base_external_dbsource.py:352
 #, python-format
 msgid ""
 "\"%s\" method not found, check that all assets are installed for the %s "
@@ -63,23 +63,25 @@ msgstr ""
 #. module: base_external_dbsource
 #: model:ir.model.fields,field_description:base_external_dbsource.field_base_external_dbsource__ca_certs
 #, fuzzy
-#| msgid "Ca certs"
 msgid "Ca Certs"
 msgstr "CA Zerts"
 
 #. module: base_external_dbsource
 #: model:ir.model.fields,field_description:base_external_dbsource.field_base_external_dbsource__client_cert
 #, fuzzy
-#| msgid "Client cert"
 msgid "Client Cert"
 msgstr "Client-Zert"
 
 #. module: base_external_dbsource
 #: model:ir.model.fields,field_description:base_external_dbsource.field_base_external_dbsource__client_key
 #, fuzzy
-#| msgid "Client key"
 msgid "Client Key"
 msgstr "Client-Schlüssel"
+
+#. module: base_external_dbsource
+#: model:ir.model.fields,field_description:base_external_dbsource.field_base_external_dbsource__company_id
+msgid "Company"
+msgstr ""
 
 #. module: base_external_dbsource
 #: model:ir.model.fields,field_description:base_external_dbsource.field_base_external_dbsource__conn_string_full
@@ -93,7 +95,7 @@ msgid "Connection string"
 msgstr ""
 
 #. module: base_external_dbsource
-#: code:addons/base_external_dbsource/models/base_external_dbsource.py:188
+#: code:addons/base_external_dbsource/models/base_external_dbsource.py:193
 #, python-format
 msgid ""
 "Connection test failed:\n"
@@ -102,7 +104,7 @@ msgid ""
 msgstr ""
 
 #. module: base_external_dbsource
-#: code:addons/base_external_dbsource/models/base_external_dbsource.py:192
+#: code:addons/base_external_dbsource/models/base_external_dbsource.py:197
 #, python-format
 msgid ""
 "Connection test succeeded:\n"
@@ -188,6 +190,11 @@ msgid "Microsoft SQL Server"
 msgstr ""
 
 #. module: base_external_dbsource
+#: selection:base.external.dbsource,connector:0
+msgid "MySQL"
+msgstr ""
+
+#. module: base_external_dbsource
 #: model:ir.model.fields,field_description:base_external_dbsource.field_base_external_dbsource__password
 msgid "Password"
 msgstr "Passwort"
@@ -218,7 +225,7 @@ msgid "Test Connection"
 msgstr ""
 
 #. module: base_external_dbsource
-#: code:addons/base_external_dbsource/models/base_external_dbsource.py:159
+#: code:addons/base_external_dbsource/models/base_external_dbsource.py:164
 #, python-format
 msgid "query is a required argument"
 msgstr ""

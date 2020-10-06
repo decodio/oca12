@@ -296,29 +296,6 @@ class Database(object):
 
     def _initialize(self):
         with closing(self.conn.cursor()) as cr:
-            # this is the trigger that sends notifications when jobs change
-            cr.execute("""
-                DROP TRIGGER IF EXISTS queue_job_notify ON queue_job;
-
-                CREATE OR REPLACE
-                    FUNCTION queue_job_notify() RETURNS trigger AS $$
-                BEGIN
-                    IF TG_OP = 'DELETE' THEN
-                        IF OLD.state != 'done' THEN
-                            PERFORM pg_notify('queue_job', OLD.uuid);
-                        END IF;
-                    ELSE
-                        PERFORM pg_notify('queue_job', NEW.uuid);
-                    END IF;
-                    RETURN NULL;
-                END;
-                $$ LANGUAGE plpgsql;
-
-                CREATE TRIGGER queue_job_notify
-                    AFTER INSERT OR UPDATE OR DELETE
-                    ON queue_job
-                    FOR EACH ROW EXECUTE PROCEDURE queue_job_notify();
-            """)
             cr.execute("LISTEN queue_job")
 
     @contextmanager
@@ -334,6 +311,11 @@ class Database(object):
         with closing(self.conn.cursor("select_jobs", withhold=True)) as cr:
             cr.execute(query, args)
             yield cr
+
+    def keep_alive(self):
+        query = "SELECT 1"
+        with closing(self.conn.cursor()) as cr:
+            cr.execute(query)
 
     def set_job_enqueued(self, uuid):
         with closing(self.conn.cursor()) as cr:
@@ -437,6 +419,12 @@ class QueueJobRunner(object):
 
     def process_notifications(self):
         for db in self.db_by_name.values():
+            if not db.conn.notifies:
+                # If there are no activity in the queue_job table it seems that
+                # tcp keepalives are not sent (in that very specific scenario),
+                # causing some intermediaries (such as haproxy) to close the
+                # connection, making the jobrunner to restart on a socket error
+                db.keep_alive()
             while db.conn.notifies:
                 if self._stop:
                     break

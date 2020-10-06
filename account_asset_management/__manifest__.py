@@ -4,7 +4,7 @@
 
 {
     'name': 'Assets Management',
-    'version': '12.0.2.2.5',
+    'version': '12.0.2.3.0',
     'license': 'AGPL-3',
     'depends': [
         'account',
@@ -16,6 +16,7 @@
     'data': [
         'security/account_asset_security.xml',
         'security/ir.model.access.csv',
+        'report/account_asset_report_views.xml',
         'wizard/account_asset_compute.xml',
         'wizard/account_asset_remove.xml',
         'views/account_account.xml',

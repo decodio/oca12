@@ -73,7 +73,8 @@ class StockPicking(models.Model):
                 else:
                     for move_line in move.move_line_ids:
                         produce = self.env['mrp.product.produce'].with_context(
-                            default_production_id=production.id).create({
+                            default_production_id=production.id,
+                            active_id=production.id).create({
                                 'production_id': production.id,
                                 'product_id': production.product_id.id,
                                 'product_qty': move_line.qty_done,
@@ -109,7 +110,7 @@ class StockPicking(models.Model):
         for move in self.move_lines:
             if not move._has_tracked_subcontract_components():
                 continue
-            production = move.move_orig_ids.production_id
+            production = move.move_orig_ids.mapped("production_id")
             if not production or production.state in ('done', 'to_close'):
                 continue
             return move._action_record_components()

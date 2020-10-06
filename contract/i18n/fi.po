@@ -421,7 +421,7 @@ msgid "Cancel allowed?"
 msgstr "Peruminen sallittu"
 
 #. module: contract
-#: code:addons/contract/models/contract_line.py:1086
+#: code:addons/contract/models/contract_line.py:1092
 #, python-format
 msgid "Cancel not allowed for this line"
 msgstr "Peruminen ei ole sallittu tälle riville"
@@ -470,7 +470,7 @@ msgid "Company"
 msgstr "Yritys"
 
 #. module: contract
-#: code:addons/contract/models/contract.py:360
+#: code:addons/contract/models/contract.py:393
 #, python-format
 msgid "Compose Email"
 msgstr "Kirjoita sähköposti"
@@ -609,7 +609,7 @@ msgid "Contract line '%s' start date can't be later than end date"
 msgstr "Sopimusrivin '%s' aloituspäivä ei voi olla päättymispäivän jälkeen"
 
 #. module: contract
-#: code:addons/contract/models/contract_line.py:1115
+#: code:addons/contract/models/contract_line.py:1121
 #, python-format
 msgid "Contract line Un-canceled: %s<br/>- "
 msgstr "Sopimusrivin palautettu perutuista: %s<br/>- "
@@ -627,13 +627,13 @@ msgid "Contract line and its successor overlapped"
 msgstr "Sopimusrivi ja sen seuraaja ovat päällekkäin"
 
 #. module: contract
-#: code:addons/contract/models/contract_line.py:1094
+#: code:addons/contract/models/contract_line.py:1100
 #, python-format
 msgid "Contract line canceled: %s<br/>- "
 msgstr "Sopimusrivi peruttu: %s<br/>- "
 
 #. module: contract
-#: code:addons/contract/models/contract_line.py:886
+#: code:addons/contract/models/contract_line.py:892
 #, python-format
 msgid ""
 "Contract line for <strong>{product}</strong>\n"
@@ -646,7 +646,7 @@ msgstr ""
 "                            "
 
 #. module: contract
-#: code:addons/contract/models/contract_line.py:966
+#: code:addons/contract/models/contract_line.py:972
 #, python-format
 msgid ""
 "Contract line for <strong>{product}</strong>\n"
@@ -664,7 +664,7 @@ msgstr ""
 "                    "
 
 #. module: contract
-#: code:addons/contract/models/contract_line.py:1262
+#: code:addons/contract/models/contract_line.py:1268
 #, python-format
 msgid ""
 "Contract line for <strong>{product}</strong>\n"
@@ -682,7 +682,7 @@ msgstr ""
 "                "
 
 #. module: contract
-#: code:addons/contract/models/contract_line.py:1074
+#: code:addons/contract/models/contract_line.py:1080
 #, python-format
 msgid ""
 "Contract line for <strong>{product}</strong>\n"
@@ -700,7 +700,7 @@ msgstr ""
 "                "
 
 #. module: contract
-#: code:addons/contract/models/contract_line.py:1314
+#: code:addons/contract/models/contract_line.py:1320
 #, python-format
 msgid "Contract line must be canceled before delete"
 msgstr "Sopimusrivi pitää perua ennen poistamista"
@@ -711,7 +711,7 @@ msgid "Contract lines"
 msgstr "Sopimusrivit"
 
 #. module: contract
-#: code:addons/contract/models/contract.py:502
+#: code:addons/contract/models/contract.py:536
 #, python-format
 msgid ""
 "Contract manually invoiced: <a href=\"#\" data-oe-model=\"%s\" data-oe-id="
@@ -888,7 +888,7 @@ msgid "Discount (%)"
 msgstr "Alennus (%)"
 
 #. module: contract
-#: code:addons/contract/models/abstract_contract_line.py:241
+#: code:addons/contract/models/abstract_contract_line.py:242
 #, python-format
 msgid "Discount should be less or equal to 100"
 msgstr "Alennus voi olla korkeintaan 100"
@@ -1108,6 +1108,15 @@ msgid "Is Follower"
 msgstr "On seuraaja"
 
 #. module: contract
+#: model:ir.model.fields,field_description:contract.field_contract_abstract_contract_line__is_recurring_note
+#: model:ir.model.fields,field_description:contract.field_contract_line__is_recurring_note
+#: model:ir.model.fields,field_description:contract.field_contract_template_line__is_recurring_note
+#, fuzzy
+#| msgid "Recurring Invoices"
+msgid "Is Recurring Note"
+msgstr "Toistuvaislaskut"
+
+#. module: contract
 #: model_terms:ir.ui.view,arch_db:contract.contract_line_wizard_stop_form_view
 msgid "Is suspension without end date"
 msgstr "Keskeytyksellä ei ole päättymispäivää"
@@ -1178,6 +1187,13 @@ msgstr "Kuvateksti (laskurivien kuvauksen sisällä käytettävät merkinnät)"
 #: model:ir.model.fields,field_description:contract.field_contract_contract__message_main_attachment_id
 msgid "Main Attachment"
 msgstr "Pääliite"
+
+#. module: contract
+#: model:ir.model.fields,field_description:contract.field_contract_contract__manual_currency_id
+#, fuzzy
+#| msgid "Currency"
+msgid "Manual Currency"
+msgstr "Valuutta"
 
 #. module: contract
 #: model:ir.model.fields,field_description:contract.field_contract_line__manual_renew_needed
@@ -1369,7 +1385,7 @@ msgid "Plan successor allowed?"
 msgstr "Sopimuksen seuraaja sallittu"
 
 #. module: contract
-#: code:addons/contract/models/contract_line.py:949
+#: code:addons/contract/models/contract_line.py:955
 #, python-format
 msgid "Plan successor not allowed for this line"
 msgstr "Sopimuksen seuraaja ei ole sallittu tälle riville"
@@ -1380,7 +1396,7 @@ msgid "Planned"
 msgstr "Suunniteltu"
 
 #. module: contract
-#: code:addons/contract/models/contract.py:318
+#: code:addons/contract/models/contract.py:351
 #, python-format
 msgid "Please define a %s journal for the company '%s'."
 msgstr "Aseta %s-päiväkirja yritykselle '%s'."
@@ -1637,7 +1653,7 @@ msgid "Stop allowed?"
 msgstr "Päättäminen sallittu"
 
 #. module: contract
-#: code:addons/contract/models/contract_line.py:869
+#: code:addons/contract/models/contract_line.py:875
 #, python-format
 msgid "Stop not allowed for this line"
 msgstr "Päättäminen ei ole sallittu tälle riville"
@@ -1648,7 +1664,7 @@ msgid "Stop/Plan successor allowed?"
 msgstr "Päättäminen/sopimuksen seuraaja sallittu"
 
 #. module: contract
-#: code:addons/contract/models/contract_line.py:1010
+#: code:addons/contract/models/contract_line.py:1016
 #, python-format
 msgid "Stop/Plan successor not allowed for this line"
 msgstr "Päättäminen/sopimuksen seuraaja ei ole sallittu tälle riville"
@@ -1703,7 +1719,7 @@ msgid "Technical field for UX purpose."
 msgstr ""
 
 #. module: contract
-#: code:addons/contract/models/contract.py:530
+#: code:addons/contract/models/contract.py:571
 #: model_terms:ir.ui.view,arch_db:contract.contract_contract_form_view
 #: model_terms:ir.ui.view,arch_db:contract.contract_contract_terminate_form_view
 #, fuzzy, python-format
@@ -1805,7 +1821,7 @@ msgid "Un-cancel"
 msgstr "Peru peruminen"
 
 #. module: contract
-#: code:addons/contract/models/contract_line.py:1107
+#: code:addons/contract/models/contract_line.py:1113
 #, python-format
 msgid "Un-cancel not allowed for this line"
 msgstr "Perumisen perumista ei ole sallittu tälle riville"
@@ -1863,6 +1879,11 @@ msgid "Validate"
 msgstr "Vahvista"
 
 #. module: contract
+#: model:ir.model,name:contract.model_ir_ui_view
+msgid "View"
+msgstr ""
+
+#. module: contract
 #: model:ir.model.fields,field_description:contract.field_contract_contract__website_message_ids
 msgid "Website Messages"
 msgstr "Verkkosivun viestit"
@@ -1915,13 +1936,13 @@ msgid "Year(s)"
 msgstr "Vuotta"
 
 #. module: contract
-#: code:addons/contract/models/contract.py:544
+#: code:addons/contract/models/contract.py:585
 #, python-format
 msgid "You are not allowed to terminate contracts."
 msgstr ""
 
 #. module: contract
-#: code:addons/contract/models/contract_line.py:819
+#: code:addons/contract/models/contract_line.py:825
 #, python-format
 msgid "You can't delay a contract line invoiced at least one time."
 msgstr "Et voi viivästyttää sopimusriviä, jos sitä on jo laskutettu."

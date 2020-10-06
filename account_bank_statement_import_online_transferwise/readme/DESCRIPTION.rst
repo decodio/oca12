@@ -1,2 +1,2 @@
 This module provides online bank statements from
-`TransferWise.com <https://transferwise.com/>`_.
+`TransferWise.com <https://transferwise.com/>`__.

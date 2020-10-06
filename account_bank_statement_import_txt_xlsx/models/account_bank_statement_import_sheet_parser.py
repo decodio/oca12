@@ -1,5 +1,5 @@
 # Copyright 2019 ForgeFlow, S.L.
-# Copyright 2020 Brainbean Apps (https://brainbeanapps.com)
+# Copyright 2020 CorporateHub (https://corporatehub.eu)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import api, models, _
@@ -206,21 +206,29 @@ class AccountBankStatementImportSheetParser(models.TransientModel):
                 )
 
             amount = self._parse_decimal(amount, mapping)
-            if balance is not None:
+            if balance:
                 balance = self._parse_decimal(balance, mapping)
+            else:
+                balance = None
 
-            if debit_credit is not None:
+            if debit_credit:
                 amount = amount.copy_abs()
                 if debit_credit == mapping.debit_value:
                     amount = -amount
 
-            if original_currency is None:
+            if not original_currency:
                 original_currency = currency
                 original_amount = amount
             elif original_currency == currency:
                 original_amount = amount
 
-            original_amount = self._parse_decimal(original_amount, mapping)
+            if original_amount:
+                original_amount = self._parse_decimal(
+                    original_amount,
+                    mapping
+                ).copy_sign(amount)
+            else:
+                original_amount = 0.0
 
             line = {
                 'timestamp': timestamp,

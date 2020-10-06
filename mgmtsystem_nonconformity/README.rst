@@ -119,6 +119,11 @@ Changelog
 
 * [MIG] Migration to 12.0.
 
+12.0.1.0.0 (2020-07-09)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+* [ADD] Add Non-Conformity Report.
+
 Bug Tracker
 ===========
 
@@ -147,17 +152,7 @@ Contributors
 * Gervais Naoussi <gervaisnaoussi@gmail.com>
 * Eugen Don <eugen.don@don-systems.de>
 * Jose Maria Alzaga <jose.alzaga@aselcis.com>
-
-Other credits
-~~~~~~~~~~~~~
-
-[ This file is optional and contains additional credits, other than
-  authors, contributors, and maintainers. ]
-
-The development of this module has been financially supported by:
-
-* Company 1 name
-* Company 2 name
+* Marcel Savegnago <marcel.savegnago@escodoo.com.br>
 
 Maintainers
 ~~~~~~~~~~~

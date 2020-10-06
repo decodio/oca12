@@ -1,4 +1,4 @@
-# © 2018-19 Eficent Business and IT Consulting Services S.L. (www.eficent.com)
+# Copyright 2020 ForgeFlow S.L.
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 from odoo import api, models
@@ -11,5 +11,7 @@ class AccountReconcileModel(models.Model):
     def _apply_conditions(self, query, params):
         query, params = super(
             AccountReconcileModel, self)._apply_conditions(query, params)
-        query += ' AND account.exclude_bank_reconcile IS NOT TRUE'
+        rule = self.env["account.reconcile.model"].browse(params[1])
+        if rule.rule_type == "invoice_matching":
+            query += ' AND account.exclude_bank_reconcile IS NOT TRUE'
         return query, params

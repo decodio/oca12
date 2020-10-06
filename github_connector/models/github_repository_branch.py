@@ -86,7 +86,7 @@ class GithubRepository(models.Model):
 
     # Init Section
     def __init__(self, pool, cr):
-        source_path = tools.config.get('source_code_local_path', False)
+        source_path = self._get_source_path()
         if not os.path.exists(source_path):
             try:
                 os.makedirs(source_path)
@@ -97,6 +97,11 @@ class GithubRepository(models.Model):
         if source_path and source_path not in modules.module.ad_paths:
             modules.module.ad_paths.append(source_path)
         super(GithubRepository, self).__init__(pool, cr)
+
+    def _get_source_path(self):
+        return tools.config.get("source_code_local_path", "") or os.environ.get(
+            "SOURCE_CODE_LOCAL_PATH", ""
+        )
 
     # Action Section
     @api.multi
@@ -144,8 +149,10 @@ class GithubRepository(models.Model):
                             branch.local_path))
 
                 command = (
-                    "git clone %s%s/%s.git -b %s %s") % (
-                        _GITHUB_URL,
+                    "git clone %s//%s%s%s/%s.git -b %s %s") % (
+                        _GITHUB_URL.split('//')[0],
+                        self.get_github_login(),
+                        _GITHUB_URL.split('//')[1],
                         branch.repository_id.organization_id.github_login,
                         branch.repository_id.name,
                         branch.name,
@@ -189,6 +196,18 @@ class GithubRepository(models.Model):
                     else:
                         branch._download_code()
         return True
+
+    def get_github_login(self):
+        """Get credentials for private repos."""
+        login = ''
+        if tools.config.get('github_token'):
+            login = "x-access-token:%s@" % (tools.config.get('github_token'))
+        elif tools.config.get('github_login') and tools.config.get('github_password'):
+            login = "%s:%s@" % (
+                tools.config.get('github_login'),
+                tools.config.get('github_password')
+            )
+        return login
 
     def _get_analyzable_files(self, existing_folder):
         res = []
@@ -277,7 +296,7 @@ class GithubRepository(models.Model):
     @api.multi
     @api.depends('complete_name')
     def _compute_local_path(self):
-        source_path = tools.config.get('source_code_local_path', False)
+        source_path = self._get_source_path()
         if not source_path:
             raise exceptions.Warning(_(
                 "source_code_local_path should be defined in your "

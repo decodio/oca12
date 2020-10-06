@@ -25,7 +25,7 @@ Agreement Sale
 
 |badge1| |badge2| |badge3| |badge4| |badge5| 
 
-This module adds *Agreement* field to Sales Orders
+This module adds *Agreement* field to Sales Orders. Upon invoice creation, that field is copied to the invoice.
 
 **Table of contents**
 

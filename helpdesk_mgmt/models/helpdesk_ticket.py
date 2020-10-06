@@ -1,4 +1,5 @@
 from odoo import _, api, fields, models, tools
+from email.utils import getaddresses
 
 
 class HelpdeskTicket(models.Model):
@@ -6,8 +7,8 @@ class HelpdeskTicket(models.Model):
     _name = 'helpdesk.ticket'
     _description = 'Helpdesk Ticket'
     _rec_name = 'number'
-    _order = 'number desc'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _order = 'priority desc, sequence, number desc'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
 
     def _get_default_stage_id(self):
         return self.env['helpdesk.ticket.stage'].search([], limit=1).id
@@ -49,7 +50,7 @@ class HelpdeskTicket(models.Model):
     assigned_date = fields.Datetime(string='Assigned Date')
     closed_date = fields.Datetime(string='Closed Date')
     closed = fields.Boolean(related='stage_id.closed')
-    unattended = fields.Boolean(related='stage_id.unattended')
+    unattended = fields.Boolean(related='stage_id.unattended', store=True)
     tag_ids = fields.Many2many('helpdesk.ticket.tag')
     company_id = fields.Many2one(
         'res.company',
@@ -72,22 +73,55 @@ class HelpdeskTicket(models.Model):
         ('2', _('High')),
         ('3', _('Very High')),
     ], string='Priority', default='1')
-    attachment_ids = fields.One2many(
-        'ir.attachment', 'res_id',
-        domain=[('res_model', '=', 'helpdesk.ticket')],
-        string="Media Attachments")
     color = fields.Integer(string='Color Index')
     kanban_state = fields.Selection([
         ('normal', 'Default'),
         ('done', 'Ready for next stage'),
         ('blocked', 'Blocked')], string='Kanban State')
+    sequence = fields.Integer(
+        string='Sequence', index=True, default=10,
+        help="Gives the sequence order when displaying a list of tickets.")
 
     def send_user_mail(self):
         self.env.ref('helpdesk_mgmt.assignment_email_template'). \
-            send_mail(self.id)
+            send_mail(self.id, force_send=True)
+
+    def send_partner_mail(self):
+        self.env.ref('helpdesk_mgmt.created_ticket_template'). \
+            send_mail(self.id, force_send=True)
 
     def assign_to_me(self):
         self.write({'user_id': self.env.user.id})
+
+    def _compute_access_url(self):
+        super(HelpdeskTicket, self)._compute_access_url()
+        for ticket in self:
+            ticket.access_url = '/my/ticket/%s' % (ticket.id)
+
+    def partner_can_access(self):
+        if not self.partner_id:
+            return False
+        user = self.env['res.users'].sudo().search([
+            ('partner_id', '=', self.partner_id.id)])
+        if not user:
+            return False
+        if not self.sudo(user.id).check_access_rights('read', raise_exception=False):
+            return False
+        else:
+            return True
+
+    def get_access_link(self):
+        # _notify_get_action_link is not callable from email template
+        return self._notify_get_action_link('view')
+
+    @api.multi
+    def _notify_get_groups(self, message, groups):
+        groups = super(HelpdeskTicket, self)._notify_get_groups(message, groups)
+        self.ensure_one()
+        for group_name, group_method, group_data in groups:
+            if group_name == 'portal':
+                group_data['has_button_access'] = True
+        return groups
 
     @api.onchange('partner_id')
     def _onchange_partner_id(self):
@@ -117,16 +151,31 @@ class HelpdeskTicket(models.Model):
     @api.model
     def create(self, vals):
         if vals.get('number', '/') == '/':
-            seq = self.env['ir.sequence']
-            if 'company_id' in vals:
-                seq = seq.with_context(force_company=vals['company_id'])
-            vals['number'] = seq.next_by_code(
-                'helpdesk.ticket.sequence') or '/'
+            vals["number"] = self._prepare_ticket_number(vals)
+
+        if vals.get("partner_id") and (
+            "partner_name" not in vals or "partner_email" not in vals
+        ):
+            partner = self.env["res.partner"].browse(vals["partner_id"])
+            vals.setdefault("partner_name", partner.name)
+            vals.setdefault("partner_email", partner.email)
+
+        if self.env.context.get(
+            'fetchmail_cron_running'
+        ) and not vals.get('channel_id'):
+            vals['channel_id'] = self.env.ref(
+                'helpdesk_mgmt.helpdesk_ticket_channel_email').id
+
         res = super().create(vals)
 
         # Check if mail to the user has to be sent
         if vals.get('user_id') and res:
             res.send_user_mail()
+            res.message_subscribe(partner_ids=res.user_id.partner_id.ids)
+        if (vals.get('partner_id') or vals.get('partner_email')) and res:
+            res.send_partner_mail()
+            if res.partner_id:
+                res.message_subscribe(partner_ids=res.partner_id.ids)
         return res
 
     @api.multi
@@ -135,9 +184,7 @@ class HelpdeskTicket(models.Model):
         if default is None:
             default = {}
         if "number" not in default:
-            default['number'] = self.env['ir.sequence'].next_by_code(
-                'helpdesk.ticket.sequence'
-            ) or '/'
+            default["number"] = self._prepare_ticket_number(default)
         res = super(HelpdeskTicket, self).copy(default)
         return res
 
@@ -160,7 +207,14 @@ class HelpdeskTicket(models.Model):
         for ticket in self:
             if vals.get('user_id'):
                 ticket.send_user_mail()
+                ticket.message_subscribe(partner_ids=ticket.user_id.partner_id.ids)
         return res
+
+    def _prepare_ticket_number(self, values):
+        seq = self.env["ir.sequence"]
+        if "company_id" in values:
+            seq = seq.with_context(force_company=values["company_id"])
+        return seq.next_by_code("helpdesk.ticket.sequence") or "/"
 
     # ---------------------------------------------------
     # Mail gateway
@@ -187,9 +241,12 @@ class HelpdeskTicket(models.Model):
         defaults = {
             'name': msg.get('subject') or _("No Subject"),
             'description': msg.get('body'),
-            'partner_email': msg.get('from'),
             'partner_id': msg.get('author_id')
         }
+        res = getaddresses([msg.get('from', '')])
+        if res:
+            defaults['partner_name'] = res[0][0]
+            defaults['partner_email'] = res[0][1]
         defaults.update(custom_values)
 
         # Write default values coming from msg
