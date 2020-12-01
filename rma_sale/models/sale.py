@@ -62,9 +62,12 @@ class SaleOrder(models.Model):
             action.update(
                 res_id=rma.id,
                 view_mode="form",
+                views=[],
             )
         else:
             action['domain'] = [('id', 'in', rma.ids)]
+        # reset context to show all related rma without default filters
+        action['context'] = {}
         return action
 
     def get_delivery_rma_data(self):

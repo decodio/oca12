@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 10.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-06-01 02:08+0000\n"
-"PO-Revision-Date: 2020-08-08 16:59+0000\n"
+"PO-Revision-Date: 2020-11-13 20:36+0000\n"
 "Last-Translator: Matjaz Mozetic <matjaz@matmoz.si>\n"
 "Language-Team: Slovenian (https://www.transifex.com/oca/teams/23907/sl/)\n"
 "Language: sl\n"
@@ -21,9 +21,61 @@ msgstr ""
 "X-Generator: Weblate 3.10\n"
 
 #. module: stock_split_picking
-#: model_terms:ir.ui.view,arch_db:stock_split_picking.view_picking_form
-msgid "Are you sure you want to split current picking?"
-msgstr "Ste prepričani, da želite to dobavnico razdeliti?"
+#: model_terms:ir.ui.view,arch_db:stock_split_picking.view_stock_split_picking
+msgid "Cancel"
+msgstr "Preklic"
+
+#. module: stock_split_picking
+#: code:addons/stock_split_picking/models/stock_picking.py:100
+#, python-format
+msgid "Cannot split off all moves from picking %s"
+msgstr ""
+
+#. module: stock_split_picking
+#: code:addons/stock_split_picking/models/stock_picking.py:94
+#, python-format
+msgid "Cannot split picking %s in state %s"
+msgstr ""
+
+#. module: stock_split_picking
+#: model:ir.model.fields,field_description:stock_split_picking.field_stock_split_picking__create_uid
+msgid "Created by"
+msgstr "Ustvaril"
+
+#. module: stock_split_picking
+#: model:ir.model.fields,field_description:stock_split_picking.field_stock_split_picking__create_date
+msgid "Created on"
+msgstr "Ustvarjeno"
+
+#. module: stock_split_picking
+#: model:ir.model.fields,field_description:stock_split_picking.field_stock_split_picking__display_name
+msgid "Display Name"
+msgstr "Prikazni naziv"
+
+#. module: stock_split_picking
+#: selection:stock.split.picking,mode:0
+msgid "Done quantities"
+msgstr "Opravljene količine"
+
+#. module: stock_split_picking
+#: model:ir.model.fields,field_description:stock_split_picking.field_stock_split_picking__id
+msgid "ID"
+msgstr "ID"
+
+#. module: stock_split_picking
+#: model:ir.model.fields,field_description:stock_split_picking.field_stock_split_picking____last_update
+msgid "Last Modified on"
+msgstr "Zadnjič spremenjeno"
+
+#. module: stock_split_picking
+#: model:ir.model.fields,field_description:stock_split_picking.field_stock_split_picking__write_uid
+msgid "Last Updated by"
+msgstr "Zadnji posodobil"
+
+#. module: stock_split_picking
+#: model:ir.model.fields,field_description:stock_split_picking.field_stock_split_picking__write_date
+msgid "Last Updated on"
+msgstr "Zadnjič posodobljeno"
 
 #. module: stock_split_picking
 #: code:addons/stock_split_picking/models/stock_picking.py:22
@@ -32,19 +84,55 @@ msgid "Mark as todo this picking please."
 msgstr "Označite zbirnik za opravek, prosim."
 
 #. module: stock_split_picking
+#: model:ir.model.fields,field_description:stock_split_picking.field_stock_split_picking__mode
+msgid "Mode"
+msgstr ""
+
+#. module: stock_split_picking
+#: model:ir.model.fields,field_description:stock_split_picking.field_stock_split_picking__move_ids
+msgid "Move"
+msgstr ""
+
+#. module: stock_split_picking
+#: selection:stock.split.picking,mode:0
+msgid "One picking per move"
+msgstr ""
+
+#. module: stock_split_picking
+#: model:ir.model.fields,field_description:stock_split_picking.field_stock_split_picking__picking_ids
+msgid "Picking"
+msgstr "Dobavnica"
+
+#. module: stock_split_picking
+#: selection:stock.split.picking,mode:0
+msgid "Select move lines to split off"
+msgstr ""
+
+#. module: stock_split_picking
 #: model_terms:ir.ui.view,arch_db:stock_split_picking.view_picking_form
+#: model_terms:ir.ui.view,arch_db:stock_split_picking.view_stock_split_picking
 msgid "Split"
 msgstr "Razdelitev"
 
 #. module: stock_split_picking
-#: code:addons/stock_split_picking/models/stock_picking.py:65
+#: model:ir.model,name:stock_split_picking.model_stock_split_picking
+msgid "Split a picking"
+msgstr ""
+
+#. module: stock_split_picking
+#: model:ir.actions.act_window,name:stock_split_picking.action_stock_split_picking
+msgid "Split pickings"
+msgstr ""
+
+#. module: stock_split_picking
+#: code:addons/stock_split_picking/models/stock_picking.py:78
 #, python-format
 msgid ""
 "The backorder <a href=\"#\" data-oe-model=\"stock.picking\" data-oe-id=\"%d"
 "\">%s</a> has been created."
 msgstr ""
-"Zaostali nalog <a href=\"#\" data-oe-model=\"stock.picking\" data-oe-id=\"%"
-"d\">%s</a> je ustvarjen."
+"Zaostali nalog <a href=\"#\" data-oe-model=\"stock.picking\" data-oe-id=\"%d"
+"\">%s</a> je ustvarjen."
 
 #. module: stock_split_picking
 #: model:ir.model,name:stock_split_picking.model_stock_picking
@@ -59,3 +147,11 @@ msgid ""
 msgstr ""
 "Da bi lahko razdelili vašo dobavnico na več novih, morate vnesti opravljeno "
 "količino."
+
+#. module: stock_split_picking
+#: model_terms:ir.ui.view,arch_db:stock_split_picking.view_stock_split_picking
+msgid "or"
+msgstr "ali"
+
+#~ msgid "Are you sure you want to split current picking?"
+#~ msgstr "Ste prepričani, da želite to dobavnico razdeliti?"

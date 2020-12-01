@@ -56,7 +56,7 @@ Authors
 ~~~~~~~
 
 * Savoir-faire Linux
-* Brainbean Apps
+* CorporateHub
 
 Contributors
 ~~~~~~~~~~~~
@@ -66,7 +66,9 @@ Contributors
 * Ivan Yelizariev
 * Julien Laloux
 * Duc, Dao Dong <duc.dd@komit-consulting.com> (https://komit-consulting.com)
-* Alexey Pelykh <alexey.pelykh@brainbeanapps.com>
+* `CorporateHub <https://corporatehub.eu/>`__
+
+  * Alexey Pelykh <alexey.pelykh@corphub.eu>
 
 Other credits
 ~~~~~~~~~~~~~

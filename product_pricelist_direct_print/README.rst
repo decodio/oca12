@@ -89,9 +89,9 @@ Contributors
   * Carlos Dauden <carlos.dauden@tecnativa.com>
   * David Vidal <david.vidal@tecnativa.com>
 
-* `Brainbean Apps <https://brainbeanapps.com>`_:
+* `CorporateHub <https://corporatehub.eu/>`__
 
-  * Alexey Pelykh <alexey.pelykh@brainbeanapps.com>
+  * Alexey Pelykh <alexey.pelykh@corphub.eu>
 
 Maintainers
 ~~~~~~~~~~~

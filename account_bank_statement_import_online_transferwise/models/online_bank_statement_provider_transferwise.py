@@ -1,4 +1,5 @@
 # Copyright 2019 Brainbean Apps (https://brainbeanapps.com)
+# Copyright 2020 CorporateHub (https://corporatehub.eu)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 from dateutil.relativedelta import relativedelta
@@ -12,6 +13,10 @@ import urllib.request
 
 from odoo import models, api, _
 from odoo.exceptions import UserError
+
+import logging
+_logger = logging.getLogger(__name__)
+
 
 TRANSFERWISE_API_BASE = 'https://api.transferwise.com'
 
@@ -29,6 +34,7 @@ class OnlineBankStatementProviderTransferwise(models.Model):
             url = api_base + '/v1/profiles'
             data = self._transferwise_retrieve(url, api_key)
         except:
+            _logger.warning('Unable to get profiles', exc_info=True)
             return []
         return list(map(
             lambda entry: (
@@ -153,6 +159,7 @@ class OnlineBankStatementProviderTransferwise(models.Model):
 
     @api.model
     def _transferwise_transaction_to_lines(self, transaction):
+        transaction_type = transaction['type']
         reference_number = transaction['referenceNumber']
         details = transaction.get('details', {})
         exchange_details = transaction.get('exchangeDetails')
@@ -169,12 +176,15 @@ class OnlineBankStatementProviderTransferwise(models.Model):
             )
         amount = transaction['amount']
         amount_value = amount.get('value', 0)
-        fees_value = total_fees.get('value', Decimal()).copy_abs()
-        if amount_value.is_signed():
+        fees_value = total_fees.get('value', Decimal())
+        if transaction_type == 'CREDIT' \
+                and details.get('type') == 'MONEY_ADDED':
             fees_value = fees_value.copy_negate()
+        else:
+            fees_value = fees_value.copy_sign(amount_value)
         amount_value -= fees_value
         unique_import_id = '%s-%s-%s' % (
-            transaction['type'],
+            transaction_type,
             reference_number,
             int(date.timestamp()),
         )
@@ -261,7 +271,7 @@ class OnlineBankStatementProviderTransferwise(models.Model):
     def _transferwise_retrieve(self, url, api_key):
         with self._transferwise_urlopen(url, api_key) as response:
             content = response.read().decode(
-                response.headers.get_content_charset()
+                response.headers.get_content_charset() or 'utf-8'
             )
         return self._transferwise_validate(content)
 

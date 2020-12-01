@@ -58,14 +58,7 @@ Contributors
 * Alex Comba <alex.comba@agilebg.com>
 * Carlos Jimeno <carlos.jimeno@guadaltech.es>
 * María Asunción Daza <mariaasuncion.daza@guadaltech.es>
-
-Other credits
-~~~~~~~~~~~~~
-
-Images
-------
-
-* Odoo Community Association: `Icon <https://github.com/OCA/maintainer-tools/blob/master/template/module/static/description/icon.svg>`_.
+* Marcel Savegnago <marcel.savegnago@escodoo.com.br>
 
 Maintainers
 ~~~~~~~~~~~

@@ -69,6 +69,7 @@
                         <group id="main-left">
                             <field name="id" invisible="1"/>
                             <field name="fsm_parent_id" domain="[('id', '!=', id)]"/>
+                            <field name="partner_id" groups="base.group_no_one" readonly="1" />
                             <field name="owner_id"/>
                             <field name="contact_id" context="{'default_service_location_id': active_id, 'default_street': street, 'default_street2': street2, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id}"/>
                             <field name="phone" widget="phone"/>
@@ -129,6 +130,26 @@
                             <group id="others">
                                 <group id="others-left"></group>
                                 <group id="others-right"></group>
+                            </group>
+                        </page>
+                        <page string="Geo Location" name="geo_location">
+                            <group id="get_locate" colspan="2" col="2">
+                                <separator string="Geolocation" colspan="2"/>
+                                <button
+                                    string="Geolocate"
+                                    name="geo_localize"
+                                    colspan="2"
+                                    icon="fa-check"
+                                    type="object"/>
+                                <div>
+                                    <span class="oe_inline"> ( On  </span>
+                                    <field name="date_localization" nolabel="1" class="oe_inline"/>
+                                    <span> : Lat : </span>
+                                    <field name="partner_latitude" nolabel="1" class="oe_inline"/>
+                                    <span> ;  Long:  </span>
+                                    <field name="partner_longitude" nolabel="1" class="oe_inline"/>
+                                    <span>) </span>
+                                </div>
                             </group>
                         </page>
                     </notebook>

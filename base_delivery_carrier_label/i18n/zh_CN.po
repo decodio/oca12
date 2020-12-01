@@ -374,6 +374,11 @@ msgid "Options"
 msgstr "选项"
 
 #. module: base_delivery_carrier_label
+#: selection:delivery.carrier,delivery_type:0
+msgid "Paazl"
+msgstr ""
+
+#. module: base_delivery_carrier_label
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_shipping_label__package_id
 msgid "Pack"
 msgstr "包裹"
@@ -398,6 +403,11 @@ msgstr "包裹跟踪链接"
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_delivery_carrier_template_option__partner_id
 msgid "Partner Carrier"
 msgstr "合作伙伴承运商"
+
+#. module: base_delivery_carrier_label
+#: selection:delivery.carrier,delivery_type:0
+msgid "Post logistics"
+msgstr ""
 
 #. module: base_delivery_carrier_label
 #: model:ir.model,name:base_delivery_carrier_label.model_stock_move_line
@@ -535,6 +545,11 @@ msgstr "调拨"
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_shipping_label__type
 msgid "Type"
 msgstr "类型"
+
+#. module: base_delivery_carrier_label
+#: selection:delivery.carrier,delivery_type:0
+msgid "UPS"
+msgstr ""
 
 #. module: base_delivery_carrier_label
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_shipping_label__url

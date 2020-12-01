@@ -104,7 +104,9 @@ Contributors
   * Vicent Cubells <vicent.cubells@tecnativa.com>
   * Victor M.M. Torres <victor.martin@tecnativa.com>
 
-* Alexey Pelykh <alexey.pelykh@brainbeanapps.com>
+* `CorporateHub <https://corporatehub.eu/>`__
+
+  * Alexey Pelykh <alexey.pelykh@corphub.eu>
 
 Maintainers
 ~~~~~~~~~~~

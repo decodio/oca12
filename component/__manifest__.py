@@ -5,7 +5,7 @@
 {'name': 'Components',
  'summary': 'Add capabilities to register and use decoupled components,'
             ' as an alternative to model classes',
- 'version': '12.0.1.0.0',
+ 'version': '12.0.1.0.1',
  'author': 'Camptocamp,'
            'Odoo Community Association (OCA)',
  'website': 'https://github.com/OCA/connector',
@@ -17,6 +17,6 @@
      'python': ['cachetools'],
  },
  'installable': True,
- 'development_status': 'Stable',
+ 'development_status': 'Production/Stable',
  'maintainers': ['guewen'],
  }

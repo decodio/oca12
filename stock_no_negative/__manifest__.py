@@ -5,12 +5,13 @@
 
 {
     'name': 'Stock Disallow Negative',
-    'version': '12.0.1.1.0',
+    'version': '12.0.1.2.0',
     'category': 'Inventory, Logistic, Storage',
     'license': 'AGPL-3',
     'summary': 'Disallow negative stock levels by default',
     'author': 'Akretion,Odoo Community Association (OCA)',
     'website': 'https://github.com/OCA/stock-logistics-workflow',
+    'maintainers': ['luisg123v'],
     'depends': ['stock'],
     'data': [
         'views/product_product_views.xml',

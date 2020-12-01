@@ -123,7 +123,6 @@ msgstr "Poduzeće"
 #. module: base_delivery_carrier_label
 #: model_terms:ir.ui.view,arch_db:base_delivery_carrier_label.view_picking_withcarrier_out_form
 #, fuzzy
-#| msgid "Create Shipping Label"
 msgid "Create Shipping Label 🚚"
 msgstr "Napravi naljepnicu za otpremu"
 
@@ -240,7 +239,6 @@ msgstr "Vrsta datoteke"
 #. module: base_delivery_carrier_label
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_shipping_label__datas_fname
 #, fuzzy
-#| msgid "File Name"
 msgid "Filename"
 msgstr "Naziv datoteke"
 
@@ -376,6 +374,11 @@ msgid "Options"
 msgstr "Opcije"
 
 #. module: base_delivery_carrier_label
+#: selection:delivery.carrier,delivery_type:0
+msgid "Paazl"
+msgstr ""
+
+#. module: base_delivery_carrier_label
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_shipping_label__package_id
 msgid "Pack"
 msgstr "Paket"
@@ -383,7 +386,6 @@ msgstr "Paket"
 #. module: base_delivery_carrier_label
 #: model:ir.model,name:base_delivery_carrier_label.model_stock_quant_package
 #, fuzzy
-#| msgid "Pack"
 msgid "Packages"
 msgstr "Paket"
 
@@ -401,6 +403,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_delivery_carrier_option__partner_id
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_delivery_carrier_template_option__partner_id
 msgid "Partner Carrier"
+msgstr ""
+
+#. module: base_delivery_carrier_label
+#: selection:delivery.carrier,delivery_type:0
+msgid "Post logistics"
 msgstr ""
 
 #. module: base_delivery_carrier_label
@@ -461,7 +468,6 @@ msgstr ""
 #. module: base_delivery_carrier_label
 #: model_terms:ir.ui.view,arch_db:base_delivery_carrier_label.view_picking_withcarrier_out_form
 #, fuzzy
-#| msgid "Create Shipping Label"
 msgid "Shipping Label 🚚"
 msgstr "Napravi naljepnicu za otpremu"
 
@@ -538,6 +544,11 @@ msgstr ""
 #. module: base_delivery_carrier_label
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_shipping_label__type
 msgid "Type"
+msgstr ""
+
+#. module: base_delivery_carrier_label
+#: selection:delivery.carrier,delivery_type:0
+msgid "UPS"
 msgstr ""
 
 #. module: base_delivery_carrier_label

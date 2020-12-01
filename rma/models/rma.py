@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 from odoo.tests import Form
 from odoo.tools import html2plaintext
 import odoo.addons.decimal_precision as dp
@@ -84,6 +84,13 @@ class Rma(models.Model):
         states={'draft': [('readonly', False)]},
         index=True,
         track_visibility='always'
+    )
+    partner_shipping_id = fields.Many2one(
+        string="Shipping Address",
+        comodel_name="res.partner",
+        readonly=True,
+        states={'draft': [('readonly', False)]},
+        help="Shipping address for current RMA."
     )
     partner_invoice_id = fields.Many2one(
         string="Invoice Address",
@@ -416,7 +423,9 @@ class Rma(models.Model):
             record.access_url = '/my/rmas/{}'.format(record.id)
 
     # Constrains methods (@api.constrains)
-    @api.constrains('state', 'partner_id', 'partner_invoice_id', 'product_id')
+    @api.constrains(
+        'state', 'partner_id', 'partner_invoice_id',
+        'partner_shipping_id', 'product_id')
     def _check_required_after_draft(self):
         """ Check that RMAs are being created or edited with the
         necessary fields filled out. Only applies to 'Draft' and
@@ -444,10 +453,13 @@ class Rma(models.Model):
     def _onchange_partner_id(self):
         self.picking_id = False
         partner_invoice_id = False
+        partner_shipping_id = False
         if self.partner_id:
-            address = self.partner_id.address_get(['invoice'])
+            address = self.partner_id.address_get(['invoice', 'delivery'])
             partner_invoice_id = address.get('invoice', False)
+            partner_shipping_id = address.get('delivery', False)
         self.partner_invoice_id = partner_invoice_id
+        self.partner_shipping_id = partner_shipping_id
 
     @api.onchange("picking_id")
     def _onchange_picking_id(self):
@@ -718,7 +730,10 @@ class Rma(models.Model):
     # Validation business methods
     def _ensure_required_fields(self):
         """ This method is used to ensure the following fields are not empty:
-        ['partner_id', 'partner_invoice_id', 'product_id', 'location_id']
+        [
+            'partner_id', 'partner_invoice_id', 'partner_shipping_id',
+            'product_id', 'location_id'
+        ]
 
         This method is intended to be called on confirm RMA action and is
         invoked by:
@@ -726,8 +741,10 @@ class Rma(models.Model):
         rma.action_confirm
         """
         ir_translation = self.env['ir.translation']
-        required = ['partner_id', 'partner_invoice_id', 'product_id',
-                    'location_id']
+        required = [
+            'partner_id', 'partner_invoice_id', 'partner_shipping_id',
+            'product_id', 'location_id'
+        ]
         for record in self:
             desc = ""
             for field in filter(lambda item: not record[item], required):
@@ -854,7 +871,7 @@ class Rma(models.Model):
     def _prepare_picking(self, picking_form):
         picking_form.company_id = self.company_id
         picking_form.origin = self.name
-        picking_form.partner_id = self.partner_id
+        picking_form.partner_id = self.partner_shipping_id
         picking_form.location_dest_id = self.location_id
         with picking_form.move_ids_without_package.new() as move_form:
             move_form.product_id = self.product_id
@@ -938,7 +955,7 @@ class Rma(models.Model):
         self._ensure_qty_to_return(qty, uom)
         group_dict = {}
         for record in self.filtered('can_be_returned'):
-            key = (record.partner_id.id, record.company_id.id,
+            key = (record.partner_shipping_id.id, record.company_id.id,
                    record.warehouse_id)
             group_dict.setdefault(key, self.env['rma'])
             group_dict[key] |= record
@@ -965,8 +982,9 @@ class Rma(models.Model):
                     picking_id=picking.id,
                     rma_id=rma.id,
                     move_orig_ids=[(4, rma.reception_move_id.id)],
+                    company_id=picking.company_id.id,
                 )
-                self.env['stock.move'].create(move_vals)
+                self.env['stock.move'].sudo().create(move_vals)
                 rma.message_post(
                     body=_(
                         'Return: <a href="#" data-oe-model="stock.picking" '
@@ -986,7 +1004,7 @@ class Rma(models.Model):
         picking_form.picking_type_id = self.warehouse_id.rma_out_type_id
         picking_form.company_id = self.company_id
         picking_form.origin = origin or self.name
-        picking_form.partner_id = self.partner_id
+        picking_form.partner_id = self.partner_shipping_id
 
     def _prepare_returning_move(self, move_form, scheduled_date,
                                 quantity=None, uom=None):
@@ -1048,7 +1066,7 @@ class Rma(models.Model):
             self.procurement_group_id = self.env['procurement.group'].create({
                 'name': self.name,
                 'move_type': 'direct',
-                'partner_id': self.partner_id.id,
+                'partner_id': self.partner_shipping_id.id,
             }).id
         values = self._prepare_procurement_values(
             self.procurement_group_id, scheduled_date, warehouse)
@@ -1056,7 +1074,7 @@ class Rma(models.Model):
             product,
             qty,
             uom,
-            self.partner_id.property_stock_customer,
+            self.partner_shipping_id.property_stock_customer,
             self.product_id.display_name,
             self.procurement_group_id.name,
             values,
@@ -1070,11 +1088,11 @@ class Rma(models.Model):
     ):
         self.ensure_one()
         return {
-            'company_id': self.company_id.id,
+            'company_id': self.company_id,
             'group_id': group_id,
             'date_planned': scheduled_date,
             'warehouse_id': warehouse,
-            'partner_id': self.partner_id.id,
+            'partner_id': self.partner_shipping_id.id,
             'rma_id': self.id,
             'priority': self.priority,
         }
@@ -1128,6 +1146,17 @@ class Rma(models.Model):
         # RMA followers
         self_with_context = self.with_context(mail_post_autofollow=True)
         return super(Rma, self_with_context).message_post(**kwargs)
+
+    @api.multi
+    def message_get_suggested_recipients(self):
+        recipients = super().message_get_suggested_recipients()
+        try:
+            for record in self.filtered("partner_id"):
+                record._message_add_suggested_recipient(
+                    recipients, partner=record.partner_id, reason=_('Customer'))
+        except AccessError:  # no read access rights
+            pass
+        return recipients
 
     # Reporting business methods
     def _get_report_base_filename(self):

@@ -173,7 +173,7 @@ class ProductMRPArea(models.Model):
             proc_loc = rec.location_proc_id or rec.mrp_area_id.location_id
             values = {
                 'warehouse_id': rec.mrp_area_id.warehouse_id,
-                'company_id': self.env.user.company_id.id,
+                'company_id': self.env.user.company_id,
                 # TODO: better way to get company
             }
             rule = group_obj._get_rule(rec.product_id, proc_loc, values)
@@ -220,3 +220,8 @@ class ProductMRPArea(models.Model):
             lambda r: r.main_supplierinfo_id and r.supply_method == "buy"
         ):
             rec.mrp_minimum_order_qty = rec.main_supplierinfo_id.min_qty
+
+    @api.multi
+    def _to_be_exploded(self):
+        self.ensure_one()
+        return self.supply_method == 'manufacture'

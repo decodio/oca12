@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: stock_no_negative
-#: code:addons/stock_no_negative/models/stock_quant.py:41
+#: code:addons/stock_no_negative/models/stock_quant.py:38
 #, python-format
 msgid " lot '%s'"
 msgstr " lote '%s'"
@@ -85,7 +85,7 @@ msgid "Quants"
 msgstr "Quants"
 
 #. module: stock_no_negative
-#: code:addons/stock_no_negative/models/stock_quant.py:42
+#: code:addons/stock_no_negative/models/stock_quant.py:39
 #, python-format
 msgid ""
 "You cannot validate this stock operation because the stock level of the "

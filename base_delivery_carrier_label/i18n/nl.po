@@ -93,7 +93,6 @@ msgstr "Vervoerder"
 #: model:ir.actions.act_window,name:base_delivery_carrier_label.action_carrier_account
 #: model:ir.ui.menu,name:base_delivery_carrier_label.carrier_account_menu
 #, fuzzy
-#| msgid "Carrier"
 msgid "Carrier Account"
 msgstr "Vervoerder"
 
@@ -372,6 +371,11 @@ msgid "Options"
 msgstr ""
 
 #. module: base_delivery_carrier_label
+#: selection:delivery.carrier,delivery_type:0
+msgid "Paazl"
+msgstr ""
+
+#. module: base_delivery_carrier_label
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_shipping_label__package_id
 msgid "Pack"
 msgstr ""
@@ -395,6 +399,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_delivery_carrier_option__partner_id
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_delivery_carrier_template_option__partner_id
 msgid "Partner Carrier"
+msgstr ""
+
+#. module: base_delivery_carrier_label
+#: selection:delivery.carrier,delivery_type:0
+msgid "Post logistics"
 msgstr ""
 
 #. module: base_delivery_carrier_label
@@ -530,6 +539,11 @@ msgstr ""
 #. module: base_delivery_carrier_label
 #: model:ir.model.fields,field_description:base_delivery_carrier_label.field_shipping_label__type
 msgid "Type"
+msgstr ""
+
+#. module: base_delivery_carrier_label
+#: selection:delivery.carrier,delivery_type:0
+msgid "UPS"
 msgstr ""
 
 #. module: base_delivery_carrier_label
