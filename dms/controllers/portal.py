@@ -1,39 +1,29 @@
-# Copyright 2020 Tecnativa - Víctor Martínez
+# Copyright 2020-2021 Tecnativa - Víctor Martínez
 import base64
-import logging
 
 from odoo import _, http
-from odoo.exceptions import AccessError, MissingError
 from odoo.http import request
 from odoo.osv.expression import OR
 
 from odoo.addons.portal.controllers.portal import CustomerPortal
 from odoo.addons.web.controllers.main import content_disposition, ensure_db
 
-_logger = logging.getLogger(__name__)
-
 
 class CustomerPortal(CustomerPortal):
     def _dms_check_access(self, model, res_id, access_token=None):
-        try:
-            item_sudo = request.env[model].sudo().browse([res_id])
-        except (AccessError, MissingError):
-            return False
-
         if access_token:
-            if not item_sudo.check_access_token(access_token):
+            item = request.env[model].sudo().browse(res_id)
+            if not item.check_access_token(access_token):
                 return False
         else:
-            if not item_sudo.sudo(request.env.user.id).check_access("read", False):
+            item = request.env[model].browse(res_id)
+            if not item.sudo(request.env.user.id).check_access("read", False):
                 return False
-
-        return item_sudo
+        return item
 
     def _prepare_portal_layout_values(self):
         values = super()._prepare_portal_layout_values()
-        ids = request.env["dms.directory"]._get_own_root_directories(
-            request.env.user.id
-        )
+        ids = request.env["dms.directory"]._get_own_root_directories()
         values.update({"dms_directory_count": len(ids)})
         return values
 
@@ -57,13 +47,7 @@ class CustomerPortal(CustomerPortal):
             filterby = "name"
         # domain
         domain = [
-            (
-                "id",
-                "in",
-                request.env["dms.directory"]._get_own_root_directories(
-                    request.env.user.id
-                ),
-            )
+            ("id", "in", request.env["dms.directory"]._get_own_root_directories(),)
         ]
         # search
         if search and search_in:
@@ -72,16 +56,12 @@ class CustomerPortal(CustomerPortal):
                 search_domain = OR([search_domain, [("name", "ilike", search)]])
             domain += search_domain
         # content according to pager and archive selected
-        items = (
-            request.env["dms.directory"]
-            .sudo(request.env.user.id)
-            .search(domain, order=sort_br)
-        )
+        items = request.env["dms.directory"].search(domain, order=sort_br)
         request.session["my_dms_folder_history"] = items.ids
         # values
         values.update(
             {
-                "dms_directories": items.sudo(),
+                "dms_directories": items,
                 "page_name": "dms_directory",
                 "default_url": "/my/dms",
                 "searchbar_sortings": searchbar_sortings,
@@ -110,14 +90,7 @@ class CustomerPortal(CustomerPortal):
         access_token=None,
         **kw
     ):
-        """Process user's consent acceptance or rejection."""
         ensure_db()
-        try:
-            # If there's a website, we need a user to render the template
-            request.uid = request.website.user_id.id
-        except AttributeError:
-            # If there's no website, the default is OK
-            pass
         # operations
         searchbar_sortings = {"name": {"label": _("Name"), "order": "name asc"}}
         # default sortby br
@@ -139,11 +112,14 @@ class CustomerPortal(CustomerPortal):
                 search_domain = OR([search_domain, [("name", "ilike", search)]])
             domain += search_domain
         # content according to pager and archive selected
-        dms_directory_items = (
-            request.env["dms.directory"]
-            .sudo(request.env.user.id)
-            .search(domain, order=sort_br)
-        )
+        if access_token:
+            dms_directory_items = (
+                request.env["dms.directory"].sudo().search(domain, order=sort_br)
+            )
+        else:
+            dms_directory_items = request.env["dms.directory"].search(
+                domain, order=sort_br
+            )
         request.session["my_dms_folder_history"] = dms_directory_items.ids
         # check_access
         res = self._dms_check_access("dms.directory", dms_directory_id, access_token)
@@ -165,18 +141,19 @@ class CustomerPortal(CustomerPortal):
                 search_domain = OR([search_domain, [("name", "ilike", search)]])
             domain += search_domain
         # items
-        dms_file_items = (
-            request.env["dms.file"]
-            .sudo(request.env.user.id)
-            .search(domain, order=sort_br)
-        )
+        if access_token:
+            dms_file_items = (
+                request.env["dms.file"].sudo().search(domain, order=sort_br)
+            )
+        else:
+            dms_file_items = request.env["dms.file"].search(domain, order=sort_br)
         request.session["my_dms_file_history"] = dms_file_items.ids
-        dms_parent_categories = dms_directory_sudo.sudo(
-            request.env.user.id
-        )._get_parent_categories(access_token)
+        dms_parent_categories = dms_directory_sudo.sudo()._get_parent_categories(
+            access_token
+        )
         # values
         values = {
-            "dms_directories": dms_directory_items.sudo(),
+            "dms_directories": dms_directory_items,
             "page_name": "dms_directory",
             "default_url": "/my/dms/directories",
             "searchbar_sortings": searchbar_sortings,
@@ -186,7 +163,7 @@ class CustomerPortal(CustomerPortal):
             "filterby": filterby,
             "access_token": access_token,
             "dms_directory": dms_directory_sudo,
-            "dms_files": dms_file_items.sudo(),
+            "dms_files": dms_file_items,
             "dms_parent_categories": dms_parent_categories,
         }
         return request.render("dms.portal_my_dms", values)
@@ -200,12 +177,6 @@ class CustomerPortal(CustomerPortal):
     def portal_my_dms_file_download(self, dms_file_id, access_token=None, **kw):
         """Process user's consent acceptance or rejection."""
         ensure_db()
-        try:
-            # If there's a website, we need a user to render the template
-            request.uid = request.website.user_id.id
-        except AttributeError:
-            # If there's no website, the default is OK
-            pass
         # operations
         res = self._dms_check_access("dms.file", dms_file_id, access_token)
         if not res:

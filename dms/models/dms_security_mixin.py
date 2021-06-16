@@ -1,7 +1,10 @@
 # Copyright 2020 Creu Blanca
+# Copyright 2021 Tecnativa - Víctor Martínez
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
 from collections import defaultdict
+
+from psycopg2 import sql
 
 from odoo import SUPERUSER_ID, _, api, fields, models
 from odoo.exceptions import AccessError
@@ -19,9 +22,6 @@ class DmsSecurityMixin(models.AbstractModel):
 
     # Set it to True to enforced security even if no group has been set
     _access_groups_strict = False
-
-    # Set it to True to let the non strict mode check for existing groups per mode
-    _access_groups_mode = False
 
     permission_read = fields.Boolean(
         compute="_compute_permissions_read",
@@ -109,10 +109,15 @@ class DmsSecurityMixin(models.AbstractModel):
                 FROM {table}_complete_groups_rel r
                 JOIN dms_access_group g ON r.gid = g.id
                 JOIN dms_access_group_users_rel u ON r.gid = u.gid
-                WHERE u.uid = %s AND g.perm_{mode} = true
+                WHERE u.uid = %s AND (
+                    (%s = 'read' AND g.perm_read) OR
+                    (%s = 'create' AND g.perm_create) OR
+                    (%s = 'write' AND g.perm_write) OR
+                    (%s = 'unlink' AND g.perm_unlink)
+                )
             )
         """.format(
-            table=self._table, mode=mode
+            table=self._table
         )
         if not self._access_groups_strict:
             exists_clause = """
@@ -120,21 +125,31 @@ class DmsSecurityMixin(models.AbstractModel):
                     SELECT 1
                         FROM {table}_complete_groups_rel r
                         JOIN dms_access_group g ON r.gid = g.id
-                        WHERE r.aid = "{table}".id {groups_mode}
+                        WHERE r.aid = "{table}".id
                 )
             """
-            groups_mode = (
-                self._access_groups_mode
-                and "AND g.perm_{mode} = true".format(mode=mode)
-            )
-            exists_clause = exists_clause.format(
-                table=self._table, groups_mode=groups_mode or ""
-            )
+            exists_clause = exists_clause.format(table=self._table)
             where_clause = "({groups_clause} OR {exists_clause})".format(
-                groups_clause=where_clause, exists_clause=exists_clause,
+                groups_clause=where_clause, exists_clause=exists_clause
             )
         query.where_clause += [where_clause]
-        query.where_clause_params += [self.env.user.id]
+        query.where_clause_params += [self.env.user.id] + ([mode] * 4)
+        # Add _get_directory_ids_with_res_model_without_access
+        if self.env.context.get("use_res_model_without_access", True):
+            custom_ids = self._get_directory_ids_with_res_model_without_access(mode)
+            if custom_ids:
+                field = "id"
+                if self._name == "dms.file":
+                    field = "directory_id"
+                extra_clause = """
+                    "{table}".{field} NOT IN ({ids})
+                """.format(
+                    table=self._table,
+                    field=field,
+                    ids=", ".join(["%s"] * len(custom_ids)),
+                )
+                query.where_clause += [extra_clause]
+                query.where_clause_params += custom_ids.ids
 
     @api.model
     def _apply_ir_rules(self, query, mode="read"):
@@ -142,28 +157,23 @@ class DmsSecurityMixin(models.AbstractModel):
         self._apply_access_groups(query, mode=mode)
 
     def _get_ids_without_access_groups(self, operation):
-        sql_query = """
+        sql_query = sql.SQL(
+            """
             SELECT id
-            FROM {table} a
+            FROM {self_table} a
             WHERE NOT EXISTS (
                 SELECT 1
-                FROM {table}_complete_groups_rel r
-                JOIN dms_access_group g ON r.gid = g.id
-                WHERE r.aid = a.id {subset} {groups_mode}
-            );
-        """
-        subset = self.ids and "AND r.aid = ANY (VALUES {ids})".format(
-            ids=", ".join(map(lambda id: "(%s)" % id, self.ids))
+                FROM {rel_table} r
+                JOIN dms_access_group g ON r.gid = g.id AND r.aid = a.id
+                WHERE r.aid = ANY (%(subset_ids)s)
+            )
+            """
         )
-        groups_mode = (
-            self._access_groups_mode
-            and "AND g.perm_{operation} = true".format(operation=operation)
-        )
-        # pylint: disable=sql-injection
         sql_query = sql_query.format(
-            table=self._table, subset=subset or "", groups_mode=groups_mode or "",
+            self_table=sql.Identifier(self._table),
+            rel_table=sql.Identifier(self._table + "_complete_groups_rel"),
         )
-        self.env.cr.execute(sql_query)
+        self.env.cr.execute(sql_query, {"subset_ids": self.ids})
         return list(map(lambda val: val[0], self.env.cr.fetchall()))
 
     @api.model
@@ -222,11 +232,8 @@ class DmsSecurityMixin(models.AbstractModel):
         try:
             access_right = self.check_access_rights(operation, raise_exception)
             access_rule = self.check_access_rule(operation) is None
-            return (
-                access_right
-                and access_rule
-                and self.check_access_groups(operation) is None
-            )
+            access_group = self.check_access_groups(operation) is None
+            return access_right and access_rule and access_group
         except AccessError:
             if raise_exception:
                 raise
@@ -235,27 +242,29 @@ class DmsSecurityMixin(models.AbstractModel):
     def check_access_groups(self, operation):
         if self.env.user.id == SUPERUSER_ID:
             return None
-        group_ids = set(self.ids) - set(self._get_ids_without_access_groups(operation))
+        group_ids = list(
+            set(self.ids) - set(self._get_ids_without_access_groups(operation))
+        )
         if group_ids:
-            # pylint: disable=sql-injection
-            sql_query = """
-                SELECT r.aid, perm_{operation}
-                FROM {table}_complete_groups_rel r
+            sql_query = sql.SQL(
+                """
+                SELECT r.aid, perm_read, perm_create, perm_write, perm_unlink
+                FROM {rel_table} r
                 JOIN dms_access_group g ON r.gid = g.id
                 JOIN dms_access_group_users_rel u ON r.gid = u.gid
-                WHERE r.aid = ANY (VALUES {ids}) AND u.uid = %s;
-            """.format(
-                operation=operation,
-                table=self._table,
-                ids=", ".join(map(lambda id: "(%s)" % id, group_ids)),
+                WHERE r.aid = ANY (%(group_ids)s) AND u.uid = %(uid)s;
+                """
+            ).format(rel_table=sql.Identifier(self._table + "_complete_groups_rel"),)
+            self.env.cr.execute(
+                sql_query, {"group_ids": group_ids, "uid": self.env.user.id}
             )
-            self.env.cr.execute(sql_query, [self.env.user.id])
             result = defaultdict(list)
-            for key, val in self.env.cr.fetchall():
-                result[key].append(val)
-            if len(result.keys()) < len(group_ids) or not all(
-                list(map(lambda val: any(val), result.values()))
-            ):
+            for val in self.env.cr.dictfetchall():
+                result[val["aid"]].append(val["perm_%s" % operation])
+            if (
+                len(result.keys()) < len(group_ids)
+                or not all(list(map(lambda val: any(val), result.values())))
+            ) and not self.check_access(operation):
                 raise AccessError(
                     _(
                         "The requested operation cannot be completed due "
@@ -270,24 +279,55 @@ class DmsSecurityMixin(models.AbstractModel):
         if self.env.user.id == SUPERUSER_ID:
             return self
         ids_with_access = self._get_ids_without_access_groups(operation)
-        group_ids = set(self.ids) - set(ids_with_access)
+        group_ids = list(set(self.ids) - set(ids_with_access))
         if group_ids:
-            # pylint: disable=sql-injection
-            sql_query = """
+            sql_query = sql.SQL(
+                """
                 SELECT r.aid
-                FROM {table}_complete_groups_rel r
+                FROM {rel_table} r
                 JOIN dms_access_group g ON r.gid = g.id
                 JOIN dms_access_group_users_rel u ON r.gid = u.gid
-                WHERE r.aid = ANY (VALUES {ids})
-                      AND u.uid = %s AND g.perm_{operation} = true;
-            """.format(
-                table=self._table,
-                ids=", ".join(map(lambda id: "(%s)" % id, group_ids)),
-                operation=operation,
+                WHERE
+                    r.aid = ANY (%(ids)s) AND
+                    u.uid = %(uid)s AND (
+                        (%(operation)s = 'read' AND g.perm_read) OR
+                        (%(operation)s = 'create' AND g.perm_create) OR
+                        (%(operation)s = 'write' AND g.perm_write) OR
+                        (%(operation)s = 'unlink' AND g.perm_unlink)
+                    )
+            """
+            ).format(rel_table=sql.Identifier(self._table + "_complete_groups_rel"),)
+            self.env.cr.execute(
+                sql_query,
+                {"ids": group_ids, "uid": self.env.user.id, "operation": operation},
             )
-            self.env.cr.execute(sql_query, [self.env.user.id])
             ids_with_access += list(map(lambda val: val[0], self.env.cr.fetchall()))
         return self & self.browse(ids_with_access)
+
+    def _get_directory_ids_with_res_model_without_access(self, operation):
+        """
+        It's necessary to get all directories with res_model related and check
+        if access to related record.
+        Context use_res_model_without_access=False is used to skip some
+        part of functions that use these function and prevent recursion error.
+        """
+        return (
+            self.env["dms.directory"]
+            .with_context(use_res_model_without_access=False)
+            .search(
+                [
+                    ("res_model", "!=", False),
+                    "|",
+                    "&",
+                    ("is_root_directory", "=", True),
+                    ("root_storage_id_inherit_access_from_parent_record", "=", True),
+                    "&",
+                    ("is_root_directory", "=", False),
+                    ("storage_id_inherit_access_from_parent_record", "=", True),
+                ]
+            )
+            .filtered(lambda x: not x.check_access("read"))
+        )
 
     def _write(self, vals):
         self.check_access_groups("write")

@@ -18,47 +18,10 @@ msgstr ""
 "X-Generator: Weblate 3.7.1\n"
 
 #. module: hr_expense_invoice
-#: model_terms:ir.ui.view,arch_db:hr_expense_invoice.hr_expense_create_invoice_form
-msgid "Cancel"
-msgstr ""
-
-#. module: hr_expense_invoice
-#: model_terms:ir.ui.view,arch_db:hr_expense_invoice.hr_expense_create_invoice_form
-#, fuzzy
-msgid "Create Invoice"
-msgstr "Factura"
-
-#. module: hr_expense_invoice
-#: model:ir.actions.act_window,name:hr_expense_invoice.action_expense_create_invoice
 #: model_terms:ir.ui.view,arch_db:hr_expense_invoice.hr_expense_sheet_form_view_inherit_sale_expense
 #, fuzzy
 msgid "Create Vendor Bill"
 msgstr "Factura de Proveedor"
-
-#. module: hr_expense_invoice
-#: model_terms:ir.ui.view,arch_db:hr_expense_invoice.hr_expense_create_invoice_form
-msgid "Create Vendor Bill from Expense"
-msgstr ""
-
-#. module: hr_expense_invoice
-#: model:ir.model,name:hr_expense_invoice.model_hr_expense_create_invoice
-msgid "Create invoice from expense report"
-msgstr ""
-
-#. module: hr_expense_invoice
-#: model:ir.model.fields,field_description:hr_expense_invoice.field_hr_expense_create_invoice__create_uid
-msgid "Created by"
-msgstr ""
-
-#. module: hr_expense_invoice
-#: model:ir.model.fields,field_description:hr_expense_invoice.field_hr_expense_create_invoice__create_date
-msgid "Created on"
-msgstr ""
-
-#. module: hr_expense_invoice
-#: model:ir.model.fields,field_description:hr_expense_invoice.field_hr_expense_create_invoice__display_name
-msgid "Display Name"
-msgstr ""
 
 #. module: hr_expense_invoice
 #: model:ir.model,name:hr_expense_invoice.model_hr_expense
@@ -66,24 +29,24 @@ msgid "Expense"
 msgstr "Gasto"
 
 #. module: hr_expense_invoice
-#: model:ir.model,name:hr_expense_invoice.model_hr_expense_sheet_register_payment_wizard
-msgid "Expense Register Payment Wizard"
-msgstr ""
-
-#. module: hr_expense_invoice
 #: model:ir.model,name:hr_expense_invoice.model_hr_expense_sheet
 msgid "Expense Report"
 msgstr "Informe de gastos"
 
 #. module: hr_expense_invoice
-#: model:ir.model.fields,field_description:hr_expense_invoice.field_hr_expense_create_invoice__expense_ids
+#: model:ir.model.fields,help:hr_expense_invoice.field_hr_expense__sheet_id_state
+msgid "Expense Report State"
+msgstr ""
+
+#. module: hr_expense_invoice
+#: model:ir.model.fields,field_description:hr_expense_invoice.field_account_invoice__expense_ids
 #, fuzzy
 msgid "Expenses"
 msgstr "Gasto"
 
 #. module: hr_expense_invoice
-#: model:ir.model.fields,field_description:hr_expense_invoice.field_hr_expense_create_invoice__id
-msgid "ID"
+#: model:ir.model,name:hr_expense_invoice.model_account_invoice
+msgid "Invoice"
 msgstr ""
 
 #. module: hr_expense_invoice
@@ -93,12 +56,7 @@ msgid "Invoice Count"
 msgstr "Factura"
 
 #. module: hr_expense_invoice
-#: model:ir.model.fields,field_description:hr_expense_invoice.field_hr_expense_sheet__invoice_fully_created
-msgid "Invoice Fully Created"
-msgstr ""
-
-#. module: hr_expense_invoice
-#: code:addons/hr_expense_invoice/models/hr_expense_sheet.py:75
+#: code:addons/hr_expense_invoice/models/hr_expense_sheet.py:70
 #: model_terms:ir.ui.view,arch_db:hr_expense_invoice.hr_expense_sheet_form_view_inherit_sale_expense
 #, fuzzy, python-format
 msgid "Invoices"
@@ -110,34 +68,8 @@ msgid "Journal Item"
 msgstr ""
 
 #. module: hr_expense_invoice
-#: model:ir.model.fields,field_description:hr_expense_invoice.field_hr_expense_create_invoice____last_update
-msgid "Last Modified on"
-msgstr ""
-
-#. module: hr_expense_invoice
-#: model:ir.model.fields,field_description:hr_expense_invoice.field_hr_expense_create_invoice__write_uid
-msgid "Last Updated by"
-msgstr ""
-
-#. module: hr_expense_invoice
-#: model:ir.model.fields,field_description:hr_expense_invoice.field_hr_expense_create_invoice__write_date
-msgid "Last Updated on"
-msgstr ""
-
-#. module: hr_expense_invoice
-#: code:addons/hr_expense_invoice/wizard/expense_create_invoice.py:40
-#, python-format
-msgid "No valid expenses to create invoice"
-msgstr ""
-
-#. module: hr_expense_invoice
 #: model:ir.model,name:hr_expense_invoice.model_account_payment
 msgid "Payments"
-msgstr ""
-
-#. module: hr_expense_invoice
-#: model_terms:ir.ui.view,arch_db:hr_expense_invoice.hr_expense_create_invoice_form
-msgid "Please select expense line to create new vendor bill:"
 msgstr ""
 
 #. module: hr_expense_invoice
@@ -147,9 +79,8 @@ msgid "Register payment on expense's invoice is not allowed"
 msgstr ""
 
 #. module: hr_expense_invoice
-#: code:addons/hr_expense_invoice/wizard/expense_create_invoice.py:23
-#, python-format
-msgid "This action is allowed only in Approved sate"
+#: model:ir.model.fields,field_description:hr_expense_invoice.field_hr_expense__sheet_id_state
+msgid "Sheet state"
 msgstr ""
 
 #. module: hr_expense_invoice
@@ -158,7 +89,7 @@ msgid "Vendor Bill"
 msgstr "Factura de Proveedor"
 
 #. module: hr_expense_invoice
-#: code:addons/hr_expense_invoice/models/hr_expense_sheet.py:68
+#: code:addons/hr_expense_invoice/models/hr_expense_sheet.py:63
 #, python-format
 msgid ""
 "Vendor bill amount mismatch!\n"
@@ -166,11 +97,23 @@ msgid ""
 msgstr ""
 
 #. module: hr_expense_invoice
-#: code:addons/hr_expense_invoice/models/hr_expense.py:26
-#: code:addons/hr_expense_invoice/models/hr_expense_sheet.py:62
+#: code:addons/hr_expense_invoice/models/hr_expense.py:67
+#: code:addons/hr_expense_invoice/models/hr_expense_sheet.py:57
 #, python-format
 msgid "Vendor bill state must be Open"
 msgstr ""
+
+#. module: hr_expense_invoice
+#: code:addons/hr_expense_invoice/models/account_invoice.py:23
+#, python-format
+msgid ""
+"You can't change the total amount, as there's an expense linked to this "
+"invoice."
+msgstr ""
+
+#, fuzzy
+#~ msgid "Create Invoice"
+#~ msgstr "Factura"
 
 #~ msgid ""
 #~ "Cannot reconcile supplier invoice payable with generated line. Please "

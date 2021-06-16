@@ -154,7 +154,7 @@ msgstr ""
 "Número da parte que chama não recuperado do PBX ou PBX inacessível pelo Odoo"
 
 #. module: asterisk_click2dial
-#: code:addons/asterisk_click2dial/models/asterisk_server.py:216
+#: code:addons/asterisk_click2dial/models/asterisk_server.py:217
 #, python-format
 msgid ""
 "Can't get calling number from  Asterisk.\n"
@@ -308,8 +308,8 @@ msgstr "Número de telefone ausente"
 #. openerp-web
 #: code:addons/asterisk_click2dial/static/src/js/asterisk_click2dial.js:70
 #, python-format
-msgid "Moving to form view of '%s' (%s ID %d)"
-msgstr "Movendo para a visualização de formulário de '%s' (%s ID %d)"
+msgid "Moving to form view of %s (%s ID %d)"
+msgstr ""
 
 #. module: asterisk_click2dial
 #: code:addons/asterisk_click2dial/models/res_users.py:104
@@ -617,3 +617,6 @@ msgstr "mISDN"
 #: model_terms:ir.ui.view,arch_db:asterisk_click2dial.view_asterisk_server_form
 msgid "seconds"
 msgstr "segundos"
+
+#~ msgid "Moving to form view of '%s' (%s ID %d)"
+#~ msgstr "Movendo para a visualização de formulário de '%s' (%s ID %d)"

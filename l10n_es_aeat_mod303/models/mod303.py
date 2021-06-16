@@ -1,7 +1,7 @@
 # Copyright 2013 - Guadaltech - Alberto Martín Cortada
 # Copyright 2015 - AvanzOSC - Ainara Galdona
 # Copyright 2016 Tecnativa - Antonio Espinosa
-# Copyright 2014-2019 Tecnativa - Pedro M. Baeza
+# Copyright 2014-2021 Tecnativa - Pedro M. Baeza
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 from odoo import api, exceptions, fields, models, _
@@ -14,6 +14,7 @@ _ACCOUNT_PATTERN_MAP = {
 }
 
 NON_EDITABLE_ON_DONE = {'done': [('readonly', True)]}
+EDITABLE_ON_DRAFT = {'draft': [('readonly', False)]}
 
 
 class L10nEsAeatMod303Report(models.Model):
@@ -52,11 +53,19 @@ class L10nEsAeatMod303Report(models.Model):
     atribuible_estado = fields.Float(
         string="[66] Attributable to the Administration", readonly=True,
         compute='_compute_atribuible_estado', store=True)
+    potential_cuota_compensar = fields.Float(
+        string="[110] Pending fees to compensate", default=0,
+        states=NON_EDITABLE_ON_DONE,
+    )
     cuota_compensar = fields.Float(
-        string="[67] Fees to compensate", default=0,
+        string="[78] Applied fees to compensate (old [67])", default=0,
         states=NON_EDITABLE_ON_DONE,
         help="Fee to compensate for prior periods, in which his statement "
              "was to return and compensation back option was chosen")
+    remaining_cuota_compensar = fields.Float(
+        string="[87] Remaining fees to compensate",
+        compute="_compute_remaining_cuota_compensar",
+    )
     regularizacion_anual = fields.Float(
         string="[68] Annual regularization",
         states=NON_EDITABLE_ON_DONE,
@@ -106,7 +115,8 @@ class L10nEsAeatMod303Report(models.Model):
         ],
         default='2',
         required=True,
-        states=NON_EDITABLE_ON_DONE,
+        readonly=True,
+        states=EDITABLE_ON_DRAFT,
         string=u"Exonerado mod. 390",
         help=u"Exonerado de la Declaración-resumen anual del IVA, modelo 390: "
              u"Volumen de operaciones (art. 121 LIVA)",
@@ -114,7 +124,8 @@ class L10nEsAeatMod303Report(models.Model):
     has_operation_volume = fields.Boolean(
         string=u"¿Volumen de operaciones?",
         default=True,
-        states=NON_EDITABLE_ON_DONE,
+        readonly=True,
+        states=EDITABLE_ON_DRAFT,
         help=u"¿Existe volumen de operaciones (art. 121 LIVA)?",
     )
     has_347 = fields.Boolean(
@@ -266,6 +277,13 @@ class L10nEsAeatMod303Report(models.Model):
             report.atribuible_estado = (
                 report.casilla_46 * report.porcentaje_atribuible_estado / 100.)
 
+    @api.depends("potential_cuota_compensar", "cuota_compensar")
+    def _compute_remaining_cuota_compensar(self):
+        for record in self:
+            record.remaining_cuota_compensar = (
+                record.potential_cuota_compensar - record.cuota_compensar
+            )
+
     @api.multi
     @api.depends('atribuible_estado', 'cuota_compensar',
                  'regularizacion_anual', 'casilla_77')
@@ -335,12 +353,13 @@ class L10nEsAeatMod303Report(models.Model):
     def calculate(self):
         res = super(L10nEsAeatMod303Report, self).calculate()
         for mod303 in self:
-            mod303.counterpart_account_id = \
-                self.env['account.account'].search([
+            vals = {
+                "counterpart_account_id": self.env['account.account'].search([
                     ('code', '=like', '%s%%' % _ACCOUNT_PATTERN_MAP.get(
                         mod303.result_type, '4750')),
                     ('company_id', '=', mod303.company_id.id),
-                ], limit=1)
+                ], limit=1).id,
+            }
             prev_reports = mod303._get_previous_fiscalyear_reports(
                 mod303.date_start
             ).filtered(lambda x: x.state not in ['draft', 'cancelled'])
@@ -353,7 +372,9 @@ class L10nEsAeatMod303Report(models.Model):
                 ),
             )
             if prev_report.result_type == 'C':
-                mod303.cuota_compensar = abs(prev_report.resultado_liquidacion)
+                vals["cuota_compensar"] = abs(prev_report.resultado_liquidacion)
+                vals["potential_cuota_compensar"] = vals["cuota_compensar"]
+            mod303.write(vals)
         return res
 
     @api.multi
@@ -367,10 +388,12 @@ class L10nEsAeatMod303Report(models.Model):
             raise exceptions.Warning(msg)
         return super(L10nEsAeatMod303Report, self).button_confirm()
 
-    @api.multi
-    @api.constrains('cuota_compensar')
+    @api.constrains("potential_cuota_compensar", "cuota_compensar")
     def check_qty(self):
-        if self.filtered(lambda x: x.cuota_compensar < 0.0):
+        if self.filtered(lambda x: (
+            x.cuota_compensar < 0 or x.remaining_cuota_compensar < 0 or
+            (x.potential_cuota_compensar - x.cuota_compensar) < 0
+        )):
             raise exceptions.ValidationError(_(
                 'The fee to compensate must be indicated as a positive number.'
             ))

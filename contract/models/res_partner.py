@@ -1,6 +1,8 @@
 # Copyright 2017 Carlos Dauden <carlos.dauden@tecnativa.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from ast import literal_eval
+
 from odoo import fields, models
 
 
@@ -21,10 +23,13 @@ class ResPartner(models.Model):
         string="Contracts",
     )
 
+    def _get_partner_contract_domain(self):
+        return [("partner_id", "child_of", self.ids)]
+
     def _compute_contract_count(self):
         contract_model = self.env['contract.contract']
-        fetch_data = contract_model.read_group([
-            ('partner_id', 'child_of', self.ids)],
+        fetch_data = contract_model.read_group(
+            self._get_partner_contract_domain(),
             ['partner_id', 'contract_type'], ['partner_id', 'contract_type'],
             lazy=False)
         result = [[data['partner_id'][0], data['contract_type'],
@@ -46,13 +51,12 @@ class ResPartner(models.Model):
         contract_type = self._context.get('contract_type')
 
         res = self._get_act_window_contract_xml(contract_type)
-        res.update(
-            context=dict(
-                self.env.context,
-                search_default_partner_id=self.id,
-                default_partner_id=self.id,
-                default_pricelist_id=self.property_product_pricelist.id,
-            ),
+        action_context = {k: v for k, v in self.env.context.items() if k != "group_by"}
+        action_context["default_partner_id"] = self.id
+        action_context["default_pricelist_id"] = self.property_product_pricelist.id
+        res["context"] = action_context
+        res["domain"] = (
+            literal_eval(res["domain"]) + self._get_partner_contract_domain()
         )
         return res
 

@@ -7,6 +7,12 @@
         </xpath>
     </template>
 
+    <template id="_assets_bootstrap" inherit_id="web._assets_bootstrap">
+        <xpath expr="link[2]">
+          <link type="text/css" rel="stylesheet" href="/web_widget_one2many_product_picker/static/src/scss/main_variables.scss"/>
+        </xpath>
+    </template>
+
     <template id="assets_backend" name="account assets" inherit_id="web.assets_backend">
         <xpath expr="." position="inside">
             <link type="text/css" rel="stylesheet"
@@ -20,6 +26,7 @@
             <script type="text/javascript" src="/web_widget_one2many_product_picker/static/src/js/views/One2ManyProductPicker/quick_modif_price_form.js"></script>
             <script type="text/javascript" src="/web_widget_one2many_product_picker/static/src/js/views/basic_view.js"></script>
             <script type="text/javascript" src="/web_widget_one2many_product_picker/static/src/js/views/basic_model.js"></script>
+            <script type="text/javascript" src="/web_widget_one2many_product_picker/static/src/js/views/basic_controller.js"></script>
             <script type="text/javascript" src="/web_widget_one2many_product_picker/static/src/js/widgets/field_one2many_product_picker.js"></script>
         </xpath>
     </template>

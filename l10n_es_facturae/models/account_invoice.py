@@ -69,7 +69,6 @@ class AccountInvoice(models.Model):
                    'satisfechas. Auto de declaración de concurso')
         ]
     )
-
     integration_ids = fields.One2many(
         comodel_name='account.invoice.integration',
         inverse_name='invoice_id',
@@ -82,6 +81,12 @@ class AccountInvoice(models.Model):
     facturae_end_date = fields.Date(
         readonly=True,
         states={'draft': [('readonly', False)]},
+    )
+    integration_issue = fields.Boolean(
+        compute='_compute_integration_issue',
+        store=True,
+        help="This field should show if the invoice has been integrated and "
+             "has any issues"
     )
 
     @api.constrains('facturae_start_date', 'facturae_end_date')
@@ -124,6 +129,21 @@ class AccountInvoice(models.Model):
                     break
 
     can_integrate = fields.Boolean(compute="_compute_can_integrate")
+
+    def _integration_issue_fields(self):
+        return (
+            'integration_ids', 'integration_ids.state',
+            'integration_ids.method_id', 'integration_ids.integration_status')
+
+    @api.depends(lambda r: r._integration_issue_fields())
+    def _compute_integration_issue(self):
+        for record in self:
+            integration_issue = False
+            for integration in record.integration_ids:
+                if integration._check_integration_issue():
+                    integration_issue = True
+                    break
+            record.integration_issue = integration_issue
 
     @api.multi
     def action_integrations(self):
@@ -223,17 +243,32 @@ class AccountInvoice(models.Model):
                                     'invoices that have been validated.'))
         return
 
+    def _get_facturae_invoice_attachments(self):
+        result = []
+        if self.partner_id.attach_invoice_as_annex:
+            action = self.env.ref('account.account_invoices')
+            content, content_type = action.render(self.ids)
+            result.append({
+                'data': base64.b64encode(content),
+                'content_type': content_type,
+                'encoding': 'BASE64',
+                'description': _("Invoice %s") % self.number,
+                'compression': False
+            })
+        return result
+
     def get_facturae(self, firmar_facturae):
 
         def _sign_file(cert, password, request):
-            min = 1
-            max = 99999
-            signature_id = 'Signature%05d' % random.randint(min, max)
-            signed_properties_id = signature_id + '-SignedProperties%05d' \
-                                                  % random.randint(min, max)
-            key_info_id = 'KeyInfo%05d' % random.randint(min, max)
-            reference_id = 'Reference%05d' % random.randint(min, max)
-            object_id = 'Object%05d' % random.randint(min, max)
+            minimum = 1
+            maximum = 99999
+            signature_id = 'Signature%05d' % random.randint(minimum, maximum)
+            signed_properties_id = (signature_id + '-SignedProperties%05d') % (
+                random.randint(minimum, maximum)
+            )
+            key_info_id = 'KeyInfo%05d' % random.randint(minimum, maximum)
+            reference_id = 'Reference%05d' % random.randint(minimum, maximum)
+            object_id = 'Object%05d' % random.randint(minimum, maximum)
             etsi = 'http://uri.etsi.org/01903/v1.3.2#'
             sig_policy_identifier = 'http://www.facturae.es/' \
                                     'politica_de_firma_formato_facturae/' \

@@ -122,6 +122,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         data = {
             'origin': origin,
             'partner_id': self.supplier_id.id,
+            'payment_term_id': supplier.property_supplier_payment_term_id.id,
             'fiscal_position_id': supplier.property_account_position_id and
             supplier.property_account_position_id.id or False,
             'picking_type_id': picking_type.id,
@@ -184,6 +185,10 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                                      date_required.day),
             'move_dest_ids': [(4, x.id) for x in item.line_id.move_dest_ids]
         }
+        if item.line_id.analytic_tag_ids:
+            vals['analytic_tag_ids'] = [
+                (4, ati) for ati in item.line_id.analytic_tag_ids.ids
+            ]
         self._execute_purchase_line_onchange(vals)
         return vals
 

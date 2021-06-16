@@ -132,7 +132,9 @@ class TestMailTracking(TransactionCase):
             'partner_ids': [(4, self.recipient.id)],
             'body': '<p>This is a test message</p>',
         })
-        message._notify(message, {}, force_send=True)
+        # disable mail_send_copy module for this test
+        message.with_context(do_not_send_copy=True)._notify(
+            message, {}, force_send=True)
         # Search tracking created
         tracking_email = self.env['mail.tracking.email'].search([
             ('mail_message_id', '=', message.id),
@@ -277,8 +279,7 @@ class TestMailTracking(TransactionCase):
         values = tracking.mail_message_id.get_failed_messages()
         self.assertEqual(values[0]['id'], tracking.mail_message_id.id)
         messages = MailMessageObj.search([])
-        messages_failed = MailMessageObj.search(
-            MailMessageObj._get_failed_message_domain())
+        messages_failed = MailMessageObj.search([['is_failed_message', '=', True]])
         self.assertTrue(messages)
         self.assertTrue(messages_failed)
         self.assertTrue(len(messages) > len(messages_failed))

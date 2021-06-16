@@ -36,7 +36,7 @@
                 <tr class="active">
                     <th>RMA #</th>
                     <th class='d-none d-md-table-cell'>Date</th>
-                    <th>Product</th>
+                    <th name="th_product">Product</th>
                     <th class='text-right'>Quantity</th>
                     <th class='d-none d-md-table-cell'>Status</th>
                 </tr>
@@ -51,7 +51,7 @@
                         </td>
                         <td class="d-none d-md-table-cell"><span t-field="rma.date"/></td>
                         <!-- Portal users don't have access to unpublished products -->
-                        <td><span t-esc="rma.sudo().product_id.display_name"/></td>
+                        <td name="td_product"><span t-esc="rma.sudo().product_id.display_name"/></td>
                         <td class='text-right'><span t-field="rma.product_uom_qty"/></td>
                         <td class="d-none d-md-table-cell tx_status">
                             <span class="badge badge-pill badge-secondary"><span t-field="rma.state"/></span>
@@ -83,6 +83,12 @@
                             </a>
                         </span>
                         <span class="float-right">
+                            <!-- Tags -->
+                            <t t-set="tags" t-value="rma.tag_ids.filtered('is_public')" />
+                            <!-- We don't have the color o_tag_color_# classes available in the frontend -->
+                            <t t-foreach="tags" t-as="tag">
+                                <span class="badge badge-pill badge-info label-text-align" t-esc="tag.name" />
+                            </t>
                             <t t-if="rma.state in ['refunded', 'returned', 'replaced']">
                                 <span class="small text-success orders_label_text_align"><i class="fa fa-fw fa-check"/> <b><span t-field="rma.state"/></b></span>
                             </t>

@@ -69,6 +69,7 @@ class Rma(models.Model):
             'cancelled': [('readonly', True)],
         },
     )
+    tag_ids = fields.Many2many(comodel_name="rma.tag", string="Tags")
     company_id = fields.Many2one(
         comodel_name="res.company",
         default=lambda self: self.env.user.company_id,
@@ -512,7 +513,13 @@ class Rma(models.Model):
         # Assign a default team_id which will be the first in the sequence
         if "team_id" not in vals:
             vals["team_id"] = self.env["rma.team"].search([], limit=1).id
-        return super().create(vals)
+        rmas = super().create(vals)
+        # Send acknowledge when the RMA is created from the portal and the
+        # company has the proper setting active. This context is set by the
+        # `rma_sale` module.
+        if self.env.context.get("from_portal"):
+            rmas._send_draft_email()
+        return rmas
 
     @api.multi
     def copy(self, default=None):
@@ -528,13 +535,52 @@ class Rma(models.Model):
                 _("You cannot delete RMAs that are not in draft state"))
         return super().unlink()
 
+    def _send_draft_email(self):
+        """Send customer notifications they place the RMA from the portal"""
+        for rma in self.filtered("company_id.send_rma_draft_confirmation"):
+            rma_template_id = (
+                rma.company_id.rma_mail_draft_confirmation_template_id.id
+            )
+            rma.with_context(
+                force_send=True,
+                mark_rma_as_sent=True,
+                default_subtype_id=self.env.ref("rma.mt_rma_notification").id,
+            ).message_post_with_template(rma_template_id)
+
+    def _send_confirmation_email(self):
+        """Auto send notifications"""
+        for rma in self.filtered(lambda p: p.company_id.send_rma_confirmation):
+            rma_template_id = (
+                rma.company_id.rma_mail_confirmation_template_id.id
+            )
+            rma.with_context(
+                force_send=True,
+                mark_rma_as_sent=True,
+                default_subtype_id=self.env.ref('rma.mt_rma_notification').id,
+            ).message_post_with_template(rma_template_id)
+
+    def _send_receipt_confirmation_email(self):
+        """Send customer notifications when the products are received"""
+        for rma in self.filtered("company_id.send_rma_receipt_confirmation"):
+            rma_template_id = (
+                rma.company_id.rma_mail_receipt_confirmation_template_id.id
+            )
+            rma.with_context(
+                force_send=True,
+                mark_rma_as_sent=True,
+                default_subtype_id=self.env.ref("rma.mt_rma_notification").id,
+            ).message_post_with_template(rma_template_id)
+
     # Action methods
     def action_rma_send(self):
         self.ensure_one()
         template = self.env.ref('rma.mail_template_rma_notification', False)
+        template = (
+            self.company_id.rma_mail_confirmation_template_id or template)
         form = self.env.ref('mail.email_compose_message_wizard_form', False)
         ctx = {
             'default_model': 'rma',
+            'default_subtype_id': self.env.ref('rma.mt_rma_notification').id,
             'default_res_id': self.ids[0],
             'default_use_template': bool(template),
             'default_template_id': template and template.id or False,
@@ -569,6 +615,7 @@ class Rma(models.Model):
             })
             if self.partner_id not in self.message_partner_ids:
                 self.message_subscribe([self.partner_id.id])
+            self._send_confirmation_email()
 
     def action_refund(self):
         """Invoked when 'Refund' button in rma form view is clicked
@@ -597,12 +644,14 @@ class Rma(models.Model):
                 refund_vals = invoice_form._values_to_save(all_fields=True)
                 line_vals = refund_vals['invoice_line_ids'][-1][2]
                 line_vals.update(invoice_id=refund.id, rma_id=rma.id)
+                line_vals.update(rma._get_extra_refund_line_vals())
                 line = self.env['account.invoice.line'].create(line_vals)
                 rma.write({
                     'refund_line_id': line.id,
                     'refund_id': refund.id,
                     'state': 'refunded',
                 })
+            refund.compute_taxes()
             refund.message_post_with_view(
                 'mail.message_origin_link',
                 values={'self': refund, 'origin': rmas},
@@ -872,6 +921,7 @@ class Rma(models.Model):
         picking_form.company_id = self.company_id
         picking_form.origin = self.name
         picking_form.partner_id = self.partner_shipping_id
+        picking_form.location_id = self.partner_shipping_id.property_stock_customer
         picking_form.location_dest_id = self.location_id
         with picking_form.move_ids_without_package.new() as move_form:
             move_form.product_id = self.product_id
@@ -938,15 +988,31 @@ class Rma(models.Model):
         rma.action_refund
         """
         self.ensure_one()
-        line_form.product_id = self.product_id
-        line_form.quantity = self.product_uom_qty
-        line_form.uom_id = self.product_uom
+        product = self._get_refund_line_product()
+        qty, uom = self._get_refund_line_quantity()
+        line_form.product_id = product
+        line_form.quantity = qty
+        line_form.uom_id = uom
         line_form.price_unit = self._get_refund_line_price_unit()
+
+    def _get_refund_line_product(self):
+        """To be overriden in a third module with the proper origin values
+        in case a kit is linked with the rma"""
+        return self.product_id
+
+    def _get_refund_line_quantity(self):
+        """To be overriden in a third module with the proper origin values
+        in case a kit is linked with the rma """
+        return (self.product_uom_qty, self.product_uom)
 
     def _get_refund_line_price_unit(self):
         """To be overriden in a third module with the proper origin values
         in case a sale order is linked to the original move"""
         return self.product_id.lst_price
+
+    def _get_extra_refund_line_vals(self):
+        """Override to write aditional stuff into the refund line"""
+        return {}
 
     # Returning business methods
     def create_return(self, scheduled_date, qty=None, uom=None):
@@ -1100,8 +1166,11 @@ class Rma(models.Model):
     # Mail business methods
     def _track_subtype(self, init_values):
         self.ensure_one()
-        if 'state' in init_values and self.state == 'draft':
-            return 'rma.mt_rma_draft'
+        if 'state' in init_values:
+            if self.state == 'draft':
+                return 'rma.mt_rma_draft'
+            elif self.state == 'confirmed':
+                return 'rma.mt_rma_notification'
         return super()._track_subtype(init_values)
 
     def message_new(self, msg_dict, custom_values=None):
@@ -1164,6 +1233,16 @@ class Rma(models.Model):
         return 'RMA Report - %s' % self.name
 
     # Other business methods
+
+    def update_received_state_on_reception(self):
+        """ Invoked by:
+            [stock.move]._action_done
+            Here we can attach methods to trigger when the customer products
+            are received on the RMA location, such as automatic notifications
+        """
+        self.write({"state": "received"})
+        self._send_receipt_confirmation_email()
+
     def update_received_state(self):
         """ Invoked by:
          [stock.move].unlink

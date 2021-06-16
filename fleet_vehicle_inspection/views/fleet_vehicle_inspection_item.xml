@@ -16,7 +16,21 @@
                         <label for="name" class="oe_edit_only"/>
                         <h1><field name="name"/></h1>
                     </div>
+                    <notebook>
+                        <page name="instruction" string="Instruction">
+                            <field name="instruction" />
+                        </page>
+                    </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" />
+                    <field name="activity_ids" widget="mail_activity" />
+                    <field
+                        name="message_ids"
+                        widget="mail_thread"
+                        options="{'post_refresh': 'recipients'}"
+                    />
+                </div>
             </form>
         </field>
     </record>
@@ -37,6 +51,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
+                <field name="instruction"/>
             </tree>
         </field>
     </record>

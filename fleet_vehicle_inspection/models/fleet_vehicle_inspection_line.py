@@ -9,6 +9,7 @@ class FleetVehicleInspectionLine(models.Model):
     _name = 'fleet.vehicle.inspection.line'
     _description = 'Fleet Vehicle Inspection Line'
     _inherit = ['mail.thread', 'mail.activity.mixin']
+    _rec_name = 'inspection_item_id'
 
     READONLY_STATES = {
         'confirmed': [('readonly', True)],
@@ -20,28 +21,34 @@ class FleetVehicleInspectionLine(models.Model):
         string='Inspection Reference',
         required=True,
         ondelete='cascade',
-        index=True,
-        copy=False)
+        index=True)
 
     inspection_item_id = fields.Many2one(
         'fleet.vehicle.inspection.item',
         'Inspection Item',
         required=True,
         track_visibility="onchange",
-        help='Inspection Item',
+        index=True,
+        ondelete='cascade',
         states=READONLY_STATES,
+        copy=True
     )
+
+    inspection_item_instruction = fields.Text(
+        'Instruction',
+        related='inspection_item_id.instruction')
 
     result = fields.Selection([
         ('todo', 'Todo'),
         ('success', 'Success'),
         ('failure', 'Failure')
     ], 'Result', default='todo',
-        help='Inspection Line Result ',
         readonly=True,
         required=True,
         copy=False
     )
+
+    result_description = fields.Char()
 
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -53,6 +60,10 @@ class FleetVehicleInspectionLine(models.Model):
         copy=False,
         store=True,
         default='draft'
+    )
+
+    inspection_line_image_ids = fields.One2many(
+        'fleet.vehicle.inspection.line.image', 'inspection_line_id', string='Images'
     )
 
     @api.multi

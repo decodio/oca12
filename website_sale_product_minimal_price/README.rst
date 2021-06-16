@@ -102,6 +102,7 @@ Contributors
 
     * Sergio Teruel
     * Carlos Roca
+    * Pedro M. Baeza
 
 Maintainers
 ~~~~~~~~~~~

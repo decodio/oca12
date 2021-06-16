@@ -14,6 +14,17 @@ JOURNAL_TYPE_MAP = {
     ('incoming', 'transit'): ['purchase', 'sale'],
 }
 
+INVOICE_TYPE_MAP = {
+    # Picking Type Code | Local Origin Usage | Local Dest Usage
+    ('outgoing', 'internal', 'customer'): 'out_invoice',
+    ('incoming', 'customer', 'internal'): 'out_refund',
+    ('incoming', 'supplier', 'internal'): 'in_invoice',
+    ('outgoing', 'internal', 'supplier'): 'in_refund',
+    ('incoming', 'transit', 'internal'): 'in_invoice',
+    ('outgoing', 'transit', 'supplier'): 'in_refund',
+    ('outgoing', 'transit', 'customer'): 'out_invoice',
+}
+
 
 class StockInvoiceOnshipping(models.TransientModel):
     _name = 'stock.invoice.onshipping'
@@ -250,13 +261,16 @@ class StockInvoiceOnshipping(models.TransientModel):
         :return: str
         """
         self.ensure_one()
-        journal2type = {
-            'sale': 'out_invoice',
-            'purchase': 'in_invoice',
-            'sale_refund': 'out_refund',
-            'purchase_refund': 'in_refund',
-        }
-        inv_type = journal2type.get(self.journal_type) or 'out_invoice'
+
+        active_ids = self.env.context.get('active_ids', [])
+        if active_ids:
+            active_ids = active_ids[0]
+        picking = self.env['stock.picking'].browse(active_ids)
+
+        inv_type = INVOICE_TYPE_MAP.get((
+            picking.picking_type_code, picking.location_id.usage,
+            picking.location_dest_id.usage)) or 'out_invoice'
+
         return inv_type
 
     @api.model
@@ -270,7 +284,10 @@ class StockInvoiceOnshipping(models.TransientModel):
         """
         key = picking
         if self.group in ['partner', 'partner_product']:
-            key = (picking._get_partner_to_invoice(), picking.picking_type_id)
+            # Pickings with same Partner to create Invoice but the
+            # Partner to Shipping is different should not be grouping.
+            key = (picking._get_partner_to_invoice(), picking.picking_type_id,
+                   picking.partner_id)
         return key
 
     @api.multi
@@ -345,6 +362,7 @@ class StockInvoiceOnshipping(models.TransientModel):
             'journal_id': journal.id,
             'picking_ids': [(4, p.id, False) for p in pickings],
         })
+
         invoice, values = self._simulate_invoice_onchange(values)
         return invoice, values
 
@@ -380,7 +398,7 @@ class StockInvoiceOnshipping(models.TransientModel):
         return grouped_moves.values()
 
     @api.multi
-    def _simulate_invoice_line_onchange(self, values):
+    def _simulate_invoice_line_onchange(self, values, price_unit=None):
         """
         Simulate onchange for invoice line
         :param values: dict
@@ -389,6 +407,8 @@ class StockInvoiceOnshipping(models.TransientModel):
         line = self.env['account.invoice.line'].new(values.copy())
         line._onchange_product_id()
         new_values = line._convert_to_write(line._cache)
+        if price_unit:
+            new_values['price_unit'] = price_unit
         # Ensure basic values are not updated
         values.update(new_values)
         return values
@@ -454,7 +474,8 @@ class StockInvoiceOnshipping(models.TransientModel):
             'move_line_ids': move_line_ids,
             'invoice_id': invoice.id,
         })
-        values = self._simulate_invoice_line_onchange(values)
+
+        values = self._simulate_invoice_line_onchange(values, price_unit=price)
         values.update({'name': name})
         return values
 

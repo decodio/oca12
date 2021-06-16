@@ -1,7 +1,8 @@
-# Copyright 2015 Pedro M. Baeza <pedro.baeza@tecnativa.com>
+# Copyright 2015 Tecnativa - Pedro M. Baeza
 # Copyright 2015 Antonio Espinosa <antonio.espinosa@tecnativa.com>
 # Copyright 2015 Javier Iniesta <javieria@antiun.com>
-# Copyright 2017 David Vidal <david.vidal@tecnativa.com>
+# Copyright 2017 Tecnativa - David Vidal
+# Copyright 2021 Tecnativa - Víctor Martínez
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 from odoo import _, api, fields, models
@@ -23,8 +24,10 @@ class MailMassMailingContact(models.Model):
                     ('id', '!=', contact.id)
                 ])
                 if contact.list_ids & other_contact.mapped('list_ids'):
-                    raise ValidationError(_("Partner already exists in one of "
-                                            "these mailing lists"))
+                    raise ValidationError(
+                        _("Partner already exists in one of these "
+                          "mailing lists") + ": %s" % contact.partner_id.display_name
+                    )
 
     @api.onchange('partner_id')
     def _onchange_partner_mass_mailing_partner(self):
@@ -70,7 +73,7 @@ class MailMassMailingContact(models.Model):
                 subscription_list_ids=vals.get('subscription_list_ids', False),
                 list_ids=vals.get('list_ids', False)
             )
-            super().write(new_vals)
+            super(MailMassMailingContact, contact).write(new_vals)
         return True
 
     def _get_company(self):

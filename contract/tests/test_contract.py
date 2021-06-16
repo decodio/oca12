@@ -1,5 +1,6 @@
 # Copyright 2018 Tecnativa - Carlos Dauden
 # Copyright 2018 Tecnativa - Pedro M. Baeza
+# Copyright 2021 Tecnativa - Víctor Martínez
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from collections import namedtuple
@@ -25,6 +26,7 @@ class TestContractBase(common.SavepointCase):
         cls.partner = cls.env['res.partner'].create({
             'name': 'partner test contract',
             'property_product_pricelist': cls.pricelist.id,
+            'email': 'demo@demo.com'
         })
         cls.product_1 = cls.env.ref('product.product_product_1')
         cls.product_2 = cls.env.ref('product.product_product_2')
@@ -133,6 +135,62 @@ class TestContract(TestContractBase):
         vals.update(overrides)
         return self.env['contract.template.line'].create(vals)
 
+    def _get_mail_messages_prev(self, contract, subtype):
+        return self.env["mail.message"].search([
+            ("model", "=", "contract.contract"),
+            ("res_id", "=", contract.id),
+            ("subtype_id", "=", subtype.id),
+        ]).ids
+
+    def _get_mail_messages(self, exclude_ids, contract, subtype):
+        return self.env["mail.message"].search([
+            ("model", "=", "contract.contract"),
+            ("res_id", "=", contract.id),
+            ("subtype_id", "=", subtype.id),
+            ('id', 'not in', exclude_ids)
+        ])
+
+    def test_add_modifications(self):
+        partner2 = self.partner.copy()
+        self.contract.message_subscribe(
+            partner_ids=partner2.ids,
+            subtype_ids=self.env.ref('mail.mt_comment').ids
+        )
+        subtype = self.env.ref('contract.mail_message_subtype_contract_modification')
+        partner_ids = self.contract.message_follower_ids.filtered(
+            lambda x: subtype in x.subtype_ids
+        ).mapped('partner_id')
+        self.assertGreaterEqual(len(partner_ids), 1)
+        # Check initial modification auto-creation
+        self.assertEqual(len(self.contract.modification_ids), 1)
+        exclude_ids = self._get_mail_messages_prev(self.contract, subtype)
+        self.contract.write({
+            'modification_ids': [
+                (
+                    0,
+                    0,
+                    {
+                        'date': '2020-01-01',
+                        'description': 'Modification 1',
+                    }
+                ),
+                (
+                    0,
+                    0,
+                    {
+                        'date': '2020-02-01',
+                        'description': 'Modification 2',
+                    }
+                )
+            ]
+        })
+        mail_messages = self._get_mail_messages(exclude_ids, self.contract, subtype)
+        self.assertGreaterEqual(len(mail_messages), 1)
+        self.assertEqual(
+            mail_messages[0].notification_ids.mapped('res_partner_id').ids,
+            self.contract.partner_id.ids
+        )
+
     def test_check_discount(self):
         with self.assertRaises(ValidationError):
             self.acct_line.write({'discount': 120})
@@ -169,6 +227,11 @@ class TestContract(TestContractBase):
         self.assertAlmostEqual(self.inv_line.price_subtotal, 50.0)
         self.assertEqual(self.contract.user_id, self.invoice_monthly.user_id)
 
+    def test_contract_action_preview(self):
+        action = self.contract.action_preview()
+        self.assertIn("/my/contracts/", action["url"])
+        self.assertIn("access_token=", action["url"])
+
     def test_contract_recurring_next_date(self):
         recurring_next_date = to_date('2018-01-15')
         self.assertEqual(
@@ -200,6 +263,21 @@ class TestContract(TestContractBase):
             self.acct_line.recurring_next_date, recurring_next_date
         )
         self.assertEqual(self.acct_line.last_date_invoiced, last_date_invoiced)
+
+    def test_contract_invoice_followers(self):
+        self.acct_line.recurring_next_date = '2018-02-23'
+        self.acct_line.recurring_rule_type = 'daily'
+        self.contract.pricelist_id = False
+        self.contract.message_subscribe(
+            partner_ids=self.contract.partner_id.ids,
+            subtype_ids=self.env.ref(
+                'contract.mail_message_subtype_invoice_created'
+            ).ids
+        )
+        self.contract.recurring_create_invoice()
+        invoice_daily = self.contract._get_related_invoices()
+        self.assertTrue(invoice_daily)
+        self.assertTrue(self.contract.partner_id in invoice_daily.message_partner_ids)
 
     def test_contract_weekly_post_paid(self):
         recurring_next_date = to_date('2018-03-01')

@@ -31,15 +31,17 @@ class ResUsersRole(models.Model):
         string="Users list",
         compute="_compute_user_ids",
     )
+    # TODO, remove in next version as it is not used in the whole module
+    # kept here for legacy reason
     group_category_id = fields.Many2one(
+        comodel_name="ir.module.category",
         related="group_id.category_id",
-        default=lambda cls: cls.env.ref(
-            "base_user_role.ir_module_category_role"
-        ).id,
         string="Associated category",
-        help="Associated group's category",
     )
     comment = fields.Html(string="Internal Notes")
+
+    def _default_category_id(self):
+        return self.env.ref("base_user_role.ir_module_category_role")
 
     @api.multi
     @api.depends("line_ids.user_id")
@@ -49,6 +51,8 @@ class ResUsersRole(models.Model):
 
     @api.model
     def create(self, vals):
+        if "category_id" not in vals and "group_id" not in vals:
+            vals.update({"category_id": self._default_category_id().id})
         new_record = super(ResUsersRole, self).create(vals)
         new_record.update_users()
         return new_record
@@ -61,7 +65,7 @@ class ResUsersRole(models.Model):
 
     @api.multi
     def unlink(self):
-        users = self.mapped("user_ids")
+        users = self.sudo().mapped("user_ids")
         res = super(ResUsersRole, self).unlink()
         users.set_groups_from_roles(force=True)
         return res
@@ -69,7 +73,7 @@ class ResUsersRole(models.Model):
     @api.multi
     def update_users(self):
         """Update all the users concerned by the roles identified by `ids`."""
-        users = self.mapped("user_ids")
+        users = self.sudo().mapped("user_ids")
         users.set_groups_from_roles()
         return True
 

@@ -4,10 +4,10 @@
 {
     "name": "Document Management System",
     "summary": """Document Management System for Odoo""",
-    "version": "12.0.4.0.2",
+    "version": "12.0.7.0.2",
     "category": "Document Management",
     "license": "LGPL-3",
-    "website": "http://github.com/OCA/dms",
+    "website": "https://github.com/OCA/dms",
     "author": "MuK IT, Tecnativa, Odoo Community Association (OCA)",
     "depends": [
         "web_drop_target",

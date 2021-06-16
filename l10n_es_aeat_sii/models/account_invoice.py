@@ -231,6 +231,21 @@ class AccountInvoice(models.Model):
                 }
             }
 
+    @api.onchange('partner_id', 'company_id')
+    def _onchange_partner_id(self):
+        """Trigger fiscal position onchange for assigning SII key when creating
+        bills from purchase module with the button from PO, due to the special
+        way this is triggered through chained onchanges.
+        """
+        trigger_fp = (
+            self.partner_id.property_account_position_id !=
+            self.fiscal_position_id
+        )
+        res = super()._onchange_partner_id()
+        if trigger_fp:
+            self.onchange_fiscal_position_id_l10n_es_aeat_sii()
+        return res
+
     @api.onchange('fiscal_position_id')
     def onchange_fiscal_position_id_l10n_es_aeat_sii(self):
         for invoice in self.filtered('fiscal_position_id'):
@@ -394,13 +409,13 @@ class AccountInvoice(models.Model):
             tax_type = abs(tax.amount)
         tax_dict = {
             'TipoImpositivo': str(tax_type),
-            'BaseImponible': sign * abs(tax_line.base_company),
+            'BaseImponible': sign * tax_line.base_company,
         }
         if self.type in ['out_invoice', 'out_refund']:
             key = 'CuotaRepercutida'
         else:
             key = 'CuotaSoportada'
-        tax_dict[key] = sign * abs(tax_line.amount_company)
+        tax_dict[key] = sign * tax_line.amount_company
         # Recargo de equivalencia
         re_tax_line = self._get_sii_tax_line_req(tax)
         if re_tax_line:
@@ -408,7 +423,7 @@ class AccountInvoice(models.Model):
                 abs(re_tax_line.tax_id.amount)
             )
             tax_dict['CuotaRecargoEquivalencia'] = (
-                sign * abs(re_tax_line.amount_company)
+                sign * re_tax_line.amount_company
             )
         return tax_dict
 
@@ -455,6 +470,7 @@ class AccountInvoice(models.Model):
         taxes_sfesse = self._get_sii_taxes_map(['SFESSE'])
         taxes_sfesns = self._get_sii_taxes_map(['SFESNS'])
         taxes_not_in_total = self._get_sii_taxes_map(['NotIncludedInTotal'])
+        base_not_in_total = self._get_sii_taxes_map(['BaseNotIncludedInTotal'])
         # Check if refund type is 'By differences'. Negative amounts!
         sign = self._get_sii_sign()
         not_in_amount_total = 0
@@ -464,8 +480,18 @@ class AccountInvoice(models.Model):
             breakdown_taxes = (
                 taxes_sfesb + taxes_sfesisp + taxes_sfens + taxes_sfesbe
             )
-            if tax in taxes_not_in_total:
-                not_in_amount_total += tax_line.amount_total
+            if tax in (taxes_not_in_total + base_not_in_total):
+                amount = (
+                    tax_line.base if tax in base_not_in_total else tax_line.amount_total
+                )
+                if self.currency_id != self.company_id.currency_id:
+                    amount = self.currency_id._convert(
+                        amount,
+                        self.company_id.currency_id,
+                        self.company_id,
+                        self._get_currency_rate_date(),
+                    )
+                not_in_amount_total += amount
             if tax in breakdown_taxes:
                 tax_breakdown = taxes_dict.setdefault(
                     'DesgloseFactura', {},
@@ -589,14 +615,25 @@ class AccountInvoice(models.Model):
         taxes_sfrns = self._get_sii_taxes_map(['SFRNS'])
         taxes_sfrnd = self._get_sii_taxes_map(['SFRND'])
         taxes_not_in_total = self._get_sii_taxes_map(['NotIncludedInTotal'])
+        base_not_in_total = self._get_sii_taxes_map(['BaseNotIncludedInTotal'])
         tax_amount = 0.0
         not_in_amount_total = 0.0
         # Check if refund type is 'By differences'. Negative amounts!
         sign = self._get_sii_sign()
         for tax_line in self.tax_line_ids:
             tax = tax_line.tax_id
-            if tax in taxes_not_in_total:
-                not_in_amount_total += tax_line.amount_total
+            if tax in (taxes_not_in_total + base_not_in_total):
+                amount = (
+                    tax_line.base if tax in base_not_in_total else tax_line.amount_total
+                )
+                if self.currency_id != self.company_id.currency_id:
+                    amount = self.currency_id._convert(
+                        amount,
+                        self.company_id.currency_id,
+                        self.company_id,
+                        self._get_currency_rate_date(),
+                    )
+                not_in_amount_total += amount
             if tax in taxes_sfrisp:
                 base_dict = taxes_dict.setdefault(
                     'InversionSujetoPasivo', {'DetalleIVA': []},
@@ -609,7 +646,7 @@ class AccountInvoice(models.Model):
                 continue
             tax_dict = self._get_sii_tax_dict(tax_line, sign)
             if tax in taxes_sfrisp + taxes_sfrs:
-                tax_amount += abs(tax_line.amount_company)
+                tax_amount += tax_line.amount_company
             if tax in taxes_sfrns:
                 tax_dict.pop("TipoImpositivo")
                 tax_dict.pop("CuotaSoportada")

@@ -4,7 +4,7 @@
 
 {
     'name': 'Production Auto Post-Inventory',
-    'version': '12.0.1.0.0',
+    'version': '12.0.1.1.0',
     'category': 'MRP',
     'author': 'Eficent, '
               'Odoo Community Association (OCA)',
@@ -14,6 +14,7 @@
         'mrp',
     ],
     'data': [
+        'data/cron.xml',
         'views/res_config_settings.xml',
     ],
     'installable': True,

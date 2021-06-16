@@ -4,6 +4,7 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
 import datetime
+import decimal
 import json
 import logging
 import sys
@@ -49,6 +50,8 @@ class JSONEncoder(json.JSONEncoder):
             return obj.isoformat()
         elif isinstance(obj, datetime.date):
             return obj.isoformat()
+        elif isinstance(obj, decimal.Decimal):
+            return float(obj)
         return super(JSONEncoder, self).default(obj)
 
 
@@ -113,7 +116,12 @@ class HttpRestRequest(HttpRequest):
         super(HttpRestRequest, self).__init__(httprequest)
         if self.httprequest.mimetype == "application/json":
             data = self.httprequest.get_data().decode(self.httprequest.charset)
-            self.params = json.loads(data)
+            try:
+                self.params = json.loads(data)
+            except ValueError as e:
+                msg = "Invalid JSON data: %s" % str(e)
+                _logger.info("%s: %s", self.httprequest.path, msg)
+                raise BadRequest(msg)
         else:
             # We reparse the query_string in order to handle data structure
             # more information on https://github.com/aventurella/pyquerystring
@@ -197,7 +205,7 @@ ori_get_request = Root.get_request
 
 def get_request(self, httprequest):
     db = httprequest.session.db
-    if db:
+    if db and odoo.service.db.exp_db_exist(db):
         # on the very first request processed by a worker,
         # registry is not loaded yet
         # so we enforce its loading here to make sure that

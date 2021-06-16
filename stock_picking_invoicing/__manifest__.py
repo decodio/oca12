@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 {
     'name': "Stock Picking Invoicing",
-    'version': '12.0.2.0.1',
+    'version': '12.0.3.1.0',
     'category': 'Warehouse Management',
     'author': "Agile Business Group,Odoo Community Association (OCA)",
     'website': 'https://github.com/OCA/account-invoicing',
@@ -14,6 +14,7 @@
     ],
     "data": [
         "wizards/stock_invoice_onshipping_view.xml",
+        "wizards/stock_return_picking_view.xml",
         "views/stock_move.xml",
         "views/stock_picking.xml",
         "views/stock_picking_type.xml",

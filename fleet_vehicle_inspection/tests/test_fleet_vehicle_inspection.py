@@ -27,6 +27,7 @@ class TestFleetVehicleInspection(SavepointCase):
 
         cls.inspection = cls.inspection.create({
             'vehicle_id': cls.vehicle,
+            'odometer': 100,
             'inspection_line_ids': [
                 (0, 0,
                     {
@@ -73,12 +74,6 @@ class TestFleetVehicleInspection(SavepointCase):
 
         self.inspection.button_confirm()
         self.assertEqual(self.inspection.state, 'confirmed')
-
-        self.inspection.button_confirm()
-        self.assertEqual(self.inspection.state, 'confirmed')
-
-        self.inspection.button_cancel()
-        self.assertEqual(self.inspection.state, 'cancel')
 
         self.inspection.button_cancel()
         self.assertEqual(self.inspection.state, 'cancel')

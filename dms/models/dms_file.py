@@ -1,5 +1,6 @@
 # Copyright 2020 Antoni Romera
 # Copyright 2017-2019 MuK IT GmbH
+# Copyright 2021 Tecnativa - Víctor Martínez
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
 import base64
@@ -151,14 +152,17 @@ class File(models.Model):
         attachment=True, string="Content File", prefetch=False, invisible=True
     )
 
+    def check_access_rule(self, operation):
+        self.mapped("directory_id").check_access_rule(operation)
+        return super().check_access_rule(operation)
+
     def get_human_size(self):
         return human_size(self.size)
 
-    def _get_share_url(self, redirect=False, signup_partner=False, pid=None):
-        self.ensure_one()
-        return "/my/dms/file/{}/download?access_token={}&db={}".format(
-            self.id, self._portal_ensure_token(), self.env.cr.dbname,
-        )
+    def _compute_access_url(self):
+        super()._compute_access_url()
+        for item in self:
+            item.access_url = "/my/dms/file/%s/download" % (item.id)
 
     def check_access_token(self, access_token=False):
         res = False
@@ -326,22 +330,17 @@ class File(models.Model):
                 FROM dms_tag t
                 JOIN dms_category c ON t.category_id = c.id
                 LEFT JOIN dms_file_tag_rel r ON t.id = r.tid
-                {directory_where_clause}
+                WHERE %(filter_by_file_ids)s IS FALSE OR r.fid = ANY(%(file_ids)s)
                 GROUP BY c.name, c.id, t.name, t.id
                 ORDER BY c.name, c.id, t.name, t.id;
             """
-            where_clause = ""
-            params = []
+            file_ids = []
             if directory_id:
                 file_ids = self.search([("directory_id", operator, directory_id)]).ids
-                if file_ids:
-                    where_clause = "WHERE r.fid in %s"
-                    params.append(tuple(file_ids))
-                else:
-                    where_clause = "WHERE 1 = 0"
-            # pylint: disable=sql-injection
-            final_query = sql_query.format(directory_where_clause=where_clause)
-            self.env.cr.execute(final_query, params)
+            self.env.cr.execute(
+                sql_query,
+                {"file_ids": file_ids, "filter_by_file_ids": bool(directory_id)},
+            )
             return self.env.cr.dictfetchall()
         if directory_id and field_name in ["directory_id", "category_id"]:
             comodel_domain = kwargs.pop("comodel_domain", [])
@@ -557,22 +556,6 @@ class File(models.Model):
             records -= self.browse(directory.sudo().mapped("file_ids").ids)
         return records
 
-    def check_access(self, operation, raise_exception=False):
-        res = super(File, self).check_access(operation, raise_exception)
-        try:
-            if self.env.user.has_group("base.group_portal"):
-                res_access = res and self.check_directory_access(operation)
-                return res_access and (
-                    self.directory_id.id
-                    not in self.directory_id._get_ids_without_access_groups(operation)
-                )
-            else:
-                return res and self.check_directory_access(operation)
-        except AccessError:
-            if raise_exception:
-                raise
-            return False
-
     def check_directory_access(self, operation, vals=False, raise_exception=False):
         if not vals:
             vals = {}
@@ -587,6 +570,16 @@ class File(models.Model):
     # ----------------------------------------------------------
     # Constrains
     # ----------------------------------------------------------
+
+    @api.constrains("storage_id", "res_model")
+    def _check_storage_id_attachment_res_model(self):
+        for record in self:
+            if record.storage_id.save_type == "attachment" and not (
+                record.res_model and record.res_id
+            ):
+                raise ValidationError(
+                    _("A file must have model and resource ID in attachment storage.")
+                )
 
     @api.constrains("name")
     def _check_name(self):
@@ -644,8 +637,22 @@ class File(models.Model):
 
     def _create_model_attachment(self, vals):
         res_vals = vals.copy()
-        directory = self.env["dms.directory"].sudo().browse(res_vals["directory_id"])
-        if directory and directory.res_model and directory.res_id:
+        directory = False
+        directory_model = self.env["dms.directory"]
+        if "directory_id" in res_vals:
+            directory = directory_model.browse(res_vals["directory_id"])
+        elif self.env.context.get("active_id"):
+            directory = directory_model.browse(self.env.context.get("active_id"))
+        elif self.env.context.get("default_directory_id"):
+            directory = directory_model.browse(
+                self.env.context.get("default_directory_id")
+            )
+        if (
+            directory
+            and directory.res_model
+            and directory.res_id
+            and directory.storage_id.save_type == "attachment"
+        ):
             attachment = (
                 self.env["ir.attachment"]
                 .with_context(dms_file=True)
