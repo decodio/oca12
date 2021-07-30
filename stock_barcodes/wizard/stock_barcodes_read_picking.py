@@ -20,6 +20,10 @@ class WizStockBarcodesReadPicking(models.TransientModel):
         string='Picking',
         readonly=True,
     )
+    pending_moves = fields.Html(
+        compute="_compute_pending_move",
+        groups="stock_barcodes.group_track_pending_products_picking_barcode"
+    )
     candidate_picking_ids = fields.One2many(
         comodel_name='wiz.candidate.picking',
         inverse_name='wiz_barcode_id',
@@ -39,6 +43,25 @@ class WizStockBarcodesReadPicking(models.TransientModel):
     confirmed_moves = fields.Boolean(
         string='Confirmed moves',
     )
+
+    @api.depends(
+        "picking_id", "barcode", "picking_id.move_lines.move_line_ids.qty_done"
+    )
+    def _compute_pending_move(self):
+        for record in self:
+            text = ""
+            if record.picking_id:
+                moves = record.picking_id.move_ids_without_package.filtered(
+                    lambda r: r.product_uom_qty > r.quantity_done
+                )
+
+                text = self.env["ir.qweb"].render(
+                    "stock_barcodes.missing_moves", {
+                        "picking": record.picking_id,
+                        "moves": moves
+                    },
+                )
+            record.pending_moves = text
 
     def name_get(self):
         return [
@@ -89,19 +112,34 @@ class WizStockBarcodesReadPicking(models.TransientModel):
         out_move = candidate_move.picking_code == 'outgoing'
         location_id = (
             self.location_id if out_move else self.picking_id.location_id)
+        quants = self.env["stock.quant"]._gather(
+            self.product_id, location_id, lot_id=self.lot_id, strict=False
+        )
         location_dest_id = (
             self.picking_id.location_dest_id if out_move else self.location_id)
-        return {
+        location_dest_id = location_dest_id.get_putaway_strategy(
+            self.product_id
+        ) or location_dest_id
+        vals = {
             'picking_id': self.picking_id.id,
             'move_id': candidate_move.id,
             'qty_done': available_qty,
-            'product_uom_id': self.product_id.uom_po_id.id,
+            'product_uom_id':
+                self.product_id.uom_po_id.id if not self.packaging_id
+                else self.packaging_id.product_uom_id.id,
             'product_id': self.product_id.id,
             'location_id': location_id.id,
             'location_dest_id': location_dest_id.id,
             'lot_id': self.lot_id.id,
             'lot_name': self.lot_id.name,
         }
+        if quants:
+            reserved_quant = quants[0]
+            vals.update({
+                'location_id': reserved_quant.location_id.id,
+                'owner_id': reserved_quant.owner_id.id or False,
+            })
+        return vals
 
     def _states_move_allowed(self):
         move_states = ['assigned']

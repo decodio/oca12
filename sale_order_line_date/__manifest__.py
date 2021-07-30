@@ -8,7 +8,7 @@
 
 {
     "name": "Sale Order Line Date",
-    "version": "12.0.1.0.0",
+    "version": "12.0.1.1.0",
     "summary": "Adds a commitment date to each sale order line.",
     "author": "OdooMRP team,"
               "AvanzOSC,"
@@ -18,7 +18,7 @@
     "category": "Sale",
     "license": "AGPL-3",
     "depends": [
-        "sale_stock",
+        "sale",
     ],
     "data": [
         "views/sale_order_view.xml",

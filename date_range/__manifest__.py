@@ -3,7 +3,7 @@
 {
     "name": "Date Range",
     "summary": "Manage all kind of date range",
-    "version": "12.0.1.0.1",
+    "version": "12.0.2.0.2",
     "category": "Uncategorized",
     "website": "https://github.com/oca/server-ux",
     "author": "ACSONE SA/NV, Odoo Community Association (OCA)",
@@ -12,6 +12,7 @@
     "depends": [
         "web",
     ],
+    # odoo_test_helper is needed for the tests
     "data": [
         "security/ir.model.access.csv",
         "security/date_range_security.xml",

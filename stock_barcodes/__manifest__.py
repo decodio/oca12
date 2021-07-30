@@ -3,7 +3,7 @@
 {
     "name": "Stock Barcodes",
     "summary": "It provides read barcode on stock operations.",
-    "version": "12.0.2.0.0",
+    "version": "12.0.2.2.0",
     "author": "Tecnativa, "
               "Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/stock-logistics-barcode",
@@ -15,6 +15,7 @@
     ],
     "data": [
         'security/ir.model.access.csv',
+        'security/security.xml',
         'views/assets.xml',
         'views/res_config_settings_views.xml',
         'views/stock_inventory_views.xml',
@@ -23,6 +24,7 @@
         'wizard/stock_barcodes_read_views.xml',
         'wizard/stock_barcodes_read_inventory_views.xml',
         'wizard/stock_barcodes_read_picking_views.xml',
+        'templates/missing_moves_template.xml',
     ],
     "installable": True,
 }

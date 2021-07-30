@@ -1,6 +1,6 @@
 # Copyright 2017 Camptocamp SA
 # Copyright 2019 ACSONE SA/NV
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+# License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html)
 
 import functools
 import logging
@@ -379,6 +379,9 @@ class DataModelFactory(object):
 
     def __getitem__(self, key):
         model = self.registry[key]
+        if hasattr(model, "__datamodel_init_patched"):
+            return model
+
         model.__init__ = functools.partialmethod(model.__init__, env=self.env)
 
         @classmethod
@@ -388,6 +391,7 @@ class DataModelFactory(object):
             return cls
 
         model.__get_schema_class__ = __get_schema_class__
+        setattr(model, "__datamodel_init_patched", True)  # noqa: B010
         return model
 
 

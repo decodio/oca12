@@ -3,13 +3,18 @@
 
 {
     "name": "User roles",
-    "version": "12.0.2.1.1",
+    "version": "12.0.2.1.2",
     "category": "Tools",
     "author": "ABF OSIELL, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "maintainers": ["ABF OSIELL", "jcdrubay"],
     "website": "https://github.com/OCA/server-backend",
-    "depends": ["base"],
+    "depends": [
+        "base",
+        # Ensure Channel autosubscription logic runs
+        # after Groups are assigned
+        "mail",
+    ],
     "data": [
         "security/ir.model.access.csv",
         "data/ir_cron.xml",
