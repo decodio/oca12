@@ -200,11 +200,13 @@ class WizardExportFatturapa(models.TransientModel):
         return True
 
     def _setContattiTrasmittente(self, company, fatturapa):
-        Telefono = company.phone
+        Telefono = company.phone_electronic_invoice or company.phone
         Email = company.email
         fatturapa.FatturaElettronicaHeader.DatiTrasmissione.\
             ContattiTrasmittente = ContattiTrasmittenteType(
-                Telefono=Telefono or None, Email=Email or None)
+                Telefono=Telefono or None,
+                Email=Email or None
+            )
 
         return True
 
@@ -848,7 +850,7 @@ class WizardExportFatturapa(models.TransientModel):
             if invoice.partner_id != partner:
                 raise UserError(
                     _('Invoices %s must belong to the same partner.') %
-                    invoices.mapped('number'))
+                    ', '.join(invoices.mapped('number')))
 
         return partner
 

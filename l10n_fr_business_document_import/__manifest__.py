@@ -3,11 +3,12 @@
 
 {
     'name': 'L10n FR Business Document Import',
-    'version': '12.0.1.0.0',
+    'version': '12.0.1.0.2',
     'category': 'French Localization',
     'license': 'AGPL-3',
     'summary': 'Adapt the module base_business_document_import for France',
     'author': 'Akretion,Odoo Community Association (OCA)',
+    'maintainers': ['alexis-via'],
     'website': 'https://github.com/OCA/l10n-france',
     'depends': ['l10n_fr_siret', 'base_business_document_import'],
     'installable': True,
