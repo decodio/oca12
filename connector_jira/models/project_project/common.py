@@ -91,6 +91,7 @@ class JiraProjectProject(models.Model):
         return [
             ('software', 'Software'),
             ('business', 'Business'),
+            ('service_desk', 'Service desk'), # infigo use this type that is available to customers alseo
         ]
 
     # Disable and implement the constraint jira_binding_uniq as python because
