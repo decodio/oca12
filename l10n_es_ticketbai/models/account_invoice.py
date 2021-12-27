@@ -14,6 +14,7 @@ class AccountInvoice(models.Model):
 
     tbai_enabled = fields.Boolean(
         related='company_id.tbai_enabled', readonly=True)
+    tbai_send_invoice = fields.Boolean(related='journal_id.tbai_send_invoice')
     tbai_substitution_invoice_id = fields.Many2one(
         comodel_name='account.invoice', copy=False,
         help="Link between a validated Customer Invoice and its substitute.")
@@ -36,7 +37,9 @@ class AccountInvoice(models.Model):
         compute='_compute_tbai_datetime_invoice', store=True, copy=False)
     tbai_date_operation = fields.Datetime('Operation Date', copy=False)
     tbai_description_operation = fields.Text(
-        'Operation Description', default="/", copy=False)
+        'Operation Description', default="/", copy=False,
+        compute="_compute_tbai_description", store=True
+    )
     tbai_substitute_simplified_invoice = fields.Boolean(
         'Substitute Simplified Invoice', copy=False)
     tbai_refund_key = fields.Selection(selection=[
@@ -183,8 +186,10 @@ class AccountInvoice(models.Model):
             vals['operation_date'] = operation_date
         gipuzkoa_tax_agency = self.env.ref(
             "l10n_es_ticketbai_api.tbai_tax_agency_gipuzkoa")
+        araba_tax_agency = self.env.ref(
+            "l10n_es_ticketbai_api.tbai_tax_agency_araba")
         tax_agency = self.company_id.tbai_tax_agency_id
-        if tax_agency == gipuzkoa_tax_agency:
+        if tax_agency in (gipuzkoa_tax_agency, araba_tax_agency):
             lines = []
             for line in self.invoice_line_ids:
                 lines.append((0, 0, {
@@ -205,13 +210,19 @@ class AccountInvoice(models.Model):
         )
         for tax in self.tax_line_ids.filtered(
                 lambda x: x.tax_id not in exclude_taxes):
+            tax_subject_to = tax.tax_id.tbai_is_subject_to_tax()
+            not_subject_to_cause = \
+                not tax_subject_to and tax.tbai_get_value_causa() or ''
+            is_exempted = tax_subject_to and tax.tax_id.tbai_is_tax_exempted() or False
+            not_exempted_type = tax_subject_to and \
+                not is_exempted and tax.tbai_get_value_tipo_no_exenta() or ''
             taxes.append((0, 0, {
                 'base': tax.tbai_get_value_base_imponible(),
-                'is_subject_to': tax.tax_id.tbai_is_subject_to_tax(),
-                'not_subject_to_cause': tax.tbai_get_value_causa(),
-                'is_exempted': tax.tax_id.tbai_is_tax_exempted(),
-                'exempted_cause': tax.tbai_vat_exemption_key.code,
-                'not_exempted_type': tax.tbai_get_value_tipo_no_exenta(),
+                'is_subject_to': tax_subject_to,
+                'not_subject_to_cause': not_subject_to_cause,
+                'is_exempted': is_exempted,
+                'exempted_cause': is_exempted and tax.tbai_vat_exemption_key.code or '',
+                'not_exempted_type': not_exempted_type,
                 'amount': "%.2f" % abs(tax.tax_id.amount),
                 'amount_total': tax.tbai_get_value_cuota_impuesto(),
                 're_amount': tax.tbai_get_value_tipo_recargo_equivalencia() or '',
@@ -300,7 +311,7 @@ class AccountInvoice(models.Model):
                         x.refund_invoice_id.tbai_invoice_id and not
                         x.refund_invoice_id.tbai_cancellation_id
                     )
-                )
+                ) and x.tbai_send_invoice
             )
             tbai_invoices._tbai_build_invoice()
         return res
@@ -402,6 +413,32 @@ class AccountInvoice(models.Model):
         else:
             res = None
         return res
+
+    @api.depends(
+        "invoice_line_ids",
+        "invoice_line_ids.name",
+        "company_id",
+    )
+    def _compute_tbai_description(self):
+        default_description = self.default_get(
+            ["tbai_description_operation"]
+        )["tbai_description_operation"]
+        for invoice in self.filtered(lambda inv: not inv.tbai_invoice_id):
+            description = ""
+            method = invoice.company_id.tbai_description_method
+            if method == "fixed":
+                description = invoice.company_id.tbai_description or default_description
+            elif method == "manual":
+                if invoice.tbai_description_operation != default_description:
+                    # keep current content if not default
+                    description = invoice.tbai_description_operation
+            else:  # auto method
+                if invoice.invoice_line_ids:
+                    names = invoice.mapped("invoice_line_ids.name") or invoice.mapped(
+                        "invoice_line_ids.ref"
+                    )
+                    description += " - ".join(filter(None, names))
+            invoice.tbai_description_operation = (description or "")[:250] or "/"
 
 
 class AccountInvoiceLine(models.Model):

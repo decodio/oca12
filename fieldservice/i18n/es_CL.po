@@ -25,7 +25,7 @@ msgid "# of Owned Locations"
 msgstr "# de Ubicaciones Propias"
 
 #. module: fieldservice
-#: code:addons/fieldservice/models/fsm_order.py:408
+#: code:addons/fieldservice/models/fsm_order.py:388
 #, python-format
 msgid "%s is a holiday (%s)."
 msgstr ""
@@ -371,7 +371,7 @@ msgstr ""
 "existente."
 
 #. module: fieldservice
-#: code:addons/fieldservice/models/fsm_order.py:252
+#: code:addons/fieldservice/models/fsm_order.py:232
 #, python-format
 msgid "Cannot move to completed from Kanban"
 msgstr ""
@@ -2015,8 +2015,8 @@ msgstr "Necesidad Programada"
 
 #. module: fieldservice
 #: code:addons/fieldservice/models/fsm_order.py:86
+#: code:addons/fieldservice/models/fsm_order.py:208
 #: code:addons/fieldservice/models/fsm_order.py:210
-#: code:addons/fieldservice/models/fsm_order.py:212
 #, python-format
 msgid "New"
 msgstr "Nuevo"
@@ -3196,7 +3196,7 @@ msgid "You cannot create recursive location."
 msgstr "No puede crear una ubicación recursiva."
 
 #. module: fieldservice
-#: code:addons/fieldservice/models/fsm_order.py:266
+#: code:addons/fieldservice/models/fsm_order.py:246
 #, python-format
 msgid "You cannot delete this order."
 msgstr "No puedes eliminar este pedido."

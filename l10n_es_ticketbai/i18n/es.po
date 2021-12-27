@@ -6,15 +6,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 12.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-08 09:06+0000\n"
-"PO-Revision-Date: 2021-06-08 09:06+0000\n"
+"POT-Creation-Date: 2021-11-11 11:38+0000\n"
+"PO-Revision-Date: 2021-11-11 12:43+0100\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
-"Language: \n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
+"X-Generator: Poedit 3.0\n"
 
 #. module: l10n_es_ticketbai
 #: model:ir.model,name:l10n_es_ticketbai.model_l10n_es_aeat_certificate
@@ -53,6 +54,11 @@ msgid "Art. 80.4"
 msgstr ""
 
 #. module: l10n_es_ticketbai
+#: selection:res.company,tbai_description_method:0
+msgid "Automatic"
+msgstr "Automático"
+
+#. module: l10n_es_ticketbai
 #: model:ir.model.fields,help:l10n_es_ticketbai.field_account_invoice__tbai_refund_key
 msgid ""
 "BOE-A-1992-28740. Ley 37/1992, de 28 de diciembre, del Impuesto sobre el "
@@ -70,7 +76,7 @@ msgid "Cancel and recreate"
 msgstr "Cancelar y recrear"
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/account_invoice.py:240
+#: code:addons/l10n_es_ticketbai/models/account_invoice.py:251
 #, python-format
 msgid "Cancellation"
 msgstr "Anulación factura"
@@ -99,7 +105,7 @@ msgid "Company"
 msgstr "Compañía"
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/account_invoice_tax.py:98
+#: code:addons/l10n_es_ticketbai/models/account_invoice_tax.py:104
 #, python-format
 msgid "Country code for partner %s not found!"
 msgstr "Código de país para la empresa %s no encontrado."
@@ -199,6 +205,11 @@ msgid "Fiscal Position Template"
 msgstr "Plantilla de posición fiscal"
 
 #. module: l10n_es_ticketbai
+#: selection:res.company,tbai_description_method:0
+msgid "Fixed"
+msgstr "Predefinido"
+
+#. module: l10n_es_ticketbai
 #: model:ir.ui.menu,name:l10n_es_ticketbai.menu_finance_ticketbai_general_info
 msgid "General Info"
 msgstr "Información general"
@@ -278,12 +289,35 @@ msgstr "Última actualización el"
 #. module: l10n_es_ticketbai
 #: model:ir.model.fields,help:l10n_es_ticketbai.field_account_invoice__tbai_substitution_invoice_id
 msgid "Link between a validated Customer Invoice and its substitute."
+msgstr "Enlace entre la factura del cliente y su sustituta."
+
+#. module: l10n_es_ticketbai
+#: selection:res.company,tbai_description_method:0
+msgid "Manual"
 msgstr ""
 
 #. module: l10n_es_ticketbai
 #: model_terms:ir.ui.view,arch_db:l10n_es_ticketbai.invoice_form_inherit
 msgid "Messages"
 msgstr "Mensajes"
+
+#. module: l10n_es_ticketbai
+#: model:ir.model.fields,help:l10n_es_ticketbai.field_res_company__tbai_description_method
+msgid ""
+"Method for the TicketBAI invoices description, can be one of these:\n"
+"- Automatic: the description will be the join of the invoice   lines "
+"description\n"
+"- Fixed: the description write on the below field 'TBAI   Description'\n"
+"- Manual (by default): It will be necessary to manually enter   the "
+"description on each invoice"
+msgstr ""
+"Método para la descripción de facturas TicketBAI, puede ser uno de éstos:\n"
+"- Automático: la descripción será la unión de las descripciones de las "
+"lineas de la factura\n"
+"- Predefinido: la descripción escrita en el campo de abajo 'Descripción "
+"TBAI'\n"
+"- Manual (por defecto): Es necesario insertar la descripción de la factura "
+"manualmente en cada factura"
 
 #. module: l10n_es_ticketbai
 #: model:ir.model.fields,field_description:l10n_es_ticketbai.field_tbai_tax_map__name
@@ -313,7 +347,7 @@ msgid "Refund"
 msgstr "Rectificativa"
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/account_invoice.py:263
+#: code:addons/l10n_es_ticketbai/models/account_invoice.py:274
 #, python-format
 msgid ""
 "Refund invoices must be cancelled in order to cancel the original invoice."
@@ -326,6 +360,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:l10n_es_ticketbai.invoice_form_inherit
 msgid "Responses"
 msgstr "Respuestas"
+
+#. module: l10n_es_ticketbai
+#: model:ir.model.fields,field_description:l10n_es_ticketbai.field_account_bank_statement_import_journal_creation__tbai_send_invoice
+#: model:ir.model.fields,field_description:l10n_es_ticketbai.field_account_invoice__tbai_send_invoice
+#: model:ir.model.fields,field_description:l10n_es_ticketbai.field_account_journal__tbai_send_invoice
+msgid "Send TicketBAI invoices to tax agency"
+msgstr "Enviar facturas a hacienda TicketBAI"
 
 #. module: l10n_es_ticketbai
 #: model:ir.model,name:l10n_es_ticketbai.model_ir_sequence
@@ -406,6 +447,15 @@ msgid "Template for Fiscal Position"
 msgstr "Plantilla de posición fiscal"
 
 #. module: l10n_es_ticketbai
+#: model:ir.model.fields,help:l10n_es_ticketbai.field_res_company__tbai_description
+msgid ""
+"The description for invoices. Only used when the field TicketBAI Description "
+"Method is 'Fixed'."
+msgstr ""
+"Descripción de las facturas. Utilizado cuando el campo Método de descripción "
+"TicketBAI es 'Predefinido'."
+
+#. module: l10n_es_ticketbai
 #: model:ir.ui.menu,name:l10n_es_ticketbai.menu_finance_ticketbai
 #: model:ir.ui.menu,name:l10n_es_ticketbai.menu_l10n_es_tbai_config
 #: model_terms:ir.ui.view,arch_db:l10n_es_ticketbai.invoice_form_inherit
@@ -443,6 +493,16 @@ msgstr "TicketBAI anulación"
 #: model:ir.model.fields,field_description:l10n_es_ticketbai.field_account_invoice__tbai_cancellation_ids
 msgid "TicketBAI Cancellations"
 msgstr "TicketBAI anulaciones"
+
+#. module: l10n_es_ticketbai
+#: model:ir.model.fields,field_description:l10n_es_ticketbai.field_res_company__tbai_description
+msgid "TicketBAI Description"
+msgstr "Descripción TBAI"
+
+#. module: l10n_es_ticketbai
+#: model:ir.model.fields,field_description:l10n_es_ticketbai.field_res_company__tbai_description_method
+msgid "TicketBAI Description Method"
+msgstr "Método descripción TBAI"
 
 #. module: l10n_es_ticketbai
 #: model_terms:ir.ui.view,arch_db:l10n_es_ticketbai.tbai_account_fiscal_position_template_view_search
@@ -606,13 +666,23 @@ msgid "Wizard to Load AEAT Certificate"
 msgstr "Asistente para cargar el certificado AEAT"
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/account_invoice.py:68
+#: code:addons/l10n_es_ticketbai/models/account_invoice.py:71
 #, python-format
 msgid "You cannot change to draft a TicketBAI invoice!"
 msgstr "No es posible cambiar el estado a borrador de una factura TicketBAI."
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/account_invoice.py:280
+#: code:addons/l10n_es_ticketbai/models/account_journal.py:34
+#, python-format
+msgid ""
+"You cannot stop sending invoices from this journal, an invoice has already "
+"been sent."
+msgstr ""
+"No puedes dejar de enviar facturas de este diario, al menos una factura ya a "
+"sido enviada."
+
+#. module: l10n_es_ticketbai
+#: code:addons/l10n_es_ticketbai/models/account_invoice.py:291
 #, python-format
 msgid "You cannot validate a refund invoice without the origin invoice!"
 msgstr "No es posible validar la factura rectificativa sin factura origen."

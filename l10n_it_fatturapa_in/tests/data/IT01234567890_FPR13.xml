@@ -13,7 +13,7 @@
                 <Telefono>06543534343</Telefono>
                 <Email>info@yourcompany.example.com</Email>
             </ContattiTrasmittente>
-            <PECDestinatario>test@pec.it</PECDestinatario>
+            <PECDestinatario>test@pec</PECDestinatario>
         </DatiTrasmissione>
         <CedentePrestatore>
             <DatiAnagrafici>
@@ -35,7 +35,7 @@
             </Sede>
             <Contatti>
                 <Telefono>06543534343</Telefono>
-                <Email>info@yourcompany.example.com</Email>
+                <Email>www.example.com / info@yourcompany.example.com</Email>
             </Contatti>
         </CedentePrestatore>
         <CessionarioCommittente>

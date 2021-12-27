@@ -33,9 +33,19 @@ class TestSCT(common.HttpCase):
             'name': 'Test EUR company',
             'currency_id': self.eur_currency.id,
         })
-        self.partner_agrolait.company_id = self.main_company.id
-        self.partner_asus.company_id = self.main_company.id
-        self.partner_c2c.company_id = self.main_company.id
+        # Done as direct SQL for avoiding ORM constraint about changing company
+        self.env.cr.execute(
+            "UPDATE res_partner SET company_id = %s WHERE id = %s",
+            (self.main_company.id, self.partner_agrolait.id)
+        )
+        self.env.cr.execute(
+            "UPDATE res_partner SET company_id = %s WHERE id = %s",
+            (self.main_company.id, self.partner_asus.id)
+        )
+        self.env.cr.execute(
+            "UPDATE res_partner SET company_id = %s WHERE id = %s",
+            (self.main_company.id, self.partner_c2c.id)
+        )
         self.env.user.write({
             'company_ids': [(6, 0, self.main_company.ids)],
             'company_id': self.main_company.id,
@@ -189,7 +199,7 @@ class TestSCT(common.HttpCase):
             debtor_acc_xpath[0].text,
             self.payment_order.company_partner_bank_id.sanitized_acc_number)
         self.payment_order.generated2uploaded()
-        self.assertEqual(self.payment_order.state, 'uploaded')
+        self.assertEqual(self.payment_order.state, 'done')
         for inv in [invoice1, invoice2, invoice3, invoice4, invoice5]:
             self.assertEqual(inv.state, 'paid')
         return
@@ -266,7 +276,7 @@ class TestSCT(common.HttpCase):
             debtor_acc_xpath[0].text,
             self.payment_order.company_partner_bank_id.sanitized_acc_number)
         self.payment_order.generated2uploaded()
-        self.assertEqual(self.payment_order.state, 'uploaded')
+        self.assertEqual(self.payment_order.state, 'done')
         for inv in [invoice1, invoice2]:
             self.assertEqual(inv.state, 'paid')
         return

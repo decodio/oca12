@@ -8,7 +8,7 @@ from psycopg2 import ProgrammingError
 
 from odoo import _, api, fields, models, SUPERUSER_ID
 from odoo.exceptions import UserError
-from odoo.tools import pycompat, sql
+from odoo.tools import pycompat, safe_eval, sql
 from odoo.addons.base.models.ir_model import IrModel
 
 _logger = logging.getLogger(__name__)
@@ -120,6 +120,10 @@ class BiSQLView(models.Model):
             'sql_valid': [('readonly', False)],
         })
 
+    computed_action_context = fields.Text(
+        compute="_compute_computed_action_context",
+        string="Computed Action Context")
+
     action_context = fields.Text(
         string="Action Context", default="{}", readonly=True,
         help="Define here a context that will be used"
@@ -127,6 +131,7 @@ class BiSQLView(models.Model):
         states={
             'draft': [('readonly', False)],
             'sql_valid': [('readonly', False)],
+            'model_valid': [('readonly', False)],
         })
 
     has_group_changed = fields.Boolean(copy=False)
@@ -192,6 +197,29 @@ class BiSQLView(models.Model):
                             'Only graph, pivot or tree views are supported'))
 
     # Compute Section
+    @api.depends("bi_sql_view_field_ids.graph_type")
+    @api.multi
+    def _compute_computed_action_context(self):
+        for rec in self:
+            action = {
+                "pivot_measures": [],
+                "pivot_row_groupby": [],
+                "pivot_column_groupby": [],
+            }
+            for field in rec.bi_sql_view_field_ids.filtered(
+                    lambda x: x.graph_type == "measure"):
+                action["pivot_measures"].append(field.name)
+
+            for field in rec.bi_sql_view_field_ids.filtered(
+                    lambda x: x.graph_type == "row"):
+                action["pivot_row_groupby"].append(field.name)
+
+            for field in rec.bi_sql_view_field_ids.filtered(
+                    lambda x: x.graph_type == "col"):
+                action["pivot_column_groupby"].append(field.name)
+
+            rec.computed_action_context = str(action)
+
     @api.depends('is_materialized')
     @api.multi
     def _compute_materialized_text(self):
@@ -233,6 +261,8 @@ class BiSQLView(models.Model):
             raise UserError(
                 _("You can only unlink draft views."
                   "If you want to delete them, first set them to draft."))
+        if self.mapped("cron_id"):
+            self.mapped("cron_id").unlink()
         return super(BiSQLView, self).unlink()
 
     @api.multi
@@ -248,10 +278,7 @@ class BiSQLView(models.Model):
     # Action Section
     @api.multi
     def button_create_sql_view_and_model(self):
-        for sql_view in self:
-            if sql_view.state != 'sql_valid':
-                raise UserError(_(
-                    "You can only process this action on SQL Valid items"))
+        for sql_view in self.filtered(lambda x: x.state == "sql_valid"):
             # Create ORM and access
             sql_view._create_model_and_fields()
             sql_view._create_model_access()
@@ -261,32 +288,38 @@ class BiSQLView(models.Model):
             sql_view._create_index()
 
             if sql_view.is_materialized:
-                sql_view.cron_id = self.env['ir.cron'].create(
-                    sql_view._prepare_cron()).id
+                if not sql_view.cron_id:
+                    sql_view.cron_id = self.env['ir.cron'].create(
+                        sql_view._prepare_cron()).id
+                else:
+                    sql_view.cron_id.active = True
             sql_view.state = 'model_valid'
         return True
 
     @api.multi
     def button_set_draft(self):
-        for sql_view in self:
+        for sql_view in self.filtered(lambda x: x.state != "draft"):
             sql_view.menu_id.unlink()
             sql_view.action_id.unlink()
             sql_view.tree_view_id.unlink()
             sql_view.graph_view_id.unlink()
             sql_view.pivot_view_id.unlink()
             sql_view.search_view_id.unlink()
-            if sql_view.cron_id:
-                sql_view.cron_id.unlink()
 
             if sql_view.state in ('model_valid', 'ui_valid'):
                 # Drop SQL View (and indexes by cascade)
                 if sql_view.is_materialized:
                     sql_view._drop_view()
 
+                if sql_view.cron_id:
+                    sql_view.cron_id.active = False
+
                 # Drop ORM
                 sql_view._drop_model_and_fields()
 
-            sql_view.write({'state': 'draft', 'has_group_changed': False})
+            sql_view.has_group_changed = False
+            super(BiSQLView, sql_view).button_set_draft()
+        return True
 
     @api.multi
     def button_create_ui(self):
@@ -358,7 +391,7 @@ class BiSQLView(models.Model):
 
     @api.multi
     def _prepare_cron(self):
-        self.ensure_one()
+        now = datetime.now()
         return {
             'name': _('Refresh Materialized View %s') % self.view_name,
             'user_id': SUPERUSER_ID,
@@ -367,6 +400,10 @@ class BiSQLView(models.Model):
             'state': 'code',
             'code': 'model._refresh_materialized_view_cron(%s)' % self.ids,
             'numbercall': -1,
+            'interval_number': 1,
+            'interval_type': 'days',
+            'nextcall': datetime(now.year, now.month, now.day+1),
+            'active': True,
         }
 
     @api.multi
@@ -455,6 +492,9 @@ class BiSQLView(models.Model):
             view_id = self.pivot_view_id.id
         else:
             view_id = self.graph_view_id.id
+        action = safe_eval(self.computed_action_context)
+        for k, v in safe_eval(self.action_context).items():
+            action[k] = v
         return {
             'name': self._prepare_action_name(),
             'res_model': self.model_id.model,
@@ -462,7 +502,7 @@ class BiSQLView(models.Model):
             'view_mode': view_mode,
             'view_id': view_id,
             'search_view_id': self.search_view_id.id,
-            'context': self.action_context,
+            'context': str(action),
         }
 
     @api.multi
@@ -651,7 +691,9 @@ class BiSQLView(models.Model):
             if sql_view.action_id:
                 # Alter name of the action, to display last refresh
                 # datetime of the materialized view
-                sql_view.action_id.name = sql_view._prepare_action_name()
+                sql_view.action_id.with_context(
+                    lang=self.env.user.lang
+                ).name = sql_view._prepare_action_name()
 
     @api.multi
     def _refresh_size(self):
@@ -660,9 +702,3 @@ class BiSQLView(models.Model):
                 sql_view.view_name)
             self._log_execute(req)
             sql_view.size = self.env.cr.fetchone()[0]
-
-    @api.multi
-    def button_preview_sql_expression(self):
-        self.button_validate_sql_expression()
-        res = self._execute_sql_request()
-        raise UserError('\n'.join(map(lambda x: str(x), res[:100])))

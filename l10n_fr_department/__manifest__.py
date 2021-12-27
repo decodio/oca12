@@ -6,13 +6,13 @@
 {
     'name': 'French Departments (Départements)',
     'summary': 'Populate Database with French Departments (Départements)',
-    'version': '12.0.1.0.1',
+    'version': '12.0.1.0.2',
     'category': 'French Localization',
     'author': 'GRAP, '
               'Akretion, '
               'Nicolas JEUDY, '
               'Odoo Community Association (OCA)',
-    'website': 'http://www.grap.coop',
+    'website': 'https://github.com/OCA/l10n-france',
     'license': 'AGPL-3',
     'depends': [
         'l10n_fr_state',

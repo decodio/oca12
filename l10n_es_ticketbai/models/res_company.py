@@ -2,6 +2,7 @@
 # Copyright 2021 Landoo Sistemas de Informacion SL
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from odoo import models, fields, api
+from odoo.tools import ormcache
 
 
 class ResCompany(models.Model):
@@ -10,6 +11,28 @@ class ResCompany(models.Model):
     tbai_aeat_certificate_id = fields.Many2one(
         comodel_name='l10n.es.aeat.certificate', string='AEAT Certificate',
         domain="[('state', '=', 'active'), ('company_id', '=', id)]", copy=False)
+
+    tbai_description_method = fields.Selection(
+        string='TicketBAI Description Method',
+        selection=[("auto", "Automatic"), ("fixed", "Fixed"),
+                   ("manual", "Manual")],
+        default="manual",
+        required=True,
+        help="Method for the TicketBAI invoices description, can be one of these:\n"
+             "- Automatic: the description will be the join of the invoice "
+             "  lines description\n"
+             "- Fixed: the description write on the below field 'TBAI "
+             "  Description'\n"
+             "- Manual (by default): It will be necessary to manually enter "
+             "  the description on each invoice",
+    )
+
+    tbai_description = fields.Char(
+        string="TicketBAI Description",
+        size=250,
+        help="The description for invoices. Only used when the field TicketBAI "
+        "Description Method is 'Fixed'.",
+    )
 
     @api.onchange('tbai_enabled')
     def onchange_tbai_enabled_unset_tbai_aeat_certificate_id(self):
@@ -34,6 +57,31 @@ class ResCompany(models.Model):
         else:
             return None
 
+    @ormcache('fp_template', 'company')
+    def _get_fp_id_from_fp_template(self, fp_template, company):
+        """Low level cached search for a fiscal position given its template and
+        company.
+        """
+        xmlids = self.env['ir.model.data'].search_read([
+            ('model', '=', 'account.fiscal.position.template'),
+            ('res_id', '=', fp_template.id)
+        ], ['name', 'module'])
+        return xmlids and self.env['ir.model.data'].search([
+            ('model', '=', 'account.fiscal.position'),
+            ('module', '=', xmlids[0]['module']),
+            ('name', '=', '{}_{}'.format(company.id, xmlids[0]['name']))
+        ]).res_id or False
+
+    def get_fps_from_templates(self, fp_templates):
+        """Return company fiscal positions that match the given templates."""
+        self.ensure_one()
+        fp_ids = []
+        for tmpl in fp_templates:
+            fp_id = self._get_fp_id_from_fp_template(tmpl, self)
+            if fp_id:
+                fp_ids.append(fp_id)
+        return self.env['account.fiscal.position'].browse(fp_ids)
+
     def write(self, vals):
         super().write(vals)
         if vals.get('tbai_enabled', False):
@@ -45,7 +93,7 @@ class ResCompany(models.Model):
                             if self.env['ir.module.module'].search([
                                 ('name', '=', 'l10n_es_account_invoice_sequence'),
                                 ('state', '=', 'installed')
-                            ]):
+                            ]) and journal.invoice_sequence_id:
                                 journal.invoice_sequence_id.suffix = ''
                             else:
                                 journal.sequence_id.suffix = ''

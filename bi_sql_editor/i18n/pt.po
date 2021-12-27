@@ -20,25 +20,25 @@ msgstr ""
 "X-Generator: Weblate 4.3.2\n"
 
 #. module: bi_sql_editor
-#: code:addons/bi_sql_editor/models/bi_sql_view.py:475
+#: code:addons/bi_sql_editor/models/bi_sql_view.py:515
 #, python-format
 msgid "%m/%d/%Y %H:%M:%S UTC"
 msgstr ""
 
 #. module: bi_sql_editor
-#: code:addons/bi_sql_editor/models/bi_sql_view.py:243
+#: code:addons/bi_sql_editor/models/bi_sql_view.py:273
 #, python-format
 msgid "%s (Copy)"
 msgstr "%s (Cópia)"
 
 #. module: bi_sql_editor
-#: code:addons/bi_sql_editor/models/bi_sql_view.py:348
+#: code:addons/bi_sql_editor/models/bi_sql_view.py:381
 #, python-format
 msgid "%s Access %s"
 msgstr "%s Acesso %s"
 
 #. module: bi_sql_editor
-#: code:addons/bi_sql_editor/models/bi_sql_view.py:376
+#: code:addons/bi_sql_editor/models/bi_sql_view.py:413
 #, python-format
 msgid "Access %s"
 msgstr "Acesso %s"
@@ -113,9 +113,14 @@ msgstr ""
 "\"tree\""
 
 #. module: bi_sql_editor
+#: model:ir.model.fields,field_description:bi_sql_editor.field_bi_sql_view__computed_action_context
+msgid "Computed Action Context"
+msgstr ""
+
+#. module: bi_sql_editor
 #: model_terms:ir.ui.view,arch_db:bi_sql_editor.view_bi_sql_view_form
-msgid "Context"
-msgstr "Contexto"
+msgid "Computed Context"
+msgstr ""
 
 #. module: bi_sql_editor
 #: model_terms:ir.ui.view,arch_db:bi_sql_editor.view_bi_sql_view_form
@@ -145,6 +150,11 @@ msgid "Cron Task that will refresh the materialized view"
 msgstr "Cron Task que atualizará a visão materializada"
 
 #. module: bi_sql_editor
+#: model_terms:ir.ui.view,arch_db:bi_sql_editor.view_bi_sql_view_form
+msgid "Custom Context"
+msgstr ""
+
+#. module: bi_sql_editor
 #: model:ir.model.fields,field_description:bi_sql_editor.field_bi_sql_view__size
 msgid "Database Size"
 msgstr "Tamanho da Base de Dados"
@@ -165,11 +175,11 @@ msgid ""
 "False)]."
 msgstr ""
 "Defina aqui a restrição de acesso aos dados.\n"
-" Certifique-se de usar o nome do campo prefixado com um 'x_'. Uma regra "
-"'ir.rule' global será criada. Uma regra típica de Multi Empresa é, por "
+" Certifique-se de usar o nome do campo prefixado com um 'x_'. Uma regra 'ir."
+"rule' global será criada. Uma regra típica de Multi Empresa é, por "
 "exemplo, \n"
-" ['|', ('x_company_id','child_of', [user.company_id."
-"id]),('x_company_id','=',False)]."
+" ['|', ('x_company_id','child_of', [user.company_id.id]),('x_company_id','=',"
+"False)]."
 
 #. module: bi_sql_editor
 #: model:ir.model.fields,field_description:bi_sql_editor.field_bi_sql_view__display_name
@@ -220,8 +230,8 @@ msgid ""
 msgstr ""
 "Para campo Odoo 'Seleção'.\n"
 " Lista de opções, especificada como uma expressão Python que define uma "
-"lista de pares (chave, etiqueta). Por exemplo: [('azul', 'Azul'), ("
-"'amarelo', 'Amarelo')]"
+"lista de pares (chave, etiqueta). Por exemplo: [('azul', 'Azul'), "
+"('amarelo', 'Amarelo')]"
 
 #. module: bi_sql_editor
 #: model:ir.model.fields,help:bi_sql_editor.field_bi_sql_view__model_name
@@ -320,7 +330,7 @@ msgid "Name"
 msgstr "Nome"
 
 #. module: bi_sql_editor
-#: code:addons/bi_sql_editor/models/bi_sql_view.py:629
+#: code:addons/bi_sql_editor/models/bi_sql_view.py:669
 #, python-format
 msgid ""
 "No Column was found.\n"
@@ -375,7 +385,7 @@ msgid "Odoo Tree View"
 msgstr "Vista Árvore Odoo"
 
 #. module: bi_sql_editor
-#: code:addons/bi_sql_editor/models/bi_sql_view.py:191
+#: code:addons/bi_sql_editor/models/bi_sql_view.py:196
 #, python-format
 msgid "Only graph, pivot or tree views are supported"
 msgstr "Só são suportadas vistas graph, pivot ou árvore"
@@ -401,7 +411,7 @@ msgid "Refresh Materialized View"
 msgstr "Refrescar Vista Materializada"
 
 #. module: bi_sql_editor
-#: code:addons/bi_sql_editor/models/bi_sql_view.py:363
+#: code:addons/bi_sql_editor/models/bi_sql_view.py:396
 #, python-format
 msgid "Refresh Materialized View %s"
 msgstr "Refrescar Vista Materializada %s"
@@ -417,7 +427,7 @@ msgid "Rule Definition"
 msgstr "Definição de Regra"
 
 #. module: bi_sql_editor
-#: code:addons/bi_sql_editor/models/bi_sql_view.py:508
+#: code:addons/bi_sql_editor/models/bi_sql_view.py:548
 #, python-format
 msgid ""
 "SQL Error while creating %s VIEW %s :\n"
@@ -620,20 +630,14 @@ msgid "Views, Action and Menu Created"
 msgstr "Vistas, Ações e Menu Criados"
 
 #. module: bi_sql_editor
-#: code:addons/bi_sql_editor/models/bi_sql_view.py:181
+#: code:addons/bi_sql_editor/models/bi_sql_view.py:186
 #: code:addons/bi_sql_editor/models/bi_sql_view_field.py:110
 #, python-format
 msgid "You can not create indexes on non materialized views"
 msgstr "Não pode criar índices em vistas não materializadas"
 
 #. module: bi_sql_editor
-#: code:addons/bi_sql_editor/models/bi_sql_view.py:253
-#, python-format
-msgid "You can only process this action on SQL Valid items"
-msgstr "Só pode processar esta ação em itens SQL válidos"
-
-#. module: bi_sql_editor
-#: code:addons/bi_sql_editor/models/bi_sql_view.py:234
+#: code:addons/bi_sql_editor/models/bi_sql_view.py:262
 #, python-format
 msgid ""
 "You can only unlink draft views.If you want to delete them, first set them "
@@ -697,3 +701,9 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:bi_sql_editor.view_bi_sql_view_form
 msgid "this will refresh the materialized view"
 msgstr "isto refrescará a vista materializada"
+
+#~ msgid "Context"
+#~ msgstr "Contexto"
+
+#~ msgid "You can only process this action on SQL Valid items"
+#~ msgstr "Só pode processar esta ação em itens SQL válidos"

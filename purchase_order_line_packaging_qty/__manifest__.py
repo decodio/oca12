@@ -5,7 +5,7 @@
     "name": "Purchase Order Line Packaging Quantity",
     "summary": "Define quantities according to product packaging"
     " on purchase order lines",
-    "version": "12.0.1.0.2",
+    "version": "12.0.1.1.0",
     "development_status": "Alpha",
     "category": "Warehouse Management",
     "website": "https://github.com/OCA/purchase-workflow",
@@ -14,5 +14,5 @@
     "application": False,
     "installable": True,
     "depends": ["purchase_stock", "stock_move_packaging_qty"],
-    "data": ["views/purchase_order.xml"],
+    "data": ["views/purchase_order.xml", "views/product_product.xml"],
 }

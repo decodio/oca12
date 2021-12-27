@@ -6,13 +6,13 @@
 {
     'name': 'French States (Régions)',
     'summary': 'Populate Database with French States (Régions)',
-    'version': '12.0.1.0.0',
+    'version': '12.0.1.0.1',
     'category': 'French Localization',
     'author': 'GRAP, '
               'Akretion, '
               'Nicolas JEUDY, '
               'Odoo Community Association (OCA)',
-    'website': 'http://www.grap.coop',
+    'website': 'https://github.com/OCA/l10n-france',
     'license': 'AGPL-3',
     'depends': ['base'],
     'pre_init_hook': 'create_fr_state_xmlid',

@@ -14,7 +14,7 @@ class TicketBAITaxAgency(models.Model):
     qr_base_url = fields.Char(
         string='QR Base URL', compute='_compute_ticketbai_version', store=True)
     test_qr_base_url = fields.Char(
-        string='QR Base URL', compute='_compute_ticketbai_version', store=True)
+        string='Test QR Base URL', compute='_compute_ticketbai_version', store=True)
     tax_agency_version_ids = fields.One2many(
         comodel_name='tbai.tax.agency.version', inverse_name='tbai_tax_agency_id')
     rest_url_invoice = fields.Char(
@@ -29,6 +29,8 @@ class TicketBAITaxAgency(models.Model):
     test_rest_url_cancellation = fields.Char(
         string='Test - REST API URL for Invoice Cancellations',
         compute='_compute_ticketbai_version', store=True)
+    sign_file_url = fields.Char(string='Sign File URL', required=True)
+    sign_file_hash = fields.Char(string='Sign File HASH', required=True)
 
     @api.multi
     def get_current_version(self):

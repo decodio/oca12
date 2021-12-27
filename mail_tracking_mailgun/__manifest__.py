@@ -6,7 +6,7 @@
 {
     "name": "Mail tracking for Mailgun",
     "summary": "Mail tracking and Mailgun webhooks integration",
-    "version": "12.0.1.0.2",
+    "version": "12.0.2.0.1",
     "category": "Social Network",
     "website": "https://github.com/OCA/social",
     "author": "Tecnativa, "
@@ -20,5 +20,6 @@
     "data": [
         "views/res_partner.xml",
         "views/mail_tracking_email.xml",
+        "wizards/res_config_settings_views.xml",
     ]
 }
