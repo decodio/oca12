@@ -18,6 +18,7 @@ class WorklogAdapter(Component):
 
     def read(self, issue_id, worklog_id):
         worklog = super().read(issue_id, worklog_id)
+        return worklog  # KGB temp
         if self.env.context.get('jira_worklog_no_tempo_timesheets_data'):
             return worklog
         with self.handle_404():

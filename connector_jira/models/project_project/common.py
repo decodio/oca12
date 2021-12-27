@@ -317,6 +317,21 @@ class ProjectAdapter(Component):
             self.get(id_).update(values)
 
     def create(self, key=None, name=None, template_name=None, values=None):
+        """
+        key: str,
+        name: str = None,
+        assignee: str = None,
+        ptype: str = "software",
+        template_name: str = None,
+        avatarId=None,
+        issueSecurityScheme=None,
+        permissionScheme=None, -> self.client.permissionschemes()
+        projectCategory=None,
+        notificationScheme=10000,
+        categoryId=None,
+        url: str = "",
+        """
+
         project = self.client.create_project(
             key=key,
             name=name,
