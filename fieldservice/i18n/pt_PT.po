@@ -25,7 +25,7 @@ msgid "# of Owned Locations"
 msgstr "# de Locais"
 
 #. module: fieldservice
-#: code:addons/fieldservice/models/fsm_order.py:388
+#: code:addons/fieldservice/models/fsm_order.py:382
 #, python-format
 msgid "%s is a holiday (%s)."
 msgstr "%s é um feriado (%s)."
@@ -369,7 +369,7 @@ msgstr ""
 "de um Estágio FSM existente."
 
 #. module: fieldservice
-#: code:addons/fieldservice/models/fsm_order.py:232
+#: code:addons/fieldservice/models/fsm_order.py:226
 #, python-format
 msgid "Cannot move to completed from Kanban"
 msgstr "Não é possível mover para concluído a partir do Kanban"
@@ -1994,8 +1994,8 @@ msgstr "Necessidade Agendada"
 
 #. module: fieldservice
 #: code:addons/fieldservice/models/fsm_order.py:86
-#: code:addons/fieldservice/models/fsm_order.py:208
-#: code:addons/fieldservice/models/fsm_order.py:210
+#: code:addons/fieldservice/models/fsm_order.py:209
+#: code:addons/fieldservice/models/fsm_order.py:211
 #, python-format
 msgid "New"
 msgstr "Novo"
@@ -3171,7 +3171,7 @@ msgid "You cannot create recursive location."
 msgstr "Não pode criar um local recursivo."
 
 #. module: fieldservice
-#: code:addons/fieldservice/models/fsm_order.py:246
+#: code:addons/fieldservice/models/fsm_order.py:240
 #, python-format
 msgid "You cannot delete this order."
 msgstr "Não pode apagar esta ordem."
