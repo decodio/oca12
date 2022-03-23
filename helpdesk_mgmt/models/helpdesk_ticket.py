@@ -1,4 +1,5 @@
 from odoo import _, api, fields, models, tools
+from odoo.osv import expression
 from email.utils import getaddresses
 
 
@@ -21,7 +22,10 @@ class HelpdeskTicket(models.Model):
     description = fields.Html(required=True, sanitize_style=True)
     user_id = fields.Many2one(
         'res.users',
-        string='Assigned user',)
+        string='Assigned user',
+        track_visibility="onchange",
+        index=True
+    )
 
     user_ids = fields.Many2many(
         comodel_name='res.users',
@@ -82,6 +86,29 @@ class HelpdeskTicket(models.Model):
     sequence = fields.Integer(
         string='Sequence', index=True, default=10,
         help="Gives the sequence order when displaying a list of tickets.")
+
+    @api.multi
+    def name_get(self):
+        result = []
+        for ticket in self:
+            name = "[%s] %s" % (ticket.number, ticket.name)
+            result.append((ticket.id, name))
+        return result
+
+    @api.model
+    def _name_search(
+        self, name, args=None, operator='ilike', limit=100, name_get_uid=None
+    ):
+        args = args or []
+        domain = []
+        if name:
+            domain = ['|', ('number', operator, name), ('name', operator, name)]
+            if operator in expression.NEGATIVE_TERM_OPERATORS:
+                domain = domain[1:]
+        ticket_ids = self._search(
+            expression.AND([domain, args]), limit=limit,
+            access_rights_uid=name_get_uid)
+        return self.browse(ticket_ids).name_get()
 
     def send_user_mail(self):
         self.env.ref('helpdesk_mgmt.assignment_email_template'). \
@@ -170,9 +197,6 @@ class HelpdeskTicket(models.Model):
         res = super().create(vals)
 
         # Check if mail to the user has to be sent
-        if vals.get('user_id') and res:
-            res.send_user_mail()
-            res.message_subscribe(partner_ids=res.user_id.partner_id.ids)
         if (vals.get('partner_id') or vals.get('partner_email')) and res:
             res.send_partner_mail()
             if res.partner_id:
@@ -202,14 +226,7 @@ class HelpdeskTicket(models.Model):
             if vals.get('user_id'):
                 vals['assigned_date'] = now
 
-        res = super(HelpdeskTicket, self).write(vals)
-
-        # Check if mail to the user has to be sent
-        for ticket in self:
-            if vals.get('user_id'):
-                ticket.send_user_mail()
-                ticket.message_subscribe(partner_ids=ticket.user_id.partner_id.ids)
-        return res
+        return super(HelpdeskTicket, self).write(vals)
 
     def _prepare_ticket_number(self, values):
         seq = self.env["ir.sequence"]
