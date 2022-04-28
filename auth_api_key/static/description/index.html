@@ -387,11 +387,13 @@ ul.auto-toc {
 </div>
 <div class="section" id="configuration">
 <h1><a class="toc-backref" href="#id1">Configuration</a></h1>
-<p>The api key menu is available into Settings &gt; Technical in debug mode.
-By default, when you create an API key, the key is saved into the database.
-It is also possible to provide the value of this key via the configuration
+<p>The API key menu is available into Settings &gt; Technical in debug mode.
+By default, when you create an API key, the key is saved into the database.</p>
+<p>If the <tt class="docutils literal">server_environment</tt> module is also installed,
+it is also possible to provide the value of this key via the configuration
 file. This can be very useful to avoid mixing your keys between your various
-environments when restoring databases. All you have to do is to add a new
+environments when restoring databases.</p>
+<p>All you have to do is to add a new
 section to your configuration file according to the following convention:</p>
 <pre class="code ini literal-block">
 <span class="k">[api_key_&lt;Record Name&gt;]</span>

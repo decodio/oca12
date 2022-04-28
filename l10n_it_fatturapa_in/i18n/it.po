@@ -102,7 +102,7 @@ msgid "Attachment URL"
 msgstr "URL allegato"
 
 #. module: l10n_it_fatturapa_in
-#: code:addons/l10n_it_fatturapa_in/models/attachment.py:123
+#: code:addons/l10n_it_fatturapa_in/models/attachment.py:139
 #, python-format
 msgid "Attachment without name"
 msgstr "Allegato senza nome"
@@ -228,6 +228,11 @@ msgstr "Impostazioni di configurazione"
 #: model:ir.model,name:l10n_it_fatturapa_in.model_res_partner
 msgid "Contact"
 msgstr "Contatto"
+
+#. module: l10n_it_fatturapa_in
+#: model:ir.model.fields,field_description:l10n_it_fatturapa_in.field_fatturapa_attachment_in__is_self_invoice
+msgid "Contains self invoices"
+msgstr ""
 
 #. module: l10n_it_fatturapa_in
 #: code:addons/l10n_it_fatturapa_in/wizard/wizard_import_fatturapa.py:227
@@ -480,7 +485,7 @@ msgstr ""
 "d'acconto\n"
 
 #. module: l10n_it_fatturapa_in
-#: code:addons/l10n_it_fatturapa_in/models/account.py:177
+#: code:addons/l10n_it_fatturapa_in/models/account.py:183
 #, python-format
 msgid "E-bill contains ImportoRitenuta %s but created invoice has got %s\n"
 msgstr "La e-fattura contiene ImportoRitenuta %s ma la fattura creata ha %s\n"
@@ -712,7 +717,7 @@ msgid "Invoice Line"
 msgstr "Riga fattura"
 
 #. module: l10n_it_fatturapa_in
-#: code:addons/l10n_it_fatturapa_in/models/account.py:225
+#: code:addons/l10n_it_fatturapa_in/models/account.py:231
 #, python-format
 msgid ""
 "Invoice date ({bill_date_invoice}) does not match with e-bill invoice date "
@@ -1429,7 +1434,7 @@ msgid "Vendor invoice registration default date"
 msgstr "Data predefinita per la registrazione delle fatture fornitore"
 
 #. module: l10n_it_fatturapa_in
-#: code:addons/l10n_it_fatturapa_in/models/account.py:214
+#: code:addons/l10n_it_fatturapa_in/models/account.py:220
 #, python-format
 msgid ""
 "Vendor reference ({bill_vendor_ref}) does not match with e-bill vendor "
