@@ -2,13 +2,13 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html)
 
 {'name': 'Queue Job Tests',
- 'version': '12.0.2.0.0',
+ 'version': '12.0.3.0.0',
  'author': 'Camptocamp,Odoo Community Association (OCA)',
  'license': 'LGPL-3',
  'category': 'Generic Modules',
  'depends': ['queue_job',
              ],
- 'website': 'http://www.camptocamp.com',
+ 'website': 'https://github.com/OCA/queue',
  'data': [
      'data/queue_job_channel_data.xml',
      'data/queue_job_function_data.xml',

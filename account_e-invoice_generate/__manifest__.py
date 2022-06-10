@@ -4,7 +4,7 @@
 
 {
     'name': 'Account e-invoice Generate',
-    'version': '12.0.1.0.0',
+    'version': '12.0.1.1.0',
     'category': 'Accounting & Finance',
     'license': 'AGPL-3',
     'summary': 'Technical module to generate PDF invoices with '
@@ -12,7 +12,6 @@
     'author': 'Akretion,Odoo Community Association (OCA)',
     'website': 'https://github.com/OCA/edi',
     'depends': ['account'],
-    'excludes': ['account_facturx'],
     'data': [
         'views/res_config_settings.xml',
     ],
