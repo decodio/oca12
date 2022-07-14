@@ -40,7 +40,7 @@ class CleanupPurgeWizardMenu(models.TransientModel):
         res = []
         for menu in self.env['ir.ui.menu'].with_context(active_test=False)\
                 .search([('action', '!=', False)]):
-            if menu.action.type != 'ir.actions.act_window':
+            if menu.action and menu.action.type != 'ir.actions.act_window':
                 continue
             if (menu.action.res_model and menu.action.res_model not in
                 self.env) or \
