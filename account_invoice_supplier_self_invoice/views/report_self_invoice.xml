@@ -97,7 +97,7 @@
                             <td class="text-right">
                                 <span t-field="l.quantity"/>
                                 <span t-field="l.uom_id"
-                                      groups="product.group_uom"/>
+                                      groups="uom.group_uom"/>
                             </td>
                             <td class="text-right">
                                 <span t-field="l.price_unit"/>
