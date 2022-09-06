@@ -4,7 +4,7 @@ from datetime import date
 
 from odoo.tools import mute_logger
 from .fatturapa_common import FatturapaCommon
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class TestDuplicatedAttachment(FatturapaCommon):
@@ -176,9 +176,8 @@ class TestFatturaPAXMLValidation(FatturapaCommon):
         self.assertRaises(
             Exception, self.run_wizard, 'test6_Exception', '')
         # fake Signed file is passed , generate parsing error
-        with mute_logger('odoo.addons.l10n_it_fatturapa_in.models.attachment'):
-            attachment = self.create_attachment(
-                'test6_orm_exception', 'IT05979361218_fake.xml.p7m')
+        attachment = self.create_attachment(
+            'test6_orm_exception', 'IT05979361218_fake.xml.p7m')
         self.assertIn('Invalid xml', attachment.e_invoice_parsing_error)
 
     def test_07_xml_import(self):
@@ -346,8 +345,6 @@ class TestFatturaPAXMLValidation(FatturapaCommon):
             invoice.inconsistencies,
             u"Company Name field contains 'Societa\' "
             "Alpha SRL'. Your System contains 'SOCIETA\' ALPHA SRL'\n\n"
-            u"XML contains tax with percentage '15.55'"
-            " but it does not exist in your system\n"
             "XML contains tax with percentage '15.55'"
             " but it does not exist in your system")
 
@@ -545,6 +542,10 @@ class TestFatturaPAXMLValidation(FatturapaCommon):
                     company_id.arrotondamenti_attivi_account_id.id:
                 move_line = True
         self.assertTrue(move_line)
+
+        # Update the reference so that importing the same file
+        # (in other tests) does not raise "Duplicated vendor reference..."
+        invoice.reference = 'test25'
 
     def test_26_xml_import(self):
         res = self.run_wizard('test26', 'IT05979361218_015.xml')
@@ -779,14 +780,119 @@ class TestFatturaPAXMLValidation(FatturapaCommon):
         Check that an XML with syntax error is created,
         but it shows a parsing error.
         """
-        with mute_logger('odoo.addons.l10n_it_fatturapa_in.models.attachment'):
-            attachment = self.create_attachment(
-                "test52",
-                "ZGEXQROO37831_anonimizzata.xml",
-            )
+        attachment = self.create_attachment(
+            "test52",
+            "ZGEXQROO37831_anonimizzata.xml",
+        )
         self.assertIn('http://ivaservizi.agenziaentrate.gov.it/ '
                       'has no category elementBinding',
                       attachment.e_invoice_parsing_error)
+
+    def test_53_xml_import(self):
+        """
+        Check that VAT of non-IT partner is not checked.
+        """
+        partner_model = self.env['res.partner']
+        # Arrange: A partner with vat GB99999999999 does not exist
+        not_valid_vat = 'GB99999999999'
+
+        def vat_partner_exists():
+            return partner_model.search([
+                ('vat', '=', not_valid_vat),
+            ])
+        self.assertFalse(vat_partner_exists())
+
+        # Act: Import an e-bill containing a supplier with vat GB99999999999
+        self.create_attachment(
+            "test53",
+            "IT01234567890_x05mX.xml",
+        )
+
+        # Assert: A partner with vat GB99999999999 exists,
+        # and the vat is usually not valid for UK
+        self.assertTrue(vat_partner_exists())
+        with self.assertRaises(ValidationError) as ve:
+            partner_model.create([{
+                'name': "Test not valid VAT",
+                'country_id': self.ref('base.uk'),
+                'vat': not_valid_vat,
+            }])
+        exc_message = ve.exception.args[0]
+        self.assertRegex(
+            exc_message,
+            'VAT number .*{not_valid_vat}.* does not seem to be valid'
+            .format(
+                not_valid_vat=not_valid_vat,
+            )
+        )
+
+    def _check_invoice_configured_date(self, invoice, configured_date):
+        """
+        Check that `invoice`'s Accounting Date is `configured date`.
+        Also check that resetting to draft and validating again
+        does not change the `invoice`'s Accounting Date.
+        """
+        self.assertEqual(
+            invoice.date,
+            configured_date,
+            "Configured date not set in the invoice after import",
+        )
+
+        invoice.action_invoice_cancel()
+        invoice.action_invoice_draft()
+        invoice.action_invoice_open()
+
+        self.assertEqual(
+            invoice.date,
+            configured_date,
+            "Configured date not set in the invoice after reset to draft",
+        )
+
+    def test_xml_import_rec_date(self):
+        """
+        Set 'Vendor invoice registration default date' to 'Received Date'.
+
+        Check that the received date is set during the import
+        and kept after reset to draft and validation.
+        """
+        company = self.env.user.company_id
+        company.in_invoice_registration_date = 'rec_date'
+
+        res = self.run_wizard('xml_import_rec_date', 'IT05979361218_013.xml')
+        invoice_id = res.get('domain')[0][2][0]
+        invoice = self.invoice_model.browse(invoice_id)
+
+        self._check_invoice_configured_date(
+            invoice,
+            invoice.e_invoice_received_date,
+        )
+
+        # Update the reference so that importing the same file
+        # (in other tests) does not raise "Duplicated vendor reference..."
+        invoice.reference = 'xml_import_rec_date'
+
+    def test_xml_import_inv_date(self):
+        """
+        Set 'Vendor invoice registration default date' to 'Invoice Date'.
+
+        Check that the invoice date is set during the import
+        and kept after reset to draft and validation.
+        """
+        company = self.env.user.company_id
+        company.in_invoice_registration_date = 'inv_date'
+
+        res = self.run_wizard('xml_import_inv_date', 'IT05979361218_013.xml')
+        invoice_id = res.get('domain')[0][2][0]
+        invoice = self.invoice_model.browse(invoice_id)
+
+        self._check_invoice_configured_date(
+            invoice,
+            invoice.date_invoice,
+        )
+
+        # Update the reference so that importing the same file
+        # (in other tests) does not raise "Duplicated vendor reference..."
+        invoice.reference = 'xml_import_inv_date'
 
     def test_01_xml_link(self):
         """

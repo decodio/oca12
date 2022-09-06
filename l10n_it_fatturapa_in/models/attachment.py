@@ -13,18 +13,9 @@ SELF_INVOICE_TYPES = ("TD16", "TD17", "TD18", "TD19", "TD20", "TD21")
 
 
 class FatturaPAAttachmentIn(models.Model):
+    _inherit = "fatturapa.attachment"
     _name = "fatturapa.attachment.in"
-    _description = "E-bill import file"
-    _inherits = {'ir.attachment': 'ir_attachment_id'}
-    _inherit = ['mail.thread']
-    _order = 'id desc'
 
-    ir_attachment_id = fields.Many2one(
-        'ir.attachment', 'Attachment', required=True, ondelete="cascade")
-    att_name = fields.Char(
-        string="E-bill file name",
-        related='ir_attachment_id.name',
-        store=True)
     in_invoice_ids = fields.One2many(
         'account.invoice', 'fatturapa_attachment_in_id',
         string="In Bills", readonly=True)
@@ -58,6 +49,8 @@ class FatturaPAAttachmentIn(models.Model):
     is_self_invoice = fields.Boolean(
         "Contains self invoices", compute="_compute_is_self_invoice", store=True
     )
+    linked_invoice_id_xml = fields.Char(
+        compute="_compute_linked_invoice_id_xml", store=True)
 
     _sql_constraints = [(
         'ftpa_attachment_in_name_uniq',
@@ -85,9 +78,6 @@ class FatturaPAAttachmentIn(models.Model):
     @api.onchange('datas_fname')
     def onchagne_datas_fname(self):
         self.name = self.datas_fname
-
-    def get_xml_string(self):
-        return self.ir_attachment_id.get_xml_string()
 
     @api.multi
     def recompute_xml_fields(self):
@@ -124,7 +114,7 @@ class FatturaPAAttachmentIn(models.Model):
                     att_name=self.display_name,
                     error_msg=e,
                 )
-            _logger.error(error_msg)
+            _logger.warning(error_msg)
             self.e_invoice_parsing_error = error_msg
         else:
             self.e_invoice_parsing_error = False
@@ -145,6 +135,20 @@ class FatturaPAAttachmentIn(models.Model):
                         # then the whole attachment is flagged
                         att.is_self_invoice = True
                         break
+
+    @api.multi
+    @api.depends('ir_attachment_id.datas')
+    def _compute_linked_invoice_id_xml(self):
+        for att in self:
+            att.linked_invoice_id_xml = ""
+            fatt = att.get_invoice_obj()
+            if fatt:
+                for invoice_body in fatt.FatturaElettronicaBody:
+                    if len(invoice_body.DatiGenerali.DatiFattureCollegate) == 1:
+                        att.linked_invoice_id_xml = (
+                            invoice_body.DatiGenerali.DatiFattureCollegate[0].
+                            IdDocumento
+                        )
 
     @api.multi
     @api.depends('ir_attachment_id.datas')

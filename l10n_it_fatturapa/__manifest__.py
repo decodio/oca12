@@ -6,7 +6,7 @@
 
 {
     'name': 'ITA - Fattura elettronica - Base',
-    'version': '12.0.2.3.0',
+    'version': '12.0.3.0.0',
     'category': 'Localization/Italy',
     'summary': 'Fatture elettroniche',
     'author': 'Davide Corio, Agile Business Group, Innoviu, '
@@ -36,6 +36,7 @@
         'views/company_view.xml',
         'views/partner_view.xml',
         'views/invoice_view.xml',
+        'views/fatturapa_attachment_views.xml',
         'views/related_document_type_views.xml',
         'security/ir.model.access.csv',
     ],

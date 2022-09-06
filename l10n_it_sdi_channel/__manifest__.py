@@ -7,7 +7,7 @@
     "name": "Italian Localization - Fattura elettronica - Canale SdI",
     "summary": "Aggiunge il canale di invio/ricezione dei file XML "
                "attraverso lo SdI",
-    "version": "12.0.1.3.4",
+    "version": "12.0.2.2.0",
     "development_status": "Beta",
     "category": "Hidden",
     'website': 'https://github.com/OCA/l10n-italy/tree/10.0/'
@@ -19,17 +19,18 @@
     "installable": True,
     "depends": [
         "account",
-        "fetchmail",
         "l10n_it_fatturapa",
+        "l10n_it_fatturapa_in",
+        "l10n_it_fatturapa_out",
     ],
     "data": [
         "security/ir.model.access.csv",
         "security/security.xml",
+        "data/mail_message_subtype_data.xml",
+        "views/account_invoice_views.xml",
         "views/sdi_view.xml",
         "views/company_view.xml",
-        'views/fetchmail_server.xml',
-        'views/ir_mail_server.xml',
-        "data/config_parameter.xml",
-        "demo/sdi_channel_demo.xml"
+        "views/fatturapa_attachment_views.xml",
+        "wizards/send_to_sdi_views.xml",
     ],
 }

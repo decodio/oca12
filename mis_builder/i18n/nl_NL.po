@@ -941,7 +941,7 @@ msgid "KPI"
 msgstr "KPI"
 
 #. module: mis_builder
-#: code:addons/mis_builder/models/mis_report.py:735
+#: code:addons/mis_builder/models/mis_report.py:734
 #, python-format
 msgid ""
 "KPI \"{}\" has type {} while a tuple was expected.\n"
@@ -954,7 +954,7 @@ msgid ""
 msgstr ""
 
 #. module: mis_builder
-#: code:addons/mis_builder/models/mis_report.py:725
+#: code:addons/mis_builder/models/mis_report.py:724
 #, python-format
 msgid ""
 "KPI \"{}\" is valued as a tuple of length {} while a tuple of length {} is "
@@ -1581,13 +1581,13 @@ msgid "Subreport"
 msgstr "Rapport"
 
 #. module: mis_builder
-#: code:addons/mis_builder/models/mis_report_subreport.py:64
+#: code:addons/mis_builder/models/mis_report_subreport.py:72
 #, python-format
 msgid "Subreport loop detected"
 msgstr ""
 
 #. module: mis_builder
-#: code:addons/mis_builder/models/mis_report_subreport.py:45
+#: code:addons/mis_builder/models/mis_report_subreport.py:53
 #, fuzzy, python-format
 msgid "Subreport name ({}) must be a valid python identifier"
 msgstr "De naam moet een geldige python identifier zijn"

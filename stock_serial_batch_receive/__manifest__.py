@@ -3,11 +3,11 @@
 {
     "name": "Stock Serial Number Batch",
     "summary": "Generate serial number automatically per batch",
-    "version": "12.0.1.0.0",
+    "version": "12.0.1.0.1",
     "category": "Stock",
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "maintainer": "Camptocamp",
-    "website": "http://www.github.com/OCA/stock-logistics-warehouse",
+    "website": "https://github.com/OCA/stock-logistics-warehouse",
     "license": "AGPL-3",
     "application": False,
     "installable": True,

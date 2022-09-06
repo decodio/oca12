@@ -148,7 +148,7 @@ msgid "Cancel"
 msgstr "Abbrechen"
 
 #. module: sale_blanket_order
-#: code:addons/sale_blanket_order/models/sale_orders.py:27
+#: code:addons/sale_blanket_order/models/sale_order.py:25
 #, python-format
 msgid ""
 "Cannot confirm order %s as one of the lines refers to a blanket order that "
@@ -724,7 +724,8 @@ msgstr "Sequenz"
 #. module: sale_blanket_order
 #: model_terms:ir.ui.view,arch_db:sale_blanket_order.view_blanket_order_form
 msgid "Setup default terms and conditions in your company settings."
-msgstr "Richten Sie in Ihren Unternehmenseinstellungen Standardbedingungen ein."
+msgstr ""
+"Richten Sie in Ihren Unternehmenseinstellungen Standardbedingungen ein."
 
 #. module: sale_blanket_order
 #: model:ir.model.fields,field_description:sale_blanket_order.field_sale_blanket_order__state
@@ -769,7 +770,7 @@ msgid "Terms and Conditions"
 msgstr "Geschäftsbedingungen"
 
 #. module: sale_blanket_order
-#: code:addons/sale_blanket_order/models/sale_orders.py:148
+#: code:addons/sale_blanket_order/models/sale_order_line.py:112
 #, python-format
 msgid ""
 "The currency of the blanket order must match with that of the sale order."
@@ -778,13 +779,13 @@ msgstr ""
 "übereinstimmen."
 
 #. module: sale_blanket_order
-#: code:addons/sale_blanket_order/models/sale_orders.py:38
+#: code:addons/sale_blanket_order/models/sale_order.py:37
 #, python-format
 msgid "The customer must be equal to the blanket order lines customer"
 msgstr "Der Kunde muss dem Kunden der Blanko-Auftragszeilen entsprechen"
 
 #. module: sale_blanket_order
-#: code:addons/sale_blanket_order/models/sale_orders.py:138
+#: code:addons/sale_blanket_order/models/sale_order_line.py:102
 #, python-format
 msgid "The product in the blanket order and in the sales order must match"
 msgstr "Das Produkt im Rahmenauftrag und im Kundenauftrag muss übereinstimmen"

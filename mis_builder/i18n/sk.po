@@ -930,7 +930,7 @@ msgid "KPI"
 msgstr "KPI"
 
 #. module: mis_builder
-#: code:addons/mis_builder/models/mis_report.py:735
+#: code:addons/mis_builder/models/mis_report.py:734
 #, python-format
 msgid ""
 "KPI \"{}\" has type {} while a tuple was expected.\n"
@@ -943,7 +943,7 @@ msgid ""
 msgstr ""
 
 #. module: mis_builder
-#: code:addons/mis_builder/models/mis_report.py:725
+#: code:addons/mis_builder/models/mis_report.py:724
 #, python-format
 msgid ""
 "KPI \"{}\" is valued as a tuple of length {} while a tuple of length {} is "
@@ -1554,13 +1554,13 @@ msgid "Subreport"
 msgstr "Čiastkový report"
 
 #. module: mis_builder
-#: code:addons/mis_builder/models/mis_report_subreport.py:64
+#: code:addons/mis_builder/models/mis_report_subreport.py:72
 #, python-format
 msgid "Subreport loop detected"
 msgstr "Nájdená slučka čiastkového výkazu"
 
 #. module: mis_builder
-#: code:addons/mis_builder/models/mis_report_subreport.py:45
+#: code:addons/mis_builder/models/mis_report_subreport.py:53
 #, python-format
 msgid "Subreport name ({}) must be a valid python identifier"
 msgstr "Názov čiastkového výkazu({}) musí byť platný identifikátor python"

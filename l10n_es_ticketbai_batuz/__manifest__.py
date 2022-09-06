@@ -5,7 +5,7 @@
     "name": "TicketBAI - Batuz - "
             "declaración de todas las operaciones de venta realizadas por las personas "
             "y entidades que desarrollan actividades económicas en Bizkaia",
-    "version": "12.0.1.1.0",
+    "version": "12.0.1.3.0",
     "category": "Accounting & Finance",
     "website": "https://github.com/OCA/l10n-spain",
     "author": "Binovo,"
@@ -38,6 +38,7 @@
         "views/res_company_views.xml",
         "views/res_partner_views.xml",
         "views/tbai_vat_regime_key_views.xml",
+        "views/account_journal_views.xml",
     ],
     "post_init_hook": "post_init_hook",
 }
