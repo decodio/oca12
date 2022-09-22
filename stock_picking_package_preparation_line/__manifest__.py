@@ -5,7 +5,7 @@
 
 {
     'name': 'Stock Picking Package Preparation Line',
-    'version': '12.0.1.0.1',
+    'version': '12.0.1.0.2',
     'author': 'Apulia Software srl, Odoo Italia Network, '
               'Odoo Community Association (OCA)',
     'license': 'AGPL-3',
@@ -15,7 +15,7 @@
         'product',
         'stock_picking_package_preparation',
     ],
-    'website': 'https://github.com/OCA/stock-logistics-workflow/tree/'
+    'website': 'https://github.com/OCA/stock-logistics-workflow'
                '12.0/stock_picking_package_preparation_line',
     'data': [
         'security/ir.model.access.csv',

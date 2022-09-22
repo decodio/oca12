@@ -5,10 +5,10 @@
     'name': 'Sale Order Global Stock Route',
     'summary': 'Add the possibility to choose '
                'one warehouse path for an order',
-    'version': '12.0.1.0.1',
+    'version': '12.0.1.0.2',
     'development_status': 'Beta',
     'category': 'Warehouse',
-    'website': 'https://github.com/OCA/stock-logistics-warehouse',
+    'website': 'https://github.com/OCA/stock-logistics-workflow',
     'author': 'Tecnativa, Odoo Community Association (OCA)',
     'license': 'AGPL-3',
     'installable': True,

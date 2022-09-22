@@ -4,13 +4,13 @@
 {
     "name": "Shifting End of lot",
     "summary": "Move product lot quantity rest to another location",
-    "version": "12.0.1.0.1",
+    "version": "12.0.1.0.2",
     "author": "Akretion, Odoo Community Association (OCA)",
     "category": "Stock",
     "depends": [
         "stock",
     ],
-    "website": "https://github.com/oca/stock-logistics-workflow/tree/12.0",
+    "website": "https://github.com/OCA/stock-logistics-workflow",
     "data": [
         "views/picking_type.xml",
     ],

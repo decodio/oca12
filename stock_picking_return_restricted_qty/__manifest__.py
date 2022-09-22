@@ -5,10 +5,10 @@
     "name": "Stock Picking Return Restricted Qty",
     "summary": "This module don't allows you to return more products"
                "than you had bought",
-    "version": "12.0.1.0.0",
+    "version": "12.0.1.0.1",
     'development_status': 'Alpha',
     "license": "AGPL-3",
     "author": "Tecnativa, Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/stock-logistics-workflow/",
+    "website": "https://github.com/OCA/stock-logistics-workflow",
     "depends": ["stock"],
 }
