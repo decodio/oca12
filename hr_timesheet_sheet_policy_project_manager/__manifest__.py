@@ -4,11 +4,11 @@
 
 {
     'name': 'HR Timesheet Sheet: Project Manager Policy',
-    'version': '12.0.1.1.0',
+    'version': '12.0.1.1.1',
     'author':
         'CorporateHub, '
         'Odoo Community Association (OCA)',
-    'website': 'https://github.com/OCA/timesheet/',
+    'website': 'https://github.com/OCA/timesheet',
     'license': 'AGPL-3',
     'category': 'Human Resources',
     'summary': 'Allows setting Project Manager as Reviewer',

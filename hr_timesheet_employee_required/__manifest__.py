@@ -4,9 +4,9 @@
 
 {
     'name': 'Task Logs Employee Required',
-    'version': '12.0.1.1.0',
+    'version': '12.0.1.1.1',
     'category': 'Human Resources',
-    'website': 'https://github.com/OCA/hr-timesheet',
+    'website': 'https://github.com/OCA/timesheet',
     'author':
         'CorporateHub, '
         'Odoo Community Association (OCA)',

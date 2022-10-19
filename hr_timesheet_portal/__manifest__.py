@@ -3,10 +3,10 @@
 {
     "name": "Timesheet portal (editable)",
     "summary": "Fill in timesheets via the portal",
-    "version": "12.0.1.0.0",
+    "version": "12.0.1.0.1",
     "development_status": "Alpha",
     "category": "Website",
-    "website": "https://github.com/OCA/hr-timesheet",
+    "website": "https://github.com/OCA/timesheet",
     "author": "Hunki Enterprises BV, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "depends": [

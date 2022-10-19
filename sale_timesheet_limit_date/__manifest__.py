@@ -3,7 +3,7 @@
 {
     'name': 'Invoice Sales Timesheets with a Date Limit',
     'summary': 'Layouts',
-    'version': '12.0.1.0.1',
+    'version': '12.0.1.0.2',
     'author': 'Camptocamp, '
     'Odoo Community Association (OCA)',
     'license': 'AGPL-3',
@@ -11,7 +11,7 @@
     'depends': [
         'sale_timesheet',
     ],
-    'website': 'https://github.com/OCA/sale-workflow',
+    'website': 'https://github.com/OCA/timesheet',
     'data': [
         'views/sale_order_view.xml',
         'views/invoice_order_view.xml'

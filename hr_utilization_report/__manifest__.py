@@ -4,9 +4,9 @@
 
 {
     'name': 'Task Logs Utilization Report',
-    'version': '12.0.1.0.2',
+    'version': '12.0.1.0.3',
     'category': 'Human Resources',
-    'website': 'https://github.com/OCA/hr-timesheet',
+    'website': 'https://github.com/OCA/timesheet',
     'author':
         'CorporateHub, '
         'Odoo Community Association (OCA)',

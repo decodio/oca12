@@ -3,10 +3,10 @@
 
 {
     'name': "Manage products representing employees",
-    'version': '12.0.1.0.0',
+    'version': '12.0.1.0.1',
     'category': 'Human Resources',
     'author': "Eficent, Odoo Community Association (OCA)",
-    'website': 'http://www.github.com/OCA/hr-timesheet',
+    'website': 'https://github.com/OCA/timesheet',
     'license': 'AGPL-3',
     'summary': 'Product is an employee',
     "depends": ['product', 'hr_timesheet'],
