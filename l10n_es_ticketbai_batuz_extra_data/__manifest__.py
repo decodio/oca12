@@ -3,7 +3,7 @@
 
 {
     "name": "TicketBAI - Batuz - Extra data",
-    "version": "12.0.1.0.0",
+    "version": "12.0.1.0.1",
     "category": "Accounting & Finance",
     "website": "https://github.com/OCA/l10n-spain",
     "author": "Kernet Internet y Nuevas Tecnologias S.L.,"
@@ -13,7 +13,8 @@
     "installable": True,
     "auto_install": False,
     "maintainers": [
-        "Kernet Internet y Nuevas Tecnologias S.L.",
+        "xAdrianC-Kernet",
+        "ao-landoo",
     ],
     "depends": [
         "l10n_es_extra_data",

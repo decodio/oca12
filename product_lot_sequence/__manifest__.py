@@ -5,10 +5,10 @@
     "name": "Product Lot Sequence",
     "summary": """
         Adds ability to define a lot sequence from the product""",
-    "version": "12.0.1.0.1",
+    "version": "12.0.1.0.2",
     "license": "AGPL-3",
     "author": "ForgeFlow S.L., Odoo Community Association (OCA)",
-    "website": "https://www.github.com/OCA/product-attribute",
+    "website": "https://github.com/OCA/product-attribute",
     "depends": ["stock"],
     "data": ["views/product_views.xml"],
 }

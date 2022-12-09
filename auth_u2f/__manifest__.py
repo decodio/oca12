@@ -18,12 +18,13 @@
 
 {
     'name': '2nd factor authentication via U2F',
-    'version': '12.0.1.0.1',
+    'version': '12.0.1.0.2',
     'author': "Joren Van Onder, "
               "initOS GmbH, "
               "Odoo Community Association (OCA)",
     "summary": "2nd factor authentication via U2F devices",
     'category': 'Extra Tools',
+    'website': 'https://github.com/OCA/server-auth',
     'license': 'LGPL-3',
     'depends': ['base', 'web'],
     'data': [

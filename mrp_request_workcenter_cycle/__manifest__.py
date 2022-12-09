@@ -3,11 +3,11 @@
 
 {
     "name": "MRP Request Workcenter Cycle",
-    "version": "12.0.1.0.0",
+    "version": "12.0.1.0.1",
     "category": "Manufacturing",
     "license": "AGPL-3",
     "author": "Akretion, Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/manufacture/tree/12.0"
+    "website": "https://github.com/OCA/manufacture"
     "/mrp_request_workcenter_cycle",
     "depends": [
         "mrp_production_request",

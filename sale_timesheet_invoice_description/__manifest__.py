@@ -5,12 +5,12 @@
 {
     'name': 'Timesheet details invoice',
     'summary': 'Add timesheet details in invoice line',
-    'version': '12.0.1.0.0',
+    'version': '12.0.1.0.1',
     'category': 'Sales Management',
     'license': 'AGPL-3',
     'author': 'Tecnativa, '
               'Odoo Community Association (OCA)',
-    'website': 'https://www.tecnativa.com',
+    'website': 'https://github.com/OCA/account-invoicing',
     'depends': [
         'sale_timesheet',
     ],

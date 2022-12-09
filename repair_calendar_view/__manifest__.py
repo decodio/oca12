@@ -4,10 +4,10 @@
 
 {
     'name': 'Repair Calendar View',
-    'version': '12.0.1.1.0',
+    'version': '12.0.1.1.1',
     'category': 'Manufacturing',
     'author': "Agile Business Group, Odoo Community Association (OCA)",
-    'website': 'http://www.agilebg.com',
+    'website': 'https://github.com/OCA/manufacture',
     'license': 'LGPL-3',
     'depends': ['repair'],
     'data': ['views/mrp_repair_view.xml'],

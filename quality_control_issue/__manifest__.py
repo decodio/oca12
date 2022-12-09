@@ -4,10 +4,10 @@
 {
     "name": "Quality Control Issue",
     "summary": "Allow to manage and report Quality Control Issues.",
-    "version": "12.0.1.0.0",
+    "version": "12.0.1.0.1",
     "development_status": "Production/Stable",
     "category": "Quality Control",
-    "website": "https://odoo-community.org/",
+    "website": "https://github.com/OCA/manufacture",
     "author": "Eficent , Odoo Community Association (OCA)",
     "maintainers": ["lreficent"],
     "license": "AGPL-3",

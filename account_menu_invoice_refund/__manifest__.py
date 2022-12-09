@@ -3,13 +3,13 @@
 
 {
     'name': 'Accunt Menu - Invoice & Refund',
-    'version': '12.0.2.0.0',
+    'version': '12.0.2.0.1',
     'summary': 'New invoice menu that combine invoices and refunds',
     'category': 'Accounting & Finance',
     'author': 'Ecosoft, '
               'Odoo Community Association (OCA)',
     'license': 'AGPL-3',
-    'website': 'https://github.com/OCA/account-invoicing/',
+    'website': 'https://github.com/OCA/account-invoicing',
     'depends': [
         'account',
     ],

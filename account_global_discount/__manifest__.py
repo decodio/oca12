@@ -3,11 +3,11 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 {
     'name': 'Account Global Discount',
-    'version': '12.0.1.2.0',
+    'version': '12.0.1.2.1',
     'category': 'Accounting',
     'author': 'Tecnativa,'
               'Odoo Community Association (OCA)',
-    'website': 'https://github.com/OCA/server-backend',
+    'website': 'https://github.com/OCA/account-invoicing',
     'license': 'AGPL-3',
     'depends': [
         'account',

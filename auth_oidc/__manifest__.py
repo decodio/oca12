@@ -4,7 +4,7 @@
 
 {
     "name": "Authentication OpenID Connect",
-    "version": "12.0.1.0.1",
+    "version": "12.0.1.1.0",
     "license": "AGPL-3",
     "author": (
         "ICTSTUDIO, André Schenkels, "
@@ -16,6 +16,9 @@
     "summary": "Allow users to login through OpenID Connect Provider",
     "external_dependencies": {"python": ["jose"]},
     "depends": ["auth_oauth"],
-    "data": ["views/auth_oauth_provider.xml"],
+    "data": [
+        "security/ir.model.access.csv",
+        "views/auth_oauth_provider.xml",
+    ],
     "demo": ["demo/local_keycloak.xml"],
 }

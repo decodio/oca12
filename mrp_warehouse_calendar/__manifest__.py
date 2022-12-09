@@ -4,9 +4,9 @@
 {
     "name": "MRP Warehouse Calendar",
     "summary": "Considers the warehouse calendars in manufacturing",
-    "version": "12.0.1.0.1",
+    "version": "12.0.1.0.2",
     "license": "LGPL-3",
-    "website": "https://github.com/stock-logistics-warehouse",
+    "website": "https://github.com/OCA/manufacture",
     "author": "Eficent, "
               "Odoo Community Association (OCA)",
     "category": "Manufacturing",

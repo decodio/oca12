@@ -4,11 +4,11 @@
 
 {
     'name': 'Production Auto Post-Inventory',
-    'version': '12.0.1.1.0',
+    'version': '12.0.1.1.1',
     'category': 'MRP',
     'author': 'Eficent, '
               'Odoo Community Association (OCA)',
-    'website': 'https://github.com/oca/manufacture',
+    'website': 'https://github.com/OCA/manufacture',
     'license': 'AGPL-3',
     'depends': [
         'mrp',

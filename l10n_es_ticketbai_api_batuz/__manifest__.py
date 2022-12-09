@@ -5,7 +5,7 @@
     "name": "TicketBAI (API) - Batuz - "
             "declaración de todas las operaciones de venta realizadas por las personas "
             " y entidades que desarrollan actividades económicas en Bizkaia",
-    "version": "12.0.1.1.1",
+    "version": "12.0.1.1.2",
     "category": "Accounting & Finance",
     "website": "https://github.com/OCA/l10n-spain",
     "author": "Binovo,"
@@ -16,7 +16,7 @@
     "auto_install": False,
     "development_status": "Alpha",
     "maintainers": [
-        'Binovo'
+        "ao-landoo",
     ],
     "depends": [
         "l10n_es_ticketbai_api",

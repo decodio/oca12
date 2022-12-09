@@ -5,11 +5,12 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 {
     'name': 'Account Invoice Line Default Account',
-    'version': '12.0.1.0.0',
+    'version': '12.0.1.0.1',
     'depends': [
         'account'
     ],
     'author': 'Therp BV,BCIM,Odoo Community Association (OCA)',
+    'website': 'https://github.com/OCA/account-invoicing',
     'license': 'AGPL-3',
     'category': 'Accounting',
     'data': [

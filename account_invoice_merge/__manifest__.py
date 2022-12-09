@@ -8,11 +8,11 @@
 
 {
     'name': 'Account Invoice Merge',
-    'version': '12.0.1.0.2',
+    'version': '12.0.1.0.3',
     'category': 'Finance',
     'summary': "Merge invoices in draft",
     'author': "Elico Corp,Odoo Community Association (OCA)",
-    'website': 'http://www.openerp.net.cn',
+    'website': 'https://github.com/OCA/account-invoicing',
     'license': 'AGPL-3',
     'depends': ['account'],
     'data': [

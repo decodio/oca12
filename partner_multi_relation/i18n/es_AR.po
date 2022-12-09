@@ -236,7 +236,7 @@ msgid "No %s partner available for relation type."
 msgstr "No hay %s socio disponible para el tipo de relación."
 
 #. module: partner_multi_relation
-#: code:addons/partner_multi_relation/models/res_partner_relation_all.py:546
+#: code:addons/partner_multi_relation/models/res_partner_relation_all.py:548
 #, python-format
 msgid "No relation type specified in vals: %s."
 msgstr "No hay tipo de relación especificada en los valores: %s."
@@ -355,7 +355,7 @@ msgid ""
 "{partners}"
 msgstr ""
 "No se pudo deshabilitar la reflexividad para el tipo de relación "
-"{related_type}. Existen relaciones reflexivas definidas para los siguientes "
+"{relation_type}. Existen relaciones reflexivas definidas para los siguientes "
 "socios: {partners}"
 
 #. module: partner_multi_relation

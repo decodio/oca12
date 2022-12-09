@@ -5,12 +5,12 @@
     'name': 'Base Repair Config',
     'summary': """
         Provides general settings for the Repair App""",
-    'version': '12.0.1.0.1',
+    'version': '12.0.1.0.2',
     'license': 'AGPL-3',
     'author': 'Escodoo,Odoo Community Association (OCA)',
     'maintainers': ['marcelsavegnago'],
     'images': ['static/description/banner.png'],
-    'website': 'https://github.com/oca/manufacture',
+    'website': 'https://github.com/OCA/manufacture',
     'depends': [
         'repair',
     ],

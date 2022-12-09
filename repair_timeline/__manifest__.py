@@ -6,11 +6,11 @@
     'summary': """
         Add timeline view""",
     'category': 'Manufacturing',
-    'version': '12.0.1.0.1',
+    'version': '12.0.1.0.2',
     'license': 'AGPL-3',
     'author': 'Escodoo,Odoo Community Association (OCA)',
     'maintainers': ['marcelsavegnago'],
-    'website': 'https://github.com/oca/manufacture',
+    'website': 'https://github.com/OCA/manufacture',
     'images': ['static/description/banner.png'],
     'depends': [
         'base_repair',
