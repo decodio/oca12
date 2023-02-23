@@ -13,16 +13,16 @@
             </field>
         </record>
 
-        <record id="invoice_form" model="ir.ui.view">
-            <field name="name">account.invoice.form</field>
-            <field name="model">account.invoice</field>
-            <field name="inherit_id" ref="account.invoice_form"/>
-            <field name="arch" type="xml">
-                <field name="partner_id" position="after">
-                    <field name="alternate_payer_id" string="Alternate Payor"/>
-                </field>
-            </field>
-        </record>
+<!--        <record id="invoice_form" model="ir.ui.view">-->
+<!--            <field name="name">account.invoice.form</field>-->
+<!--            <field name="model">account.invoice</field>-->
+<!--            <field name="inherit_id" ref="account.invoice_form"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <field name="partner_id" position="after">-->
+<!--                    <field name="alternate_payer_id" string="Alternate Payor"/>-->
+<!--                </field>-->
+<!--            </field>-->
+<!--        </record>-->
 
     </data>
 </odoo>
