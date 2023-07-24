@@ -24,7 +24,13 @@ class AccountInvoice(models.Model):
             res['partner_id'] = self.alternate_payer_id.id
         return res
 
-    @api.onchange('partner_id', 'company_id', 'alternate_payer_id')
+    #  [ECODICA FIX]
+    @api.onchange('alternate_payer_id')
+    def _onchange_alternate_payer_id(self):
+        self._onchange_partner_id()
+
+    #  [ECODICA FIX] @api.onchange('partner_id', 'company_id', 'alternate_payer_id')
+    @api.onchange('partner_id', 'company_id')
     def _onchange_partner_id(self):
         res = super(AccountInvoice, self)._onchange_partner_id()
         company_id = self.company_id.id
