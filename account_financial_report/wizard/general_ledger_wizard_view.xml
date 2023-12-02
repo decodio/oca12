@@ -25,6 +25,11 @@
                                 <field name="centralize" nolabel="1" class="oe_inline"/>
                                 <label for="centralize" class="oe_inline"/>
                             </div>
+                            <label string=" " for="ignore_unaffected_earnings"/>
+                            <div>
+                                <field name="ignore_unaffected_earnings" nolabel="1" class="oe_inline"/>
+                                <label for="ignore_unaffected_earnings" class="oe_inline"/>
+                            </div>
                             <label string=" " for="hide_account_at_0"/>
                             <div>
                                 <field name="hide_account_at_0" nolabel="1" class="oe_inline"/>

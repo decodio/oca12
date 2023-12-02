@@ -78,6 +78,7 @@ class GeneralLedgerReport(models.TransientModel):
         compute='_compute_unaffected_earnings_account',
         store=True
     )
+    ignore_unaffected_earnings = fields.Boolean("Ignore Undistributed P&L")
 
 
 class GeneralLedgerReportAccount(models.TransientModel):
@@ -1579,6 +1580,8 @@ WHERE
     def _inject_unaffected_earnings_account_values(self):
         """Inject the report values of the unaffected earnings account
         for report_general_ledger_account."""
+        if self.ignore_unaffected_earnings:
+            return  # very, very problematic
         # Fetch the profit and loss accounts
         query_unaffected_earnings_account_ids = """
             SELECT a.id
