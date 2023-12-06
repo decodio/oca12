@@ -1,12 +1,14 @@
 # Copyright 2019 Lorenzo Battistini @ TAKOBI
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo import models
+from odoo import models, fields
 
 
 class AbstractWizard(models.AbstractModel):
     _name = 'account_financial_report_abstract_wizard'
     _description = 'Abstract Wizard'
+
+    ignore_unaffected_earnings = fields.Boolean("Ignore Undistributed P&L")
 
     def _get_partner_ids_domain(self):
         return [
