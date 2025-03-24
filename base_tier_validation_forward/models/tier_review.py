@@ -7,7 +7,7 @@ class TierReview(models.Model):
     _inherit = "tier.review"
     _order = "sequence"
 
-    name = fields.Char(compute="_compute_definition_data", store=True, readonly=False)
+    name = fields.Char(compute="_compute_definition_data", related=False, store=True, readonly=False)
     status = fields.Selection(selection_add=[("forwarded", "Forwarded")],)
     review_type = fields.Selection(
         compute="_compute_definition_data", store=True, readonly=False,
